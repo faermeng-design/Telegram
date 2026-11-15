@@ -1,0 +1,42 @@
+name: Inspect code
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect code excerpts
+        run: |
+          mkdir -p inspect
+          OUT=inspect/excerpts.txt
+          : > "$OUT"
+          show() {
+            echo "" >> "$OUT"
+            echo "=================== $1 :: $2" >> "$OUT"
+            grep -n -E -m "$5" -B "$3" -A "$4" "$2" "$1" >> "$OUT" 2>&1 || echo "(не найдено)" >> "$OUT"
+          }
+          M=$(find . -name MessagesController.java | head -1)
+          T=$(find . -name Theme.java -path "*ActionBar*" | head -1)
+          C=$(find . -name ChatMessageCell.java | head -1)
+          echo "files: $M $T $C" >> "$OUT"
+          show "$M" "TL_updateDeleteMessages" 4 25 8
+          show "$M" "TL_updateDeleteChannelMessages" 4 25 8
+          show "$M" "void deleteMessagesByPush" 2 40 2
+          show "$T" "static int getColor\(" 2 45 4
+          show "$C" "currentTimeString = " 4 6 6
+          echo "" >> "$OUT"
+          find . -name AndroidManifest.xml -not -path "*/build/*" >> "$OUT"
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/excerpts.txt
+          git commit -m "inspect excerpts" || echo "nothing to commit"
+          git push
