@@ -29,6 +29,9 @@ jobs:
           sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
           sed -i "s/APP_HASH = \"[0-9a-f]*\";/APP_HASH = \"$APP_HASH\";/" $F || true
 
+      - name: Apply Telegyou mod
+        run: bash telegyou-mod.sh
+
       - name: Install NDK and accept licenses
         run: |
           SDKM=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
