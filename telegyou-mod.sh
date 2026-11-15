@@ -2,7 +2,7 @@
 set -e
 ROOT="TMessagesProj/src/main/java/org/telegram"
 
-# 1) Файл режима призрака
+# 1) Логика режима призрака
 cat > "$ROOT/messenger/GhostMode.java" <<'JAVA'
 package org.telegram.messenger;
 
@@ -18,10 +18,16 @@ import java.util.Set;
 public class GhostMode {
 
     private static final String PREFS = "telegyou";
+    private static Context appContext;
     private static Set<String> deleted;
 
+    public static void init(Context context) {
+        appContext = context;
+    }
+
     private static SharedPreferences prefs() {
-        return ApplicationLoader.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        Context c = appContext != null ? appContext : ApplicationLoader.applicationContext;
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
     public static boolean get(String key) {
@@ -39,29 +45,24 @@ public class GhostMode {
         }
     }
 
-    public static boolean noRead() { return get("no_read"); }
-    public static boolean noTyping() { return get("no_typing"); }
-    public static boolean noOnline() { return get("no_online"); }
-    public static boolean keepDeleted() { return get("keep_deleted"); }
-
     /** true = этот запрос нельзя отправлять на сервер. */
     public static boolean shouldBlock(TLObject request) {
         if (request == null) {
             return false;
         }
         String n = request.getClass().getName().toLowerCase().replace('$', '_').replace('.', '_');
-        if (noRead() && (n.contains("messages_readhistory")
-                || n.contains("channels_readhistory")
-                || n.contains("readmessagecontents")
-                || n.contains("readstories")
-                || n.contains("incrementstoryviews"))) {
-            return true;
+        if (n.contains("messages_readhistory") || n.contains("channels_readhistory")
+                || n.contains("readmessagecontents")) {
+            return get("no_read");
         }
-        if (noTyping() && n.contains("messages_settyping")) {
-            return true;
+        if (n.contains("readstories") || n.contains("incrementstoryviews")) {
+            return get("no_stories");
         }
-        if (noOnline() && n.contains("account_updatestatus")) {
-            return true;
+        if (n.contains("messages_settyping")) {
+            return get("no_typing");
+        }
+        if (n.contains("account_updatestatus")) {
+            return get("no_online");
         }
         return false;
     }
@@ -100,7 +101,84 @@ public class GhostMode {
 }
 JAVA
 
-# 2) Вставляем проверку в ConnectionsManager.java (если её там ещё нет)
+# 2) Экран настроек
+cat > "$ROOT/messenger/TelegyouSettingsActivity.java" <<'JAVA'
+package org.telegram.messenger;
+
+import android.app.Activity;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Switch;
+import android.widget.TextView;
+
+public class TelegyouSettingsActivity extends Activity {
+
+    private static final String[][] ITEMS = {
+            {"no_read", "Не отмечать прочитанным",
+                    "Собеседник не увидит «прочитано». Когда ты сам отвечаешь, Telegram всё равно помечает чат прочитанным."},
+            {"no_stories", "Анонимный просмотр историй",
+                    "Автор не увидит, что ты смотрел(а) его историю."},
+            {"no_typing", "Скрыть «печатает…»",
+                    "Собеседник не видит, что ты пишешь или записываешь голосовое."},
+            {"no_online", "Скрыть статус «в сети»",
+                    "Твой статус онлайн не обновляется."},
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GhostMode.init(getApplicationContext());
+        setTitle("Telegyou");
+
+        int p = dp(20);
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setPadding(p, dp(56), p, p);
+
+        TextView title = new TextView(this);
+        title.setText("Telegyou");
+        title.setTextSize(28);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        root.addView(title);
+
+        TextView sub = new TextView(this);
+        sub.setText("Режим призрака. Изменения действуют сразу.");
+        sub.setTextSize(14);
+        sub.setAlpha(0.7f);
+        sub.setPadding(0, dp(4), 0, dp(12));
+        root.addView(sub);
+
+        for (String[] item : ITEMS) {
+            final String key = item[0];
+            Switch sw = new Switch(this);
+            sw.setText(item[1]);
+            sw.setTextSize(17);
+            sw.setPadding(0, dp(14), 0, dp(2));
+            sw.setChecked(GhostMode.get(key));
+            sw.setOnCheckedChangeListener((button, checked) -> GhostMode.set(key, checked));
+            root.addView(sw);
+
+            TextView desc = new TextView(this);
+            desc.setText(item[2]);
+            desc.setTextSize(13);
+            desc.setAlpha(0.7f);
+            root.addView(desc);
+        }
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(root);
+        setContentView(scroll);
+    }
+
+    private int dp(int v) {
+        return (int) (v * getResources().getDisplayMetrics().density);
+    }
+}
+JAVA
+
+# 3) Проверка запросов в ConnectionsManager (если ещё не вставлена)
 python3 - <<'PY'
 p = "TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java"
 s = open(p, encoding="utf-8").read()
@@ -113,6 +191,40 @@ else:
     s = s[:j] + add + s[j:]
     open(p, "w", encoding="utf-8").write(s)
     print("ConnectionsManager: правка внесена")
+PY
+
+# 4) Регистрируем экран настроек в манифесте
+python3 - <<'PY'
+import os
+snippet = '''        <activity
+            android:name="org.telegram.messenger.TelegyouSettingsActivity"
+            android:label="Telegyou: настройки"
+            android:exported="true"
+            android:theme="@android:style/Theme.DeviceDefault">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+'''
+done = False
+for p in ["TMessagesProj_App/src/main/AndroidManifest.xml",
+          "TMessagesProj/src/main/AndroidManifest.xml"]:
+    if not os.path.exists(p):
+        continue
+    s = open(p, encoding="utf-8").read()
+    if "TelegyouSettingsActivity" in s:
+        print("Manifest: уже есть в", p)
+        done = True
+        break
+    if "</application>" in s:
+        s = s.replace("</application>", snippet + "    </application>", 1)
+        open(p, "w", encoding="utf-8").write(s)
+        print("Manifest: добавлено в", p)
+        done = True
+        break
+if not done:
+    print("ВНИМАНИЕ: манифест с </application> не найден, экран настроек не появится")
 PY
 
 grep -n -A4 "private void sendRequestInternal(" "$ROOT/tgnet/ConnectionsManager.java" | head -8
