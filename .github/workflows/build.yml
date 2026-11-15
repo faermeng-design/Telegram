@@ -40,12 +40,14 @@ jobs:
           sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
           sed -i "s/APP_HASH = \"[0-9a-f]*\";/APP_HASH = \"$APP_HASH\";/" $F || true
 
+      - name: Apply Telegyou mod
+        run: bash telegyou-mod.sh
+
       - name: Rename app to Telegyou
         run: |
           for f in $(grep -rl --include=strings.xml 'name="AppName' TMessagesProj TMessagesProj_App 2>/dev/null); do
             sed -i 's|\(<string name="AppName[A-Za-z]*"[^>]*>\)[^<]*\(</string>\)|\1Telegyou\2|' "$f"
           done
-          grep -rn --include=strings.xml 'name="AppName' TMessagesProj TMessagesProj_App | head -5 || true
 
       - name: Install NDK and accept licenses
         run: |
