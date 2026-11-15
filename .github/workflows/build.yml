@@ -7,6 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
+      - name: Check keys
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_HASH: ${{ secrets.APP_HASH }}
+        run: |
+          case "$APP_ID" in ''|*[!0-9]*) echo "::error::Секрет APP_ID пустой или в нём не только цифры (проверь название и значение)"; exit 1;; esac
+          if [ -z "$APP_HASH" ]; then echo "::error::Секрет APP_HASH пустой"; exit 1; fi
+          echo "Ключи найдены"
+
       - name: Free disk space
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL || true
 
@@ -25,6 +34,8 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_HASH: ${{ secrets.APP_HASH }}
         run: |
+          APP_ID=$(echo "$APP_ID" | tr -d '[:space:]')
+          APP_HASH=$(echo "$APP_HASH" | tr -d '[:space:]')
           printf '%s = %s\n' "APP_ID" "$APP_ID" "APP_HASH" "$APP_HASH" > API_KEYS
           F=TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
           sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
