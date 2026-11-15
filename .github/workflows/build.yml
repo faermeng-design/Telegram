@@ -12,9 +12,8 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_HASH: ${{ secrets.APP_HASH }}
         run: |
-          case "$APP_ID" in ''|*[!0-9]*) echo "::error::Секрет APP_ID пустой или в нём не только цифры (проверь название и значение)"; exit 1;; esac
+          case "$APP_ID" in ''|*[!0-9]*) echo "::error::Секрет APP_ID пустой или в нём не только цифры"; exit 1;; esac
           if [ -z "$APP_HASH" ]; then echo "::error::Секрет APP_HASH пустой"; exit 1; fi
-          echo "Ключи найдены"
 
       - name: Free disk space
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL || true
@@ -41,11 +40,17 @@ jobs:
           sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
           sed -i "s/APP_HASH = \"[0-9a-f]*\";/APP_HASH = \"$APP_HASH\";/" $F || true
 
+      - name: Rename app to Telegyou
+        run: |
+          for f in $(grep -rl --include=strings.xml 'name="AppName' TMessagesProj TMessagesProj_App 2>/dev/null); do
+            sed -i 's|\(<string name="AppName[A-Za-z]*"[^>]*>\)[^<]*\(</string>\)|\1Telegyou\2|' "$f"
+          done
+          grep -rn --include=strings.xml 'name="AppName' TMessagesProj TMessagesProj_App | head -5 || true
+
       - name: Install NDK and accept licenses
         run: |
           SDKM=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
           NDK=$(grep -E "^\s*ndkVersion" TMessagesProj/build.gradle | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || true)
-          echo "NDK version: $NDK"
           yes | $SDKM --licenses > /dev/null || true
           if [ -n "$NDK" ]; then $SDKM "ndk;$NDK"; fi
 
