@@ -1,0 +1,49 @@
+name: Build Telegyou
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL || true
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Put API keys
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_HASH: ${{ secrets.APP_HASH }}
+        run: |
+          printf '%s = %s\n' "APP_ID" "$APP_ID" "APP_HASH" "$APP_HASH" > API_KEYS
+          F=TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
+          sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
+          sed -i "s/APP_HASH = \"[0-9a-f]*\";/APP_HASH = \"$APP_HASH\";/" $F || true
+
+      - name: Install NDK and accept licenses
+        run: |
+          SDKM=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          NDK=$(grep -E "^\s*ndkVersion" TMessagesProj/build.gradle | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || true)
+          echo "NDK version: $NDK"
+          yes | $SDKM --licenses > /dev/null || true
+          if [ -n "$NDK" ]; then $SDKM "ndk;$NDK"; fi
+
+      - name: Build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon --max-workers=2 -Dorg.gradle.jvmargs="-Xmx4g" assembleAfatDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Telegyou-apk
+          path: TMessagesProj_App/build/outputs/apk/**/*.apk
