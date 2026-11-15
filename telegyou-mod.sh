@@ -2,7 +2,7 @@
 set -e
 ROOT="TMessagesProj/src/main/java/org/telegram"
 
-# 1) Логика режима призрака
+# 1) Режим призрака
 cat > "$ROOT/messenger/GhostMode.java" <<'JAVA'
 package org.telegram.messenger;
 
@@ -101,13 +101,190 @@ public class GhostMode {
 }
 JAVA
 
-# 2) Экран настроек
+# 2) Значки (creator, tester, ...) из badges.json на GitHub
+cat > "$ROOT/messenger/BadgeManager.java" <<'JAVA'
+package org.telegram.messenger;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/** Telegyou: значки, которые владелец выдаёт через файл badges.json на GitHub. */
+public class BadgeManager {
+
+    private static final String URL_STR = "__BADGES_URL__";
+    private static final long REFRESH_MS = 30 * 60 * 1000L;
+
+    private static volatile Map<Long, String> users = new HashMap<>();
+    private static volatile Map<String, String> icons = defaultIcons();
+    private static volatile Map<String, String> labels = defaultLabels();
+    private static volatile long lastFetch = 0;
+    private static volatile boolean loading = false;
+    private static boolean cacheLoaded = false;
+
+    private static Map<String, String> defaultIcons() {
+        Map<String, String> m = new HashMap<>();
+        m.put("creator", "👑");
+        m.put("tester", "🧪");
+        return m;
+    }
+
+    private static Map<String, String> defaultLabels() {
+        Map<String, String> m = new HashMap<>();
+        m.put("creator", "creator");
+        m.put("tester", "tester");
+        return m;
+    }
+
+    private static SharedPreferences prefs() {
+        return ApplicationLoader.applicationContext.getSharedPreferences("telegyou_badges", Context.MODE_PRIVATE);
+    }
+
+    private static void parse(String json) {
+        try {
+            JSONObject root = new JSONObject(json);
+            Map<String, String> newIcons = defaultIcons();
+            Map<String, String> newLabels = defaultLabels();
+            JSONObject b = root.optJSONObject("badges");
+            if (b != null) {
+                Iterator<String> it = b.keys();
+                while (it.hasNext()) {
+                    String k = it.next();
+                    JSONObject o = b.optJSONObject(k);
+                    if (o != null) {
+                        newIcons.put(k, o.optString("icon", "*"));
+                        newLabels.put(k, o.optString("label", k));
+                    }
+                }
+            }
+            Map<Long, String> newUsers = new HashMap<>();
+            JSONObject u = root.optJSONObject("users");
+            if (u != null) {
+                Iterator<String> it = u.keys();
+                while (it.hasNext()) {
+                    String k = it.next();
+                    try {
+                        newUsers.put(Long.parseLong(k.trim()), u.optString(k));
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            icons = newIcons;
+            labels = newLabels;
+            users = newUsers;
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private static void refreshAsync() {
+        if (loading) {
+            return;
+        }
+        loading = true;
+        new Thread(() -> {
+            boolean ok = false;
+            try {
+                HttpURLConnection c = (HttpURLConnection) new URL(URL_STR + "?t=" + System.currentTimeMillis()).openConnection();
+                c.setConnectTimeout(8000);
+                c.setReadTimeout(8000);
+                if (c.getResponseCode() == 200) {
+                    BufferedReader r = new BufferedReader(new InputStreamReader(c.getInputStream(), "UTF-8"));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) {
+                        sb.append(line).append('\n');
+                    }
+                    r.close();
+                    String json = sb.toString();
+                    parse(json);
+                    prefs().edit().putString("json", json).apply();
+                    ok = true;
+                }
+            } catch (Throwable ignored) {
+            } finally {
+                lastFetch = ok ? System.currentTimeMillis() : System.currentTimeMillis() - REFRESH_MS + 120000L;
+                loading = false;
+            }
+        }, "telegyou-badges").start();
+    }
+
+    private static synchronized void ensureLoaded() {
+        if (!cacheLoaded) {
+            cacheLoaded = true;
+            try {
+                String saved = prefs().getString("json", null);
+                if (saved != null) {
+                    parse(saved);
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        if (System.currentTimeMillis() - lastFetch > REFRESH_MS) {
+            lastFetch = System.currentTimeMillis();
+            refreshAsync();
+        }
+    }
+
+    public static void forceRefresh() {
+        lastFetch = 0;
+        ensureLoaded();
+    }
+
+    public static String badgeOf(long userId) {
+        try {
+            ensureLoaded();
+            return users.get(userId);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    public static String iconOf(String badge) {
+        String s = icons.get(badge);
+        return s == null ? "" : s;
+    }
+
+    public static String labelOf(String badge) {
+        String s = labels.get(badge);
+        return s == null ? badge : s;
+    }
+
+    /** Дописывает значок к имени, если у пользователя он есть. */
+    public static String decorate(long userId, String name) {
+        if (name == null || userId == 0) {
+            return name;
+        }
+        try {
+            String badge = badgeOf(userId);
+            if (badge == null) {
+                return name;
+            }
+            String icon = icons.get(badge);
+            return icon == null ? name : name + " " + icon;
+        } catch (Throwable t) {
+            return name;
+        }
+    }
+}
+JAVA
+
+# 3) Экран настроек Telegyou
 cat > "$ROOT/messenger/TelegyouSettingsActivity.java" <<'JAVA'
 package org.telegram.messenger;
 
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -125,6 +302,8 @@ public class TelegyouSettingsActivity extends Activity {
             {"no_online", "Скрыть статус «в сети»",
                     "Твой статус онлайн не обновляется."},
     };
+
+    private TextView me;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,11 +323,26 @@ public class TelegyouSettingsActivity extends Activity {
         root.addView(title);
 
         TextView sub = new TextView(this);
-        sub.setText("Режим призрака. Изменения действуют сразу.");
+        sub.setText("Режим призрака и значки. Изменения действуют сразу.");
         sub.setTextSize(14);
         sub.setAlpha(0.7f);
         sub.setPadding(0, dp(4), 0, dp(12));
         root.addView(sub);
+
+        me = new TextView(this);
+        me.setTextSize(15);
+        me.setPadding(0, dp(8), 0, dp(4));
+        root.addView(me);
+        updateMe();
+
+        Button refresh = new Button(this);
+        refresh.setText("Обновить значки");
+        refresh.setOnClickListener(v -> {
+            BadgeManager.forceRefresh();
+            me.setText("Обновляю…");
+            me.postDelayed(this::updateMe, 2500);
+        });
+        root.addView(refresh);
 
         for (String[] item : ITEMS) {
             final String key = item[0];
@@ -172,13 +366,50 @@ public class TelegyouSettingsActivity extends Activity {
         setContentView(scroll);
     }
 
+    private void updateMe() {
+        long myId = 0;
+        try {
+            myId = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+        } catch (Throwable ignored) {
+        }
+        String badge = BadgeManager.badgeOf(myId);
+        String text = "Твой Telegram ID: " + myId + "\nТвой значок: "
+                + (badge == null ? "нет" : BadgeManager.iconOf(badge) + " " + BadgeManager.labelOf(badge));
+        me.setText(text);
+    }
+
     private int dp(int v) {
         return (int) (v * getResources().getDisplayMetrics().density);
     }
 }
 JAVA
 
-# 3) Проверка запросов в ConnectionsManager (если ещё не вставлена)
+# 4) Адрес файла badges.json берём из твоего репозитория автоматически
+BADGES_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-faermeng-design/Telegram}/${GITHUB_REF_NAME:-master}/badges.json"
+sed -i "s|__BADGES_URL__|$BADGES_URL|" "$ROOT/messenger/BadgeManager.java"
+echo "Badges URL: $BADGES_URL"
+
+# 5) Делаем новые Java-файлы независимыми от кодировки (символы -> \uXXXX)
+python3 - <<'PY'
+base = "TMessagesProj/src/main/java/org/telegram/messenger/"
+for name in ["GhostMode.java", "BadgeManager.java", "TelegyouSettingsActivity.java"]:
+    p = base + name
+    s = open(p, encoding="utf-8").read()
+    out = []
+    for ch in s:
+        o = ord(ch)
+        if o < 128:
+            out.append(ch)
+        elif o < 0x10000:
+            out.append("\\u%04x" % o)
+        else:
+            o -= 0x10000
+            out.append("\\u%04x\\u%04x" % (0xD800 + (o >> 10), 0xDC00 + (o & 0x3FF)))
+    open(p, "w", encoding="ascii").write("".join(out))
+print("Новые файлы: кодировка готова")
+PY
+
+# 6) Проверка запросов в ConnectionsManager (режим призрака)
 python3 - <<'PY'
 p = "TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java"
 s = open(p, encoding="utf-8").read()
@@ -193,7 +424,36 @@ else:
     print("ConnectionsManager: правка внесена")
 PY
 
-# 4) Регистрируем экран настроек в манифесте
+# 7) Значки в именах: оборачиваем UserObject.getUserName
+python3 - <<'PY'
+import re
+p = "TMessagesProj/src/main/java/org/telegram/messenger/UserObject.java"
+try:
+    s = open(p, encoding="utf-8").read()
+except FileNotFoundError:
+    print("WARNING: UserObject.java не найден, значки в именах не появятся")
+    s = None
+if s is not None:
+    if "BadgeManager.decorate" in s:
+        print("UserObject: значки уже подключены")
+    else:
+        m = re.search(r'public static String getUserName\(TLRPC\.User (\w+)\)\s*\{', s)
+        if not m:
+            print("WARNING: функция getUserName не найдена, значки в именах не появятся")
+        else:
+            v = m.group(1)
+            wrapper = (
+                "public static String getUserName(TLRPC.User %s) {\n"
+                "        return BadgeManager.decorate(%s == null ? 0 : %s.id, getUserNameOriginal(%s));\n"
+                "    }\n\n"
+                "    public static String getUserNameOriginal(TLRPC.User %s) {"
+            ) % (v, v, v, v, v)
+            s = s[:m.start()] + wrapper + s[m.end():]
+            open(p, "w", encoding="utf-8").write(s)
+            print("UserObject: значки подключены")
+PY
+
+# 8) Экран настроек в манифесте
 python3 - <<'PY'
 import os
 snippet = '''        <activity
@@ -224,7 +484,5 @@ for p in ["TMessagesProj_App/src/main/AndroidManifest.xml",
         done = True
         break
 if not done:
-    print("ВНИМАНИЕ: манифест с </application> не найден, экран настроек не появится")
+    print("WARNING: манифест с </application> не найден, экран настроек не появится")
 PY
-
-grep -n -A4 "private void sendRequestInternal(" "$ROOT/tgnet/ConnectionsManager.java" | head -8
