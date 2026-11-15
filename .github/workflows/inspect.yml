@@ -11,27 +11,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Collect code excerpts
+      - name: Collect diagnostics and code excerpts
         run: |
           mkdir -p inspect
           OUT=inspect/excerpts.txt
           : > "$OUT"
+          sec() { printf '\n=================== %s\n' "$1" >> "$OUT"; }
           show() {
-            echo "" >> "$OUT"
-            echo "=================== $1 :: $2" >> "$OUT"
-            grep -n -E -m "$5" -B "$3" -A "$4" "$2" "$1" >> "$OUT" 2>&1 || echo "(не найдено)" >> "$OUT"
+            sec "$1 :: $2"
+            grep -n -E -m "$5" -B "$3" -A "$4" -e "$2" "$1" >> "$OUT" 2>&1 || echo "(не найдено)" >> "$OUT"
           }
+
+          sec "Результат telegyou-mod.sh"
+          bash telegyou-mod.sh >> "$OUT" 2>&1 || echo "MOD SCRIPT FAILED" >> "$OUT"
+
+          sec "Манифесты: экран настроек и LAUNCHER"
+          for f in $(find . -name AndroidManifest.xml -not -path "*/build/*"); do
+            echo "-- $f" >> "$OUT"
+            grep -n -E "TelegyouSettings|LAUNCHER" -B6 -A2 "$f" >> "$OUT" 2>&1 || true
+          done
+
+          sec "Имена классов запросов"
+          grep -rn -E "class (TL_messages_readHistory|readHistory|TL_messages_setTyping|setTyping|TL_account_updateStatus|updateStatus)\b" --include=*.java TMessagesProj/src/main/java/org/telegram/tgnet 2>/dev/null | head -20 >> "$OUT" || true
+
           M=$(find . -name MessagesController.java | head -1)
+          S=$(find . -name MessagesStorage.java | head -1)
           T=$(find . -name Theme.java -path "*ActionBar*" | head -1)
           C=$(find . -name ChatMessageCell.java | head -1)
-          echo "files: $M $T $C" >> "$OUT"
-          show "$M" "TL_updateDeleteMessages" 4 25 8
-          show "$M" "TL_updateDeleteChannelMessages" 4 25 8
-          show "$M" "void deleteMessagesByPush" 2 40 2
+          SA=$(find . -name SettingsActivity.java -path "*org/telegram/ui*" | head -1)
+          echo "files: $M | $S | $T | $C | $SA" >> "$OUT"
+
+          show "$M" "TL_updateDeleteMessages" 3 22 6
+          show "$M" "TL_updateDeleteChannelMessages" 3 22 6
+          show "$M" "void deleteMessagesByPush" 2 30 2
+          show "$M" "markMessagesAsDeleted" 2 6 8
+          show "$S" "void markMessagesAsDeleted\(" 2 30 3
+          show "$SA" "void updateRows" 2 70 1
+          show "$SA" "languageRow" 1 4 20
           show "$T" "static int getColor\(" 2 45 4
           show "$C" "currentTimeString = " 4 6 6
-          echo "" >> "$OUT"
-          find . -name AndroidManifest.xml -not -path "*/build/*" >> "$OUT"
 
       - name: Commit result
         run: |
