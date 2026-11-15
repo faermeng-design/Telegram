@@ -1,0 +1,42 @@
+name: Quick Java check
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Put API keys
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_HASH: ${{ secrets.APP_HASH }}
+        run: |
+          APP_ID=$(echo "$APP_ID" | tr -d '[:space:]')
+          APP_HASH=$(echo "$APP_HASH" | tr -d '[:space:]')
+          printf '%s = %s\n' "APP_ID" "$APP_ID" "APP_HASH" "$APP_HASH" > API_KEYS
+          F=TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
+          sed -i "s/APP_ID = [0-9]*;/APP_ID = $APP_ID;/" $F || true
+          sed -i "s/APP_HASH = \"[0-9a-f]*\";/APP_HASH = \"$APP_HASH\";/" $F || true
+
+      - name: Install NDK and accept licenses
+        run: |
+          SDKM=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          NDK=$(grep -E "^\s*ndkVersion" TMessagesProj/build.gradle | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || true)
+          yes | $SDKM --licenses > /dev/null || true
+          if [ -n "$NDK" ]; then $SDKM "ndk;$NDK"; fi
+
+      - name: Compile Java only
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon --max-workers=2 -Dorg.gradle.jvmargs="-Xmx4g" :TMessagesProj:compileDebugJavaWithJavac
