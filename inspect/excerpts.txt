@@ -1,0 +1,522 @@
+
+=================== Результат telegyou-mod.sh
+Badges URL: https://raw.githubusercontent.com/faermeng-design/Telegram/master/badges.json
+Новые файлы: кодировка готова
+ConnectionsManager: правка внесена
+UserObject: значки подключены
+Manifest: добавлено в TMessagesProj_App/src/main/AndroidManifest.xml
+
+=================== Манифесты: экран настроек и LAUNCHER
+-- ./TMessagesProj_AppHockeyApp/src/main/AndroidManifest.xml
+-- ./TMessagesProj_AppHuawei/src/main/AndroidManifest.xml
+-- ./TMessagesProj/src/main/AndroidManifest.xml
+116-            android:name="org.telegram.messenger.DefaultIcon"
+117-            android:targetActivity="org.telegram.ui.LaunchActivity"
+118-            android:exported="true">
+119-
+120-            <intent-filter>
+121-                <action android:name="android.intent.action.MAIN" />
+122:                <category android:name="android.intent.category.LAUNCHER" />
+123:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+124-            </intent-filter>
+125-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+--
+132-            android:icon="@mipmap/icon_6_launcher"
+133-            android:roundIcon="@mipmap/icon_6_launcher_round"
+134-            android:exported="true">
+135-
+136-            <intent-filter>
+137-                <action android:name="android.intent.action.MAIN" />
+138:                <category android:name="android.intent.category.LAUNCHER" />
+139:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+140-            </intent-filter>
+141-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+--
+148-            android:icon="@mipmap/icon_4_launcher"
+149-            android:roundIcon="@mipmap/icon_4_launcher_round"
+150-            android:exported="true">
+151-
+152-            <intent-filter>
+153-                <action android:name="android.intent.action.MAIN" />
+154:                <category android:name="android.intent.category.LAUNCHER" />
+155:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+156-            </intent-filter>
+157-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+--
+164-            android:icon="@mipmap/icon_3_launcher"
+165-            android:roundIcon="@mipmap/icon_3_launcher_round"
+166-            android:exported="true">
+167-
+168-            <intent-filter>
+169-                <action android:name="android.intent.action.MAIN" />
+170:                <category android:name="android.intent.category.LAUNCHER" />
+171:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+172-            </intent-filter>
+173-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+--
+180-            android:icon="@mipmap/icon_5_launcher"
+181-            android:roundIcon="@mipmap/icon_5_launcher_round"
+182-            android:exported="true">
+183-
+184-            <intent-filter>
+185-                <action android:name="android.intent.action.MAIN" />
+186:                <category android:name="android.intent.category.LAUNCHER" />
+187:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+188-            </intent-filter>
+189-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+--
+196-            android:icon="@mipmap/icon_2_launcher"
+197-            android:roundIcon="@mipmap/icon_2_launcher_round"
+198-            android:exported="true">
+199-
+200-            <intent-filter>
+201-                <action android:name="android.intent.action.MAIN" />
+202:                <category android:name="android.intent.category.LAUNCHER" />
+203:                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+204-            </intent-filter>
+205-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+-- ./TMessagesProj/config/debug/AndroidManifest.xml
+-- ./TMessagesProj/config/release/AndroidManifest.xml
+-- ./TMessagesProj_AppTests/src/main/AndroidManifest.xml
+-- ./TMessagesProj_AppStandalone/src/main/AndroidManifest.xml
+-- ./TMessagesProj_App/src/main/AndroidManifest.xml
+17-                <action android:name="com.google.android.voicesearch.SEND_MESSAGE_TO_CONTACTS" />
+18-                <category android:name="android.intent.category.DEFAULT" />
+19-                <data android:mimeType="text/plain" />
+20-            </intent-filter>
+21-        </activity>
+22-            <activity
+23:            android:name="org.telegram.messenger.TelegyouSettingsActivity"
+24-            android:label="Telegyou: настройки"
+25-            android:exported="true"
+26-            android:theme="@android:style/Theme.DeviceDefault">
+27-            <intent-filter>
+28-                <action android:name="android.intent.action.MAIN" />
+29:                <category android:name="android.intent.category.LAUNCHER" />
+30-            </intent-filter>
+31-        </activity>
+
+=================== Имена классов запросов
+TMessagesProj/src/main/java/org/telegram/tgnet/TLRPC.java:52744:    public static class TL_messages_readHistory extends TLObject {
+TMessagesProj/src/main/java/org/telegram/tgnet/TLRPC.java:53018:    public static class TL_messages_setTyping extends TLMethod<Bool> {
+TMessagesProj/src/main/java/org/telegram/tgnet/tl/TL_account.java:859:    public static class updateStatus extends TLObject {
+files: ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java | ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java | ./TMessagesProj/src/main/java/org/telegram/ui/ActionBar/Theme.java | ./TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java | ./TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
+
+=================== ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java :: TL_updateDeleteMessages
+17750-
+17751-    private int getUpdateType(TLRPC.Update update) {
+17752-        if (update instanceof TL_update.TL_updateNewMessage || update instanceof TL_update.TL_updateReadMessagesContents || update instanceof TL_update.TL_updateReadHistoryInbox ||
+17753:                update instanceof TL_update.TL_updateReadHistoryOutbox || update instanceof TL_update.TL_updateDeleteMessages || update instanceof TL_update.TL_updateWebPage ||
+17754-                update instanceof TL_update.TL_updateEditMessage || update instanceof TL_update.TL_updateFolderPeers || update instanceof TL_update.TL_updatePinnedMessages ||
+17755-                update instanceof TL_update.TL_updateMessageWidgetData) {
+17756-            return 0;
+17757-        } else if (update instanceof TL_update.TL_updateNewEncryptedMessage) {
+17758-            return 1;
+17759-        } else if (update instanceof TL_update.TL_updateNewChannelMessage || update instanceof TL_update.TL_updateDeleteChannelMessages || update instanceof TL_update.TL_updateEditChannelMessage ||
+17760-                update instanceof TL_update.TL_updateChannelWebPage || update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17761-            return 2;
+17762-        } else {
+17763-            return 3;
+17764-        }
+17765-    }
+17766-
+17767-    private static int getUpdatePts(TLRPC.Update update) {
+17768:        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17769:            return ((TL_update.TL_updateDeleteMessages) update).pts;
+17770-        } else if (update instanceof TL_update.TL_updateNewChannelMessage) {
+17771-            return ((TL_update.TL_updateNewChannelMessage) update).pts;
+17772-        } else if (update instanceof TL_update.TL_updateReadHistoryOutbox) {
+17773-            return ((TL_update.TL_updateReadHistoryOutbox) update).pts;
+17774-        } else if (update instanceof TL_update.TL_updateNewMessage) {
+17775-            return ((TL_update.TL_updateNewMessage) update).pts;
+17776-        } else if (update instanceof TL_update.TL_updateEditMessage) {
+17777-            return ((TL_update.TL_updateEditMessage) update).pts;
+17778-        } else if (update instanceof TL_update.TL_updateWebPage) {
+17779-            return ((TL_update.TL_updateWebPage) update).pts;
+17780-        } else if (update instanceof TL_update.TL_updateReadHistoryInbox) {
+17781-            return ((TL_update.TL_updateReadHistoryInbox) update).pts;
+17782-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+17783-            return ((TL_update.TL_updateChannelWebPage) update).pts;
+17784-        } else if (update instanceof TL_update.TL_updateDeleteChannelMessages) {
+17785-            return ((TL_update.TL_updateDeleteChannelMessages) update).pts;
+17786-        } else if (update instanceof TL_update.TL_updateEditChannelMessage) {
+17787-            return ((TL_update.TL_updateEditChannelMessage) update).pts;
+17788-        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17789-            return ((TL_update.TL_updateReadMessagesContents) update).pts;
+17790-        } else if (update instanceof TL_update.TL_updateChannelTooLong) {
+17791-            return ((TL_update.TL_updateChannelTooLong) update).pts;
+--
+17803-    }
+17804-
+17805-    private static int getUpdatePtsCount(TLRPC.Update update) {
+17806:        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17807:            return ((TL_update.TL_updateDeleteMessages) update).pts_count;
+17808-        } else if (update instanceof TL_update.TL_updateNewChannelMessage) {
+17809-            return ((TL_update.TL_updateNewChannelMessage) update).pts_count;
+17810-        } else if (update instanceof TL_update.TL_updateReadHistoryOutbox) {
+17811-            return ((TL_update.TL_updateReadHistoryOutbox) update).pts_count;
+17812-        } else if (update instanceof TL_update.TL_updateNewMessage) {
+17813-            return ((TL_update.TL_updateNewMessage) update).pts_count;
+17814-        } else if (update instanceof TL_update.TL_updateEditMessage) {
+17815-            return ((TL_update.TL_updateEditMessage) update).pts_count;
+17816-        } else if (update instanceof TL_update.TL_updateWebPage) {
+17817-            return ((TL_update.TL_updateWebPage) update).pts_count;
+17818-        } else if (update instanceof TL_update.TL_updateReadHistoryInbox) {
+17819-            return ((TL_update.TL_updateReadHistoryInbox) update).pts_count;
+17820-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+17821-            return ((TL_update.TL_updateChannelWebPage) update).pts_count;
+17822-        } else if (update instanceof TL_update.TL_updateDeleteChannelMessages) {
+17823-            return ((TL_update.TL_updateDeleteChannelMessages) update).pts_count;
+17824-        } else if (update instanceof TL_update.TL_updateEditChannelMessage) {
+17825-            return ((TL_update.TL_updateEditChannelMessage) update).pts_count;
+17826-        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17827-            return ((TL_update.TL_updateReadMessagesContents) update).pts_count;
+17828-        } else if (update instanceof TL_update.TL_updateFolderPeers) {
+17829-            return ((TL_update.TL_updateFolderPeers) update).pts_count;
+--
+18892-                    value = getMessagesStorage().getDialogReadMax(true, dialogId);
+18893-                }
+18894-                dialogs_read_outbox_max.put(dialogId, Math.max(value, update.max_id));
+18895:            } else if (baseUpdate instanceof TL_update.TL_updateDeleteMessages) {
+18896-                TL_update.TL_updateDeleteMessages update = (TL_update.TL_updateDeleteMessages) baseUpdate;
+18897-                if (deletedMessages == null) {
+18898-                    deletedMessages = new LongSparseArray<>();
+18899-                }
+18900-                ArrayList<Integer> arrayList = deletedMessages.get(0);
+18901-                if (arrayList == null) {
+18902-                    arrayList = new ArrayList<>();
+18903-                    deletedMessages.put(0, arrayList);
+18904-                }
+18905-                arrayList.addAll(update.messages);
+18906-            } else if (baseUpdate instanceof TL_update.TL_updateDeleteQuickReplyMessages) {
+18907-                TL_update.TL_updateDeleteQuickReplyMessages update = (TL_update.TL_updateDeleteQuickReplyMessages) baseUpdate;
+18908-                if (deletedQuickReplyMessages == null) {
+18909-                    deletedQuickReplyMessages = new LongSparseArray<>();
+18910-                }
+18911-                ArrayList<Integer> arrayList = deletedQuickReplyMessages.get(update.shortcut_id);
+18912-                if (arrayList == null) {
+18913-                    arrayList = new ArrayList<>();
+18914-                    deletedQuickReplyMessages.put(update.shortcut_id, arrayList);
+18915-                }
+18916-                arrayList.addAll(update.messages);
+18917-                if (updatesOnMainThread == null) {
+
+=================== ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java :: TL_updateDeleteChannelMessages
+17756-            return 0;
+17757-        } else if (update instanceof TL_update.TL_updateNewEncryptedMessage) {
+17758-            return 1;
+17759:        } else if (update instanceof TL_update.TL_updateNewChannelMessage || update instanceof TL_update.TL_updateDeleteChannelMessages || update instanceof TL_update.TL_updateEditChannelMessage ||
+17760-                update instanceof TL_update.TL_updateChannelWebPage || update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17761-            return 2;
+17762-        } else {
+17763-            return 3;
+17764-        }
+17765-    }
+17766-
+17767-    private static int getUpdatePts(TLRPC.Update update) {
+17768-        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17769-            return ((TL_update.TL_updateDeleteMessages) update).pts;
+17770-        } else if (update instanceof TL_update.TL_updateNewChannelMessage) {
+17771-            return ((TL_update.TL_updateNewChannelMessage) update).pts;
+17772-        } else if (update instanceof TL_update.TL_updateReadHistoryOutbox) {
+17773-            return ((TL_update.TL_updateReadHistoryOutbox) update).pts;
+17774-        } else if (update instanceof TL_update.TL_updateNewMessage) {
+17775-            return ((TL_update.TL_updateNewMessage) update).pts;
+17776-        } else if (update instanceof TL_update.TL_updateEditMessage) {
+17777-            return ((TL_update.TL_updateEditMessage) update).pts;
+17778-        } else if (update instanceof TL_update.TL_updateWebPage) {
+17779-            return ((TL_update.TL_updateWebPage) update).pts;
+17780-        } else if (update instanceof TL_update.TL_updateReadHistoryInbox) {
+17781-            return ((TL_update.TL_updateReadHistoryInbox) update).pts;
+17782-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+17783-            return ((TL_update.TL_updateChannelWebPage) update).pts;
+17784:        } else if (update instanceof TL_update.TL_updateDeleteChannelMessages) {
+17785:            return ((TL_update.TL_updateDeleteChannelMessages) update).pts;
+17786-        } else if (update instanceof TL_update.TL_updateEditChannelMessage) {
+17787-            return ((TL_update.TL_updateEditChannelMessage) update).pts;
+17788-        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17789-            return ((TL_update.TL_updateReadMessagesContents) update).pts;
+17790-        } else if (update instanceof TL_update.TL_updateChannelTooLong) {
+17791-            return ((TL_update.TL_updateChannelTooLong) update).pts;
+17792-        } else if (update instanceof TL_update.TL_updateFolderPeers) {
+17793-            return ((TL_update.TL_updateFolderPeers) update).pts;
+17794-        } else if (update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17795-            return ((TL_update.TL_updatePinnedChannelMessages) update).pts;
+17796-        } else if (update instanceof TL_update.TL_updatePinnedMessages) {
+17797-            return ((TL_update.TL_updatePinnedMessages) update).pts;
+17798-        } else if (update instanceof TL_update.TL_updateMessageWidgetData) {
+17799-            return ((TL_update.TL_updateMessageWidgetData) update).pts;
+17800-        } else {
+17801-            return 0;
+17802-        }
+17803-    }
+17804-
+17805-    private static int getUpdatePtsCount(TLRPC.Update update) {
+17806-        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17807-            return ((TL_update.TL_updateDeleteMessages) update).pts_count;
+--
+17819-            return ((TL_update.TL_updateReadHistoryInbox) update).pts_count;
+17820-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+17821-            return ((TL_update.TL_updateChannelWebPage) update).pts_count;
+17822:        } else if (update instanceof TL_update.TL_updateDeleteChannelMessages) {
+17823:            return ((TL_update.TL_updateDeleteChannelMessages) update).pts_count;
+17824-        } else if (update instanceof TL_update.TL_updateEditChannelMessage) {
+17825-            return ((TL_update.TL_updateEditChannelMessage) update).pts_count;
+17826-        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17827-            return ((TL_update.TL_updateReadMessagesContents) update).pts_count;
+17828-        } else if (update instanceof TL_update.TL_updateFolderPeers) {
+17829-            return ((TL_update.TL_updateFolderPeers) update).pts_count;
+17830-        } else if (update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17831-            return ((TL_update.TL_updatePinnedChannelMessages) update).pts_count;
+17832-        } else if (update instanceof TL_update.TL_updatePinnedMessages) {
+17833-            return ((TL_update.TL_updatePinnedMessages) update).pts_count;
+17834-        } else if (update instanceof TL_update.TL_updateMessageWidgetData) {
+17835-            return ((TL_update.TL_updateMessageWidgetData) update).pts_count;
+17836-        } else {
+17837-            return 0;
+17838-        }
+17839-    }
+17840-
+17841-    private static int getUpdateQts(TLRPC.Update update) {
+17842-        if (update instanceof TL_update.TL_updateNewEncryptedMessage) {
+17843-            return ((TL_update.TL_updateNewEncryptedMessage) update).qts;
+17844-        } else {
+17845-            return 0;
+--
+17867-            return ((TL_update.TL_updateChannel) update).channel_id;
+17868-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+17869-            return ((TL_update.TL_updateChannelWebPage) update).channel_id;
+17870:        } else if (update instanceof TL_update.TL_updateDeleteChannelMessages) {
+17871-            return ((TL_update.TL_updateDeleteChannelMessages) update).channel_id;
+17872-        } else if (update instanceof TL_update.TL_updateReadChannelInbox) {
+17873-            return ((TL_update.TL_updateReadChannelInbox) update).channel_id;
+17874-        } else if (update instanceof TL_update.TL_updatePinnedForumTopic) {
+17875-            final TLRPC.Peer peer = ((TL_update.TL_updatePinnedForumTopic) update).peer;
+17876-            return peer.channel_id;
+17877-        } else if (update instanceof TL_update.TL_updatePinnedForumTopics) {
+17878-            final TLRPC.Peer peer = ((TL_update.TL_updatePinnedForumTopics) update).peer;
+17879-            return peer.channel_id;
+17880-        } else if (update instanceof TL_update.TL_updateReadChannelDiscussionInbox) {
+17881-            return ((TL_update.TL_updateReadChannelDiscussionInbox) update).channel_id;
+17882-        } else if (update instanceof TL_update.TL_updateReadChannelDiscussionOutbox) {
+17883-            return ((TL_update.TL_updateReadChannelDiscussionOutbox) update).channel_id;
+17884-        } else if (update instanceof TL_update.TL_updateChannelUserTyping) {
+17885-            return ((TL_update.TL_updateChannelUserTyping) update).channel_id;
+17886-        } else if (update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17887-            return ((TL_update.TL_updatePinnedChannelMessages) update).channel_id;
+17888-        } else if (update instanceof TL_update.TL_updateChannelViewForumAsMessages) {
+17889-            return ((TL_update.TL_updateChannelViewForumAsMessages) update).channel_id;
+17890-        } else {
+17891-            if (BuildVars.LOGS_ENABLED) {
+17892-                FileLog.e("trying to get unknown update channel_id for " + update);
+
+=================== ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java :: void deleteMessagesByPush
+17634-    }
+17635-
+17636:    protected void deleteMessagesByPush(long dialogId, ArrayList<Integer> ids, long channelId) {
+17637-        getMessagesStorage().getStorageQueue().postRunnable(() -> {
+17638-            AndroidUtilities.runOnUIThread(() -> {
+17639-                getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, ids, channelId, false);
+17640-                if (channelId == 0) {
+17641-                    for (int b = 0, size2 = ids.size(); b < size2; b++) {
+17642-                        Integer id = ids.get(b);
+17643-                        MessageObject obj = dialogMessagesByIds.get(id);
+17644-                        if (obj != null) {
+17645-                            obj.deleted = true;
+17646-                        }
+17647-                    }
+17648-                } else {
+17649-                    ArrayList<MessageObject> objs = dialogMessage.get(-channelId);
+17650-                    if (objs != null) {
+17651-                        for (int i = 0; i < objs.size(); ++i) {
+17652-                            MessageObject obj = objs.get(i);
+17653-                            for (int b = 0, size2 = ids.size(); b < size2; b++) {
+17654-                                if (obj.getId() == ids.get(b)) {
+17655-                                    obj.deleted = true;
+17656-                                    break;
+17657-                                }
+17658-                            }
+17659-                        }
+17660-                    }
+17661-                }
+17662-            });
+17663-            getMessagesStorage().deletePushMessages(dialogId, ids);
+17664-            ArrayList<Long> dialogIds = getMessagesStorage().markMessagesAsDeleted(dialogId, ids, false, true, 0, 0);
+17665-            getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, ids, dialogIds);
+17666-        });
+
+=================== ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java :: markMessagesAsDeleted
+9372-            }
+9373-            if (scheduled) {
+9374:                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_SCHEDULED, 0);
+9375-            } else if (quickReplies) {
+9376-                if (mode == ChatActivity.MODE_QUICK_REPLIES) {
+9377-                    QuickRepliesController.getInstance(currentAccount).deleteLocalMessages(messages);
+9378-                }
+9379:                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_QUICK_REPLIES, topicId);
+9380-            } else if (welcomeMessages) {
+9381:                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_WELCOME_MESSAGES, topicId);
+9382-            } else {
+9383-                if (channelId == 0) {
+9384-                    for (int a = 0; a < messages.size(); a++) {
+9385-                        Integer id = messages.get(a);
+9386-                        MessageObject obj = dialogMessagesByIds.get(id);
+9387-                        if (obj != null) {
+--
+9392-                    markDialogMessageAsDeleted(dialogId, messages);
+9393-                }
+9394:                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
+9395-                getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
+9396-            }
+9397-            getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
+9398-        } else {
+9399-            if (taskRequest instanceof TLRPC.TL_channels_deleteMessages) {
+9400-                channelId = ((TLRPC.TL_channels_deleteMessages) taskRequest).channel.channel_id;
+--
+9568-        markDialogMessageAsDeleted(dialogId, messages);
+9569-        getMessagesStorage().deleteEphemeralMessages(dialogId, ephemeralMessage.getEphemeralId());
+9570:        getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, true, ephemeralMessage.isWelcomeMessage() ? ChatActivity.MODE_WELCOME_MESSAGES : 0, topicId);
+9571-        getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
+9572-        getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, false, false, false, 0);
+9573-
+9574-        if (ephemeralMessage.isWelcomeMessage() && !ephemeralMessage.isWelcomeAnchored()) {
+9575-            final TL_ephemeral.TL_deleteWelcomeMessage req = new TL_ephemeral.TL_deleteWelcomeMessage();
+9576-            req.peer = getInputPeer(ephemeralMessage.getDialogId());
+--
+17662-            });
+17663-            getMessagesStorage().deletePushMessages(dialogId, ids);
+17664:            ArrayList<Long> dialogIds = getMessagesStorage().markMessagesAsDeleted(dialogId, ids, false, true, 0, 0);
+17665-            getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, ids, dialogIds);
+17666-        });
+17667-    }
+17668-
+17669-    public void checkChatInviter(long chatId, boolean _createMessage) {
+17670-        TLRPC.Chat chat = getChat(chatId);
+--
+21330-                ArrayList<Integer> arrayList = deletedMessages.valueAt(a);
+21331-                getMessagesStorage().getStorageQueue().postRunnable(() -> {
+21332:                    ArrayList<Long> dialogIds = getMessagesStorage().markMessagesAsDeleted(key, arrayList, false, true, 0, 0);
+21333-                    getMessagesStorage().updateDialogsWithDeletedMessages(key, -key, arrayList, dialogIds);
+21334-                });
+21335-            }
+21336-        }
+21337-        if (deletedQuickReplyMessages != null) {
+21338-            final long selfId = getUserConfig().getClientUserId();
+--
+21341-                ArrayList<Integer> ids = deletedQuickReplyMessages.valueAt(a);
+21342-                getMessagesStorage().getStorageQueue().postRunnable(() -> {
+21343:                    ArrayList<Long> dialogIds = getMessagesStorage().markMessagesAsDeleted(selfId, ids, false, true, ChatActivity.MODE_QUICK_REPLIES, (int) topicId);
+21344-                    getMessagesStorage().updateDialogsWithDeletedMessages(selfId, -selfId, ids, dialogIds);
+21345-                });
+21346-            }
+21347-        }
+21348-        if (scheduledDeletedMessages != null) {
+21349-            for (int a = 0, size = scheduledDeletedMessages.size(); a < size; a++) {
+
+=================== ./TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java :: void markMessagesAsDeleted\(
+(не найдено)
+
+=================== ./TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java :: void updateRows
+(не найдено)
+
+=================== ./TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java :: languageRow
+(не найдено)
+
+=================== ./TMessagesProj/src/main/java/org/telegram/ui/ActionBar/Theme.java :: static int getColor\(
+9098-    }
+9099-
+9100:    public static int getColor(int key, ResourcesProvider provider) {
+9101-        if (provider != null) {
+9102-            if (provider.isCompactMode()) {
+9103-                final Integer compactColor = getCompactColor(key, provider);
+9104-                if (compactColor != null) {
+9105-                    return compactColor;
+9106-                }
+9107-            }
+9108-            return provider.getColor(key);
+9109-        }
+9110-        return getColor(key);
+9111-    }
+9112-
+9113-    public static int getCurrentColor(int key) {
+9114-        return currentColors.get(key);
+9115-    }
+9116-
+9117:    public static int getColor(int key) {
+9118-        return getColor(key, null, false);
+9119-    }
+9120-
+9121:    public static int getColor(int key, boolean[] isDefault) {
+9122-        return getColor(key, isDefault, false);
+9123-    }
+9124-
+9125:    public static int getColor(int key, boolean[] isDefault, boolean ignoreAnimation) {
+9126-        if (SharedConfig.compactMode) {
+9127-            // compact mode swaps some message colors for its own keys, see getCompactColor
+9128-            final Integer compactColor = getCompactColor(key, null);
+9129-            if (compactColor != null) {
+9130-                return compactColor;
+9131-            }
+9132-        }
+9133-        if (!ignoreAnimation && animatingColors != null) {
+9134-            int index = animatingColors.indexOfKey(key);
+9135-            if (index >= 0) {
+9136-                return animatingColors.valueAt(index);
+9137-            }
+9138-        }
+9139-        return getColorFromTable(currentColors, key, isDefault);
+9140-    }
+9141-
+9142-    /**
+9143-     * {@link #getColor(int)} without the animated colors, on the given color table: also used while a new table is computed
+9144-     * and not published yet ({@link ThemeAccent#fillAccentColors}).
+9145-     */
+9146-    private static int getColorFromTable(SparseIntArray currentColors, int key, boolean[] isDefault) {
+9147-        if (serviceBitmapShader != null && (key_chat_serviceText == key || key_chat_serviceLink == key || key_chat_serviceIcon == key
+9148-                || key_chat_stickerReplyLine == key || key_chat_stickerReplyNameText == key || key_chat_stickerReplyMessageText == key)) {
+9149-            return 0xffffffff;
+9150-        }
+9151-        if (currentTheme == defaultTheme) {
+9152-            boolean useDefault;
+9153-            if (isMyMessagesBubbles(key)) {
+9154-                useDefault = currentTheme.isDefaultMyMessagesBubbles();
+9155-            } else if (isMyMessages(key)) {
+9156-                useDefault = currentTheme.isDefaultMyMessages();
+9157-            } else if (key_chat_wallpaper == key || key_chat_wallpaper_gradient_to1 == key || key_chat_wallpaper_gradient_to2 == key || key_chat_wallpaper_gradient_to3 == key) {
+9158-                useDefault = false;
+9159-            } else {
+9160-                useDefault = currentTheme.isDefaultMainAccent();
+9161-            }
+9162-            if (useDefault) {
+9163-                if (key == key_chat_serviceBackground) {
+9164-                    return serviceMessageColor;
+9165-                } else if (key == key_chat_serviceBackgroundSelected) {
+9166-                    return serviceSelectedMessageColor;
+9167-                }
+9168-                return getDefaultColor(key);
+9169-            }
+9170-        }
+
+=================== ./TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java :: currentTimeString = 
+15659-            timeString = formatString(R.string.ScheduledTimeApprox, timeString);
+15660-        }
+15661-        if (signString != null) {
+15662-            if (messageObject.messageOwner.via_business_bot_id != 0) {
+15663:                currentTimeString = timeString + ", ";
+15664-            } else if (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.imported) {
+15665:                currentTimeString = " " + timeString;
+15666-            } else {
+15667:                currentTimeString = ", " + timeString;
+15668-            }
+15669-        } else {
+15670:            currentTimeString = timeString;
+15671-        }
+15672-        if (currentMessageObject.isStakedDice()) {
+15673:            currentTimeString = TextUtils.concat("💎", StarsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
+15674:            currentTimeString = StarsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
+15675-        }
+15676-        final long starsPrice = currentMessageObject.getDialogId() < 0 ? getStarsPrice() : 0;
+15677-        if (starsPrice > 0) {
+15678-            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  ", currentTimeString);
+15679-            currentTimeString = StarsIntroActivity.replaceStars(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
+15680-        }
