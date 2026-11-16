@@ -1,10 +1,10 @@
 {
   "badges": {
-    "creator": { "label": "creator", "icon": "👑" },
+    "owner": { "label": "owner", "icon": "👑" },
     "tester":  { "label": "tester",  "icon": "🧪" }
   },
   "users": {
-    "8512557198": "creator",
+    "8512557198": "owner",
     "5337921988": "tester"
   }
 }
