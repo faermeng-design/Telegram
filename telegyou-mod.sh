@@ -20,6 +20,7 @@ public class GhostMode {
     private static final String PREFS = "telegyou";
     private static Context appContext;
     private static Set<String> deleted;
+    private static int blockedCount = -1;
 
     public static void init(Context context) {
         appContext = context;
@@ -45,26 +46,50 @@ public class GhostMode {
         }
     }
 
+    public static boolean keepDeleted() {
+        return get("keep_deleted");
+    }
+
+    private static synchronized void bump() {
+        try {
+            if (blockedCount < 0) {
+                blockedCount = prefs().getInt("blocked", 0);
+            }
+            blockedCount++;
+            prefs().edit().putInt("blocked", blockedCount).apply();
+        } catch (Throwable ignored) {
+        }
+    }
+
+    public static int blocked() {
+        try {
+            return prefs().getInt("blocked", 0);
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
     /** true = этот запрос нельзя отправлять на сервер. */
     public static boolean shouldBlock(TLObject request) {
         if (request == null) {
             return false;
         }
         String n = request.getClass().getName().toLowerCase().replace('$', '_').replace('.', '_');
+        boolean block = false;
         if (n.contains("messages_readhistory") || n.contains("channels_readhistory")
                 || n.contains("readmessagecontents")) {
-            return get("no_read");
+            block = get("no_read");
+        } else if (n.contains("readstories") || n.contains("incrementstoryviews")) {
+            block = get("no_stories");
+        } else if (n.contains("messages_settyping")) {
+            block = get("no_typing");
+        } else if (n.contains("account_updatestatus")) {
+            block = get("no_online");
         }
-        if (n.contains("readstories") || n.contains("incrementstoryviews")) {
-            return get("no_stories");
+        if (block) {
+            bump();
         }
-        if (n.contains("messages_settyping")) {
-            return get("no_typing");
-        }
-        if (n.contains("account_updatestatus")) {
-            return get("no_online");
-        }
-        return false;
+        return block;
     }
 
     private static synchronized Set<String> deletedSet() {
@@ -301,6 +326,8 @@ public class TelegyouSettingsActivity extends Activity {
                     "Собеседник не видит, что ты пишешь или записываешь голосовое."},
             {"no_online", "Скрыть статус «в сети»",
                     "Твой статус онлайн не обновляется."},
+            {"keep_deleted", "Сохранять удалённые сообщения",
+                    "Сообщения, которые собеседник удалил, остаются у тебя в чате."},
     };
 
     private TextView me;
@@ -323,7 +350,7 @@ public class TelegyouSettingsActivity extends Activity {
         root.addView(title);
 
         TextView sub = new TextView(this);
-        sub.setText("Режим призрака и значки. Изменения действуют сразу.");
+        sub.setText("Режим призрака, удалённые и значки. Изменения действуют сразу.");
         sub.setTextSize(14);
         sub.setAlpha(0.7f);
         sub.setPadding(0, dp(4), 0, dp(12));
@@ -366,6 +393,12 @@ public class TelegyouSettingsActivity extends Activity {
         setContentView(scroll);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateMe();
+    }
+
     private void updateMe() {
         long myId = 0;
         try {
@@ -374,7 +407,8 @@ public class TelegyouSettingsActivity extends Activity {
         }
         String badge = BadgeManager.badgeOf(myId);
         String text = "Твой Telegram ID: " + myId + "\nТвой значок: "
-                + (badge == null ? "нет" : BadgeManager.iconOf(badge) + " " + BadgeManager.labelOf(badge));
+                + (badge == null ? "нет" : BadgeManager.iconOf(badge) + " " + BadgeManager.labelOf(badge))
+                + "\nЗаблокировано запросов режима призрака: " + GhostMode.blocked();
         me.setText(text);
     }
 
@@ -389,7 +423,7 @@ BADGES_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-faermeng-desi
 sed -i "s|__BADGES_URL__|$BADGES_URL|" "$ROOT/messenger/BadgeManager.java"
 echo "Badges URL: $BADGES_URL"
 
-# 5) Делаем новые Java-файлы независимыми от кодировки (символы -> \uXXXX)
+# 5) Новые Java-файлы делаем независимыми от кодировки (символы -> \uXXXX)
 python3 - <<'PY'
 base = "TMessagesProj/src/main/java/org/telegram/messenger/"
 for name in ["GhostMode.java", "BadgeManager.java", "TelegyouSettingsActivity.java"]:
@@ -409,7 +443,7 @@ for name in ["GhostMode.java", "BadgeManager.java", "TelegyouSettingsActivity.ja
 print("Новые файлы: кодировка готова")
 PY
 
-# 6) Проверка запросов в ConnectionsManager (режим призрака)
+# 6) Режим призрака: проверка запросов в ConnectionsManager
 python3 - <<'PY'
 p = "TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java"
 s = open(p, encoding="utf-8").read()
@@ -453,7 +487,43 @@ if s is not None:
             print("UserObject: значки подключены")
 PY
 
-# 8) Экран настроек в манифесте
+# 8) Сохранение удалённых сообщений: не добавляем их в список удаления
+python3 - <<'PY'
+import re
+p = "TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java"
+s = open(p, encoding="utf-8").read()
+if "GhostMode.markDeleted" in s:
+    print("Удалённые: уже подключено")
+else:
+    total = 0
+    for cls, chan in (("TL_updateDeleteMessages", False), ("TL_updateDeleteChannelMessages", True)):
+        decl = re.compile(r'TL_update\.' + cls + r'\s+(\w+)\s*=\s*\(TL_update\.' + cls + r'\)\s*\w+;')
+        for m in reversed(list(decl.finditer(s))):
+            v = m.group(1)
+            am = re.compile(r'(\w+)\.addAll\(' + v + r'\.messages\);').search(s, m.end(), m.end() + 1200)
+            if not am:
+                continue
+            lst = am.group(1)
+            ch = (v + ".channel_id") if chan else "0"
+            new = ("if (GhostMode.keepDeleted()) {\n"
+                   "    for (int gi = 0; gi < %s.messages.size(); gi++) {\n"
+                   "        GhostMode.markDeleted(%s, %s.messages.get(gi));\n"
+                   "    }\n"
+                   "} else {\n"
+                   "    %s.addAll(%s.messages);\n"
+                   "}") % (v, ch, v, lst, v)
+            s = s[:am.start()] + new + s[am.end():]
+            total += 1
+    sig = "protected void deleteMessagesByPush(long dialogId, ArrayList<Integer> ids, long channelId) {"
+    pushed = 0
+    if sig in s:
+        s = s.replace(sig, sig + "\n        if (GhostMode.keepDeleted()) {\n            return;\n        }", 1)
+        pushed = 1
+    open(p, "w", encoding="utf-8").write(s)
+    print("Удалённые: подключено мест =", total, ", push =", pushed)
+PY
+
+# 9) Экран настроек в манифесте (иконка + ссылка в информации о приложении)
 python3 - <<'PY'
 import os
 snippet = '''        <activity
@@ -464,6 +534,10 @@ snippet = '''        <activity
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 '''
