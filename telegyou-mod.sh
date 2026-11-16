@@ -83,10 +83,16 @@ public class GhostMode {
             block = get("no_stories");
         } else if (n.contains("messages_settyping")) {
             block = get("no_typing");
-        } else if (n.contains("account_updatestatus")) {
-            block = get("no_online");
+               } else if (n.contains("account_updatestatus")) {
+            if (get("no_online")) {
+                try {
+                    request.getClass().getField("offline").setBoolean(request, true);
+                } catch (Throwable ignored) {
+                }
+                bump();
+            }
         }
-        if (block) {
+                if (block) {
             bump();
         }
         return block;
@@ -559,4 +565,46 @@ for p in ["TMessagesProj_App/src/main/AndroidManifest.xml",
         break
 if not done:
     print("WARNING: манифест с </application> не найден, экран настроек не появится")
+PY
+
+# 10) Вкладка Telegyou в настройках Telegram (первая в списке)
+python3 - <<'PY'
+import re
+p = "TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+s = open(p, encoding="utf-8").read()
+if "telegyouRow" in s:
+    print("Вкладка: уже есть")
+elif "private int languageRow;" not in s or "languageRow = rowCount++;" not in s or "notificationRow = rowCount++;" not in s:
+    print("WARNING: нужные строки не найдены, вкладка не появится")
+else:
+    s = s.replace("private int languageRow;", "private int languageRow;\n    private int telegyouRow;", 1)
+    s = s.replace("notificationRow = rowCount++;", "telegyouRow = rowCount++;\n        notificationRow = rowCount++;", 1)
+    pat = re.compile(r'\}\s*else if \(position == languageRow\) \{')
+    bind = 0
+    click = 0
+    for m in reversed(list(pat.finditer(s))):
+        chunk = s[m.end():m.end() + 500]
+        a = chunk.find("setTextAndIcon")
+        b = chunk.find("presentFragment")
+        if a == -1:
+            a = 10**9
+        if b == -1:
+            b = 10**9
+        if a < b:
+            vm = re.search(r'(\w+)\.setTextAndIcon\(.*?,\s*(R\.drawable\.\w+)', chunk)
+            var = vm.group(1) if vm else "textCell"
+            icon = vm.group(2) if vm else "R.drawable.msg_settings_old"
+            new = ('} else if (position == telegyouRow) {\n'
+                   '                ' + var + '.setTextAndIcon("Telegyou", ' + icon + ', false);\n'
+                   '            ' + m.group(0))
+            s = s[:m.start()] + new + s[m.end():]
+            bind += 1
+        elif b < a:
+            new = ('} else if (position == telegyouRow) {\n'
+                   '                getParentActivity().startActivity(new android.content.Intent(getParentActivity(), org.telegram.messenger.TelegyouSettingsActivity.class));\n'
+                   '            ' + m.group(0))
+            s = s[:m.start()] + new + s[m.end():]
+            click += 1
+    open(p, "w", encoding="utf-8").write(s)
+    print("Вкладка Telegyou: показ =", bind, ", нажатие =", click)
 PY
