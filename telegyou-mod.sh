@@ -576,3 +576,60 @@ grep -n "position == languageRow" "$F" | head -5 || true
 grep -n "private int .*Row;" "$F" | head -5 || true
 grep -n "getField" TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java || echo "ПРАВКА СТАТУСА НЕ НАЙДЕНА"
 echo "=== ПРОВЕРКА КОНЕЦ ==="
+# 12) ПРОВЕРКА 2 (временно)
+F="TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+echo "=== ПРОВЕРКА 2 НАЧАЛО ==="
+grep -n "extends " "$F" | head -3 || true
+grep -n "R.string.Language\|R.string.NotificationsAndSounds\|R.string.PrivacySettings" "$F" | head -20 || true
+grep -n "fillItems\|void onClick" "$F" | head -10 || true
+echo "=== ПРОВЕРКА 2 КОНЕЦ ==="
+
+# 13) Как в AyuGram: после отправки сообщения сразу "не в сети"
+python3 - <<'PY'
+p = "TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java"
+s = open(p, encoding="ascii").read()
+if "afterSend" in s:
+    print("afterSend: уже есть")
+else:
+    method = """
+    public static void afterSend(TLObject request, final int account) {
+        try {
+            if (request == null || !get("no_online")) {
+                return;
+            }
+            String n = request.getClass().getName().toLowerCase();
+            if (n.contains("sendmessage") || n.contains("sendmedia")
+                    || n.contains("sendmultimedia") || n.contains("forwardmessages")) {
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            org.telegram.tgnet.TLRPC.TL_account_updateStatus r = new org.telegram.tgnet.TLRPC.TL_account_updateStatus();
+                            r.offline = true;
+                            org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(r, null);
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                }, 1500);
+            }
+        } catch (Throwable ignored) {
+        }
+    }
+"""
+    i = s.rindex("}")
+    s = s[:i] + method + "}\n"
+    open(p, "w", encoding="ascii").write(s)
+    print("afterSend: добавлен")
+
+p2 = "TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java"
+t = open(p2, encoding="utf-8").read()
+mark = "if (org.telegram.messenger.GhostMode.shouldBlock(object)) {\n            return;\n        }"
+if "GhostMode.afterSend" in t:
+    print("ConnectionsManager: afterSend уже подключён")
+elif mark not in t:
+    print("WARNING: место в ConnectionsManager не найдено")
+else:
+    t = t.replace(mark, mark + "\n        org.telegram.messenger.GhostMode.afterSend(object, currentAccount);", 1)
+    open(p2, "w", encoding="utf-8").write(t)
+    print("ConnectionsManager: afterSend подключён")
+PY
