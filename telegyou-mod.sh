@@ -576,3 +576,10 @@ grep -n "position == languageRow" "$F" | head -5 || true
 grep -n "private int .*Row;" "$F" | head -5 || true
 grep -n "getField" TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java || echo "ПРАВКА СТАТУСА НЕ НАЙДЕНА"
 echo "=== ПРОВЕРКА КОНЕЦ ==="
+# 12) ПРОВЕРКА 2 (временно)
+F="TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+echo "=== ПРОВЕРКА 2 НАЧАЛО ==="
+grep -n "extends " "$F" | head -3 || true
+grep -n "R.string.Language\|R.string.NotificationsAndSounds\|R.string.PrivacySettings" "$F" | head -20 || true
+grep -n "fillItems\|void onClick" "$F" | head -10 || true
+echo "=== ПРОВЕРКА 2 КОНЕЦ ==="
