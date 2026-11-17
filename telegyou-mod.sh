@@ -711,3 +711,10 @@ N=$(grep -n "7777" "$F" | head -1 | cut -d: -f1)
 echo "строка с 7777: $N"
 sed -n "$((N-8)),$((N+3))p" "$F" || true
 echo "=== ПРОВЕРКА 4 КОНЕЦ ==="
+# Запуск всех модулей из папки mod/
+for f in mod/*.sh; do
+  if [ -e "$f" ]; then
+    echo ">>> модуль $f"
+    bash "$f" || echo "WARNING: модуль $f завершился с ошибкой"
+  fi
+done
