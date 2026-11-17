@@ -669,3 +669,26 @@ else:
         open(p, "w", encoding="utf-8").write(s)
         print("Вкладка Telegyou: добавлена")
 PY
+# 16) Исправление ошибки сборки в GhostMode (afterSend)
+python3 - <<'PY'
+p = "TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java"
+s = open(p, encoding="ascii").read()
+out = []
+fixed = 0
+for ln in s.split("\n"):
+    t = ln.strip()
+    if t.startswith("org.telegram.tgnet.TLRPC.TL_account_updateStatus r ="):
+        out.append('Class<?> cls; try { cls = Class.forName("org.telegram.tgnet.tl.TL_account$updateStatus"); } catch (Throwable e1) { cls = Class.forName("org.telegram.tgnet.TLRPC$TL_account_updateStatus"); }')
+        out.append('TLObject r = (TLObject) cls.newInstance();')
+        fixed += 1
+    elif t == "r.offline = true;":
+        out.append('cls.getField("offline").setBoolean(r, true);')
+        fixed += 1
+    elif t.startswith("org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(r, null);"):
+        out.append('org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(r, (org.telegram.tgnet.RequestDelegate) null);')
+        fixed += 1
+    else:
+        out.append(ln)
+open(p, "w", encoding="ascii").write("\n".join(out))
+print("GhostMode исправлен, строк заменено =", fixed)
+PY
