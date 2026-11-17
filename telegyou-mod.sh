@@ -642,3 +642,30 @@ sed -n '880,900p' "$F" || true
 echo "--- Language ---"
 grep -n "Language" "$F" | head -8 || true
 echo "=== ПРОВЕРКА 3 КОНЕЦ ==="
+# 15) Вкладка Telegyou в настройках Telegram (первая в списке)
+python3 - <<'PY'
+p = "TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+s = open(p, encoding="utf-8").read()
+if "TelegyouSettingsActivity" in s:
+    print("Вкладка: уже есть")
+else:
+    fill = "private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {"
+    sig = "private void onClick(UItem item, View view, int position, float x, float y) {"
+    i = s.find(fill)
+    j = s.find("items.add(SettingCell.Factory.of(", i) if i >= 0 else -1
+    k = s.find(sig)
+    if i < 0 or j < 0 or k < 0 or j > k:
+        print("WARNING: вкладка не добавлена", i, j, k)
+    else:
+        click = ("\n        if (item.id == 7777) {\n"
+                 "            getParentActivity().startActivity(new android.content.Intent(getParentActivity(), org.telegram.messenger.TelegyouSettingsActivity.class));\n"
+                 "            return;\n"
+                 "        }")
+        s = s[:k + len(sig)] + click + s[k + len(sig):]
+        new_item = ("items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, "
+                    "IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "
+                    "\"Telegyou\", \"\\u0420\\u0435\\u0436\\u0438\\u043c \\u043f\\u0440\\u0438\\u0437\\u0440\\u0430\\u043a\\u0430, \\u0437\\u043d\\u0430\\u0447\\u043a\\u0438\"));\n        ")
+        s = s[:j] + new_item + s[j:]
+        open(p, "w", encoding="utf-8").write(s)
+        print("Вкладка Telegyou: добавлена")
+PY
