@@ -633,3 +633,12 @@ else:
     open(p2, "w", encoding="utf-8").write(t)
     print("ConnectionsManager: afterSend подключён")
 PY
+# 14) ПРОВЕРКА 3 (временно)
+F="TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+echo "=== ПРОВЕРКА 3 НАЧАЛО ==="
+sed -n '717,745p' "$F" || true
+echo "--- onClick ---"
+sed -n '880,900p' "$F" || true
+echo "--- Language ---"
+grep -n "Language" "$F" | head -8 || true
+echo "=== ПРОВЕРКА 3 КОНЕЦ ==="
