@@ -692,3 +692,22 @@ for ln in s.split("\n"):
 open(p, "w", encoding="ascii").write("\n".join(out))
 print("GhostMode исправлен, строк заменено =", fixed)
 PY
+# 17) Быстрее скрывать статус после отправки
+python3 - <<'PY'
+p = "TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java"
+s = open(p, encoding="ascii").read()
+if "}, 1500);" in s:
+    s = s.replace("}, 1500);", "}, 300);")
+    open(p, "w", encoding="ascii").write(s)
+    print("Пауза статуса: 0.3 сек")
+else:
+    print("Пауза статуса: не найдена")
+PY
+
+# 18) ПРОВЕРКА 4 (временно): где вкладка
+F="TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java"
+echo "=== ПРОВЕРКА 4 НАЧАЛО ==="
+N=$(grep -n "7777" "$F" | head -1 | cut -d: -f1)
+echo "строка с 7777: $N"
+sed -n "$((N-8)),$((N+3))p" "$F" || true
+echo "=== ПРОВЕРКА 4 КОНЕЦ ==="
