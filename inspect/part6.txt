@@ -1,0 +1,151 @@
+files: TMessagesProj/src/main/java/org/telegram/messenger/Emoji.java | TMessagesProj/src/main/java/org/telegram/ui/ActionBar/SimpleTextView.java | TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java | TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java | TMessagesProj/src/main/java/org/telegram/ui/Components/ChatAvatarContainer.java
+
+=================== TMessagesProj/src/main/java/org/telegram/messenger/Emoji.java :: CharSequence replaceEmoji\(
+572-
+573:    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew) {
+574-        return replaceEmoji(cs, fontMetrics, createNew, null);
+575-    }
+576-
+577:    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, float scale) {
+578-        return replaceEmoji(cs, fontMetrics, createNew, null, DynamicDrawableSpan.ALIGN_BOTTOM, scale, 0);
+579-    }
+580-
+581:    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, int[] emojiOnly) {
+582-        return replaceEmoji(cs, fontMetrics, createNew, emojiOnly, DynamicDrawableSpan.ALIGN_BOTTOM);
+583-    }
+584-
+585:    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, int[] emojiOnly, int alignment) {
+586-        return replaceEmoji(cs, fontMetrics, createNew, emojiOnly, alignment, 1.0f, 0);
+587-    }
+588-
+589:    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, int[] emojiOnly, int alignment, float scale, int minusLimit) {
+590-        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
+591-            return cs;
+592-        }
+593-        Spannable s;
+594-        if (!createNew && cs instanceof Spannable) {
+595-            s = (Spannable) cs;
+596-        } else {
+597-            s = Spannable.Factory.getInstance().newSpannable(cs);
+598-        }
+599-        ArrayList<EmojiSpanRange> emojis = parseEmojis(s, emojiOnly);
+600-        if (emojis.isEmpty()) {
+601-            return cs;
+602-        }
+603-
+604-        AnimatedEmojiSpan[] animatedEmojiSpans = s.getSpans(0, s.length(), AnimatedEmojiSpan.class);
+605-        ColoredImageSpan[] imageSpans = s.getSpans(0, s.length(), ColoredImageSpan.class);
+606-        EmojiSpan span;
+607-        Drawable drawable;
+608-        int limitCount = (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH ? 100 : 50) - minusLimit;
+609-        for (int i = 0; i < emojis.size(); ++i) {
+610-            try {
+611-                EmojiSpanRange emojiRange = emojis.get(i);
+612-                if (animatedEmojiSpans != null && animatedEmojiSpans.length > 0) {
+613-                    boolean hasAnimated = false;
+614-                    for (int j = 0; j < animatedEmojiSpans.length; ++j) {
+615-                        AnimatedEmojiSpan animatedSpan = animatedEmojiSpans[j];
+616-                        if (animatedSpan != null && s.getSpanStart(animatedSpan) == emojiRange.start && s.getSpanEnd(animatedSpan) == emojiRange.end) {
+617-                            hasAnimated = true;
+618-                            break;
+619-                        }
+620-                    }
+621-                    if (hasAnimated) {
+622-                        continue;
+623-                    }
+624-                }
+625-                if (imageSpans != null && imageSpans.length > 0) {
+626-                    boolean hasImage = false;
+627-                    for (int j = 0; j < imageSpans.length; ++j) {
+628-                        ColoredImageSpan imageSpan = imageSpans[j];
+629-                        if (imageSpan != null && s.getSpanStart(imageSpan) == emojiRange.start && s.getSpanEnd(imageSpan) == emojiRange.end) {
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/ActionBar/SimpleTextView.java :: replaceEmoji
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java :: nameTextView\[[0-9a-z]*\]\.setOnClickListener|onClick.*nameTextView
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/Cells/DialogCell.java :: Emoji.replaceEmoji
+1206-            }
+1207-            builder.append(LocaleController.formatPluralString("Stories", totalCount));
+1208-        }
+1209:        return Emoji.replaceEmoji(builder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+1210-    }
+1211-
+1212-    private CharSequence formatCommunityDialogNames() {
+--
+1258-                break;
+1259-            }
+1260-        }
+1261:        return Emoji.replaceEmoji(builder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+1262-    }
+1263-
+1264-    public boolean hasTags() {
+--
+1445-                        stringBuilder = formatInternal(messageFormatType, mess.replace('\n', ' '), messageNameString);
+1446-                    }
+1447-                }
+1448:                messageString = Emoji.replaceEmoji(stringBuilder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+1449-            } else {
+1450-                messageString = customDialog.message;
+1451-                if (customDialog.isMedia) {
+--
+1696-                        if (!useForceThreeLines && !SharedConfig.useThreeLinesLayout || hasTags()) {
+1697-                            stringBuilder.setSpan(new ForegroundColorSpanThemable(Theme.key_chats_draft, resourcesProvider), 0, messageNameString.length() + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+1698-                        }
+1699:                        messageString = Emoji.replaceEmoji(stringBuilder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+1700-                    }
+1701-                } else {
+1702-                    if (clearingDialog) {
+--
+1870-                                        FileLog.e(e);
+1871-                                    }
+1872-                                }
+1873:                                messageString = Emoji.replaceEmoji(stringBuilder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+1874-                                if (message.hasHighlightedWords()) {
+1875-                                    CharSequence messageH = AndroidUtilities.highlightText(messageString, message.highlightedWords, resourcesProvider);
+1876-                                    if (messageH != null) {
+--
+2082-                                    SpannableStringBuilder builder = (SpannableStringBuilder) messageString;
+2083-                                    builder.insert(0, " ");
+2084-                                    builder.setSpan(new FixedWidthSpan(dp((thumbSize + 2) * thumbsCount - 2 + 5)), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+2085:                                    Emoji.replaceEmoji(builder, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt(), false);
+2086-                                    if (message.hasHighlightedWords()) {
+2087-                                        CharSequence s = AndroidUtilities.highlightText(builder, message.highlightedWords, resourcesProvider);
+2088-                                        if (s != null) {
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/Components/ChatAvatarContainer.java :: titleTextView.setText|Emoji.replaceEmoji
+281-        titleTextView.setEllipsizeByGradient(true);
+282-        ThemeBind.textColor(titleTextView, Theme.key_actionBarDefaultTitle, resourcesProvider);
+283:        titleTextView.setTextSize(18);
+284-        titleTextView.setGravity(Gravity.LEFT);
+285-        titleTextView.setTypeface(AndroidUtilities.bold());
+286-        titleTextView.setLeftDrawableTopPadding(-dp(1.3f));
+--
+296-            ThemeBind.textColor(animatedSubtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
+297-            animatedSubtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
+298:            animatedSubtitleTextView.setTextSize(dp(14));
+299-            animatedSubtitleTextView.setGravity(Gravity.LEFT);
+300-            animatedSubtitleTextView.setPadding(0, 0, dp(10), 0);
+301-            animatedSubtitleTextView.setTranslationY(-dp(1));
+--
+306-            ThemeBind.textColor(subtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
+307-            subtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
+308:            subtitleTextView.setTextSize(14);
+309-            subtitleTextView.setGravity(Gravity.LEFT);
+310-            subtitleTextView.setPadding(0, 0, dp(10), 0);
+311-            addView(subtitleTextView);
+--
+661-        ThemeBind.clear(titleTextView);
+662-        ThemeBind.clear(subtitleTextView);
+663:        titleTextView.setTextColor(title);
+664:        subtitleTextView.setTextColor(subtitle);
+665-        subtitleTextView.setTag(subtitle);
+666-    }
+667-
+--
+761-    public void setGlassMode() {
+762-        if (titleTextView != null) {
+763:            titleTextView.setTextSizePx(dp(17.5f));
+764-        }
+765-        if (subtitleTextView != null) {
+766-            subtitleTextView.setTextSizePx(dp(13.5f));
