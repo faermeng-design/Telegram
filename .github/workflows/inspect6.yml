@@ -1,0 +1,46 @@
+name: Inspect badge hooks
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part6.txt
+          : > "$OUT"
+          sec() { printf '\n=================== %s\n' "$1" >> "$OUT"; }
+          show() {
+            sec "$1 :: $2"
+            if [ -f "$1" ]; then
+              grep -n -E -m "$5" -B "$3" -A "$4" -e "$2" "$1" 2>&1 | head -n 120 >> "$OUT"
+            else
+              echo "(файла нет)" >> "$OUT"
+            fi
+          }
+          E=$(find TMessagesProj -name Emoji.java | head -1)
+          S=$(find TMessagesProj -name SimpleTextView.java | head -1)
+          P=$(find TMessagesProj -name ProfileActivity.java | head -1)
+          D=$(find TMessagesProj -name DialogCell.java | head -1)
+          C=$(find TMessagesProj -name ChatAvatarContainer.java | head -1)
+          echo "files: $E | $S | $P | $D | $C" >> "$OUT"
+          show "$E" "CharSequence replaceEmoji\(" 1 40 6
+          show "$S" "replaceEmoji" 3 6 8
+          show "$P" "nameTextView\[[0-9a-z]*\]\.setOnClickListener|onClick.*nameTextView" 3 10 6
+          show "$D" "Emoji.replaceEmoji" 3 3 6
+          show "$C" "titleTextView.setText|Emoji.replaceEmoji" 2 3 6
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part6.txt
+          git commit -m "inspect part6" || echo "nothing to commit"
+          git push
