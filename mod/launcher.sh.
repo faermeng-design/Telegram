@@ -1,0 +1,81 @@
+#!/bin/bash
+ROOT="TMessagesProj/src/main/java/org/telegram/messenger"
+
+cat > "$ROOT/TelegyouLauncherActivity.java" <<'JAVA'
+package org.telegram.messenger;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+
+/** Telegyou: основной вход в приложение, просто открывает Telegram. */
+public class TelegyouLauncherActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            Intent i = new Intent();
+            i.setClassName(getPackageName(), "org.telegram.ui.LaunchActivity");
+            startActivity(i);
+        } catch (Throwable ignored) {
+        }
+        finish();
+    }
+}
+JAVA
+
+python3 - <<'PY'
+import os, re
+mans = ["TMessagesProj_App/src/main/AndroidManifest.xml",
+        "TMessagesProj/src/main/AndroidManifest.xml"]
+target = None
+for p in mans:
+    if os.path.exists(p) and "TelegyouSettingsActivity" in open(p, encoding="utf-8").read():
+        target = p
+        break
+if target is None:
+    for p in mans:
+        if os.path.exists(p) and "</application>" in open(p, encoding="utf-8").read():
+            target = p
+            break
+if target is None:
+    print("WARNING: манифест не найден, вход Telegyou не добавлен")
+    raise SystemExit(0)
+
+s = open(target, encoding="utf-8").read()
+
+launcher = '''        <activity
+            android:name="org.telegram.messenger.TelegyouLauncherActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+'''
+if "TelegyouLauncherActivity" in s:
+    print("Launcher: вход уже есть")
+else:
+    s = s.replace("</application>", launcher + "    </application>", 1)
+    print("Launcher: вход добавлен в", target)
+
+m = re.search(r'<activity\s+android:name="org\.telegram\.messenger\.TelegyouSettingsActivity".*?</activity>', s, re.S)
+if m:
+    inner = m.group(0)
+    new = re.sub(r'\s*<intent-filter>\s*<action android:name="android\.intent\.action\.MAIN"\s*/>\s*<category android:name="android\.intent\.category\.LAUNCHER"\s*/>\s*</intent-filter>', '', inner, count=1, flags=re.S)
+    if "APPLICATION_PREFERENCES" not in new:
+        pref = '''            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>'''
+        new = new.replace("</activity>", pref, 1)
+    s = s.replace(inner, new, 1)
+    print("Launcher: у настроек убрана отдельная иконка")
+else:
+    print("Launcher: настроек Telegyou в манифесте пока нет (иконка настроек не трогалась)")
+
+open(target, "w", encoding="utf-8").write(s)
+PY
