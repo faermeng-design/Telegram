@@ -1,0 +1,314 @@
+
+=================== Результат telegyou-mod.sh
+Badges URL: https://raw.githubusercontent.com/faermeng-design/Telegram/master/badges.json
+Новые файлы: кодировка готова
+ConnectionsManager: правка внесена
+UserObject: значки подключены
+Удалённые: подключено мест = 2 , push = 1
+Manifest: добавлено в TMessagesProj_App/src/main/AndroidManifest.xml
+=== ПРОВЕРКА НАЧАЛО ===
+TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
+83:                    request.getClass().getField("offline").setBoolean(request, true);
+=== ПРОВЕРКА КОНЕЦ ===
+=== ПРОВЕРКА 2 НАЧАЛО ===
+154:public class SettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ImageUpdater.ImageUpdaterDelegate, MainTabsActivity.TabFragmentDelegate, FactorAnimator.Target {
+1087:    public static class AccountCell extends LinearLayout implements Theme.Colorable {
+1238:        public static class Factory extends UItem.UItemFactory<AccountCell> {
+323:        listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick);
+717:    private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+720:            search.fillItems(items);
+880:    private void onClick(UItem item, View view, int position, float x, float y) {
+=== ПРОВЕРКА 2 КОНЕЦ ===
+afterSend: добавлен
+ConnectionsManager: afterSend подключён
+=== ПРОВЕРКА 3 НАЧАЛО ===
+    private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+        if (searchItem.isSearchFieldVisible2()) {
+            items.add(UItem.asSpace(ActionBar.getCurrentActionBarHeight()));
+            search.fillItems(items);
+            return;
+        }
+
+        items.add(UItem.asCustomShadow(topView, 200 - 12));
+
+        accountNumbers.clear();
+        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            if (UserConfig.getInstance(a).isClientActivated() && currentAccount != a) {
+                accountNumbers.add(a);
+            }
+        }
+        Collections.sort(accountNumbers, (o1, o2) -> {
+            long l1 = UserConfig.getInstance(o1).loginTime;
+            long l2 = UserConfig.getInstance(o2).loginTime;
+            if (l1 > l2) {
+                return 1;
+            } else if (l1 < l2) {
+                return -1;
+            }
+            return 0;
+        });
+
+        final Set<String> suggestions = getMessagesController().pendingSuggestions;
+        if (suggestions.contains("PREMIUM_GRACE")) {
+            items.add(SuggestionCell.Factory.of(
+--- onClick ---
+    private void onClick(UItem item, View view, int position, float x, float y) {
+        if (item.object instanceof TLRPC.TL_attachMenuBot) {
+            TLRPC.TL_attachMenuBot attachMenuBot = (TLRPC.TL_attachMenuBot) item.object;
+            if (attachMenuBot.inactive || attachMenuBot.side_menu_disclaimer_needed) {
+                WebAppDisclaimerAlert.show(getContext(), (allowSendMessage) -> {
+                    TLRPC.TL_messages_toggleBotInAttachMenu botRequest = new TLRPC.TL_messages_toggleBotInAttachMenu();
+                    botRequest.bot = MessagesController.getInstance(currentAccount).getInputUser(attachMenuBot.bot_id);
+                    botRequest.enabled = true;
+                    botRequest.write_allowed = true;
+                    ConnectionsManager.getInstance(currentAccount).sendRequest(botRequest, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
+                        attachMenuBot.inactive = attachMenuBot.side_menu_disclaimer_needed = false;
+                        LaunchActivity.showAttachMenuBot(LaunchActivity.instance, currentAccount, attachMenuBot, null, true);
+                        MediaDataController.getInstance(currentAccount).updateAttachMenuBotsInCache();
+                    }), ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
+                }, null, null);
+            } else {
+                LaunchActivity.showAttachMenuBot(LaunchActivity.instance, currentAccount, attachMenuBot, null, true);
+            }
+            return;
+        }
+        if (item.instanceOf(AccountCell.Factory.class)) {
+--- Language ---
+806:        items.add(SettingCell.Factory.of(10, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
+945:                presentSettingFragment(new LanguageSelectActivity());
+=== ПРОВЕРКА 3 КОНЕЦ ===
+Вкладка Telegyou: добавлена
+GhostMode исправлен, строк заменено = 3
+Пауза статуса: 0.3 сек
+=== ПРОВЕРКА 4 НАЧАЛО ===
+строка с 7777: 794
+                items.add(AccountCell.Factory.of(i, accountNumbers.get(i)));
+            }
+            items.add(UItem.asShadow(null));
+        }
+
+        final boolean walletAbove = getConnectionsManager().getCurrentTime() - 1791538462 < 4 * 7 * 24 * 60 * 60;
+        if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "Telegyou", "\u0420\u0435\u0436\u0438\u043c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430, \u0437\u043d\u0430\u0447\u043a\u0438"));
+        items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null));
+            items.add(UItem.asShadow(null));
+        }
+=== ПРОВЕРКА 4 КОНЕЦ ===
+>>> модуль mod/11-icon-main.sh
+Новые картинки: готово
+Иконка Основная: заменено файлов = 15
+Адаптивные иконки: изменено = 3 ['ic_launcher_sa.xml', 'ic_launcher_round.xml', 'ic_launcher.xml']
+Список иконок: Основная изменена
+>>> модуль mod/15-tab-fix.sh
+Вкладка Telegyou: перенесена наверх списка
+>>> модуль mod/20-icon-new.sh
+enum: добавлено
+Картинки и название: готово
+Манифест: иконка добавлена
+>>> модуль mod/30-intro.sh
+заменён: TMessagesProj/src/main/res/drawable-xxhdpi/intro_tg_plane.webp 246 222
+заменён: TMessagesProj/src/main/res/drawable-xhdpi/intro_tg_plane.webp 164 148
+заменён: TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp 123 111
+заменён: TMessagesProj/src/main/res/drawable-mdpi/intro_tg_plane.webp 82 74
+Приветственный экран: заменено файлов = 4
+>>> модуль mod/92-check.sh
+=== ПРОВЕРКА 6 НАЧАЛО ===
+798:        items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "Telegyou", "\u0420\u0435\u0436\u0438\u043c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430, \u0437\u043d\u0430\u0447\u043a\u0438"));
+882:        if (item.id == 7777) {
+883:            getParentActivity().startActivity(new android.content.Intent(getParentActivity(), org.telegram.messenger.TelegyouSettingsActivity.class));
+        if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null));
+            items.add(UItem.asShadow(null));
+        }
+
+        items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "Telegyou", "\u0420\u0435\u0436\u0438\u043c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430, \u0437\u043d\u0430\u0447\u043a\u0438"));
+        items.add(SettingCell.Factory.of(1, IconBackgroundColors.BLUE.top, IconBackgroundColors.BLUE.bottom, R.drawable.settings_account, getString(R.string.SettingsAccount), getString(R.string.SettingsAccountInfo)));
+        items.add(SettingCell.Factory.of(2, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_chat, getString(R.string.SettingsChat), getString(R.string.SettingsChatInfo)));
+        items.add(SettingCell.Factory.of(3, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_privacy, getString(R.string.SettingsPrivacySecurity), getString(R.string.SettingsPrivacySecurityInfo)));
+        items.add(SettingCell.Factory.of(5, IconBackgroundColors.RED.top, IconBackgroundColors.RED.bottom, R.drawable.settings_sounds, getString(R.string.SettingsNotifications), getString(R.string.SettingsNotificationsInfo)));
+=== ПРОВЕРКА 6 КОНЕЦ ===
+>>> модуль mod/93-check.sh
+=== ПРОВЕРКА 7 НАЧАЛО ===
+--- картинки intro ---
+filled_premium_intro.webp
+intro_fast_arrow.webp
+intro_fast_arrow_shadow.webp
+intro_fast_body.webp
+intro_fast_spiral.webp
+intro_ic_bubble.webp
+intro_ic_bubble_dot.webp
+intro_ic_cam.webp
+intro_ic_cam_lens.webp
+intro_ic_pencil.webp
+--- IntroActivity ---
+157:        logoDrawable = context.getResources().getDrawable(R.drawable.telegram_logo).mutate();
+207:        darkThemeDrawable = new RLottieDrawable(R.raw.sun, dp(28), dp(28), true, null);
+774:            loadTexture(R.drawable.intro_fast_arrow_shadow, 0);
+775:            loadTexture(R.drawable.intro_fast_arrow, 1);
+776:            loadTexture(R.drawable.intro_fast_body, 2);
+777:            loadTexture(R.drawable.intro_fast_spiral, 3);
+778:            loadTexture(R.drawable.intro_ic_bubble_dot, 4);
+779:            loadTexture(R.drawable.intro_ic_bubble, 5);
+780:            loadTexture(R.drawable.intro_ic_cam_lens, 6);
+781:            loadTexture(R.drawable.intro_ic_cam, 7);
+782:            loadTexture(R.drawable.intro_ic_pencil, 8);
+783:            loadTexture(R.drawable.intro_ic_pin, 9);
+784:            loadTexture(R.drawable.intro_ic_smile_eye, 10);
+785:            loadTexture(R.drawable.intro_ic_smile, 11);
+786:            loadTexture(R.drawable.intro_ic_videocam, 12);
+787:            loadTexture(R.drawable.intro_knot_down, 13);
+788:            loadTexture(R.drawable.intro_knot_up, 14);
+789:            loadTexture(R.drawable.intro_powerful_infinity_white, 15);
+790:            loadTexture(R.drawable.intro_powerful_infinity, 16);
+791:            loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), false);
+792:            loadTexture(R.drawable.intro_powerful_star, 18);
+793:            loadTexture(R.drawable.intro_private_door, 19);
+794:            loadTexture(R.drawable.intro_private_screw, 20);
+795:            loadTexture(R.drawable.intro_tg_plane, 21);
+796:            loadTexture(v -> {
+805:            loadTexture(telegramMaskProvider, 23);
+885:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index) {
+886:            loadTexture(bitmapProvider, index, false);
+889:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index, boolean rebind) {
+904:        private void loadTexture(int resId, int index) {
+--- LoginActivity ---
+193:import org.telegram.ui.Components.RLottieImageView;
+763:        backButtonView.setImageResource(R.drawable.ic_ab_back);
+2035:                        BulletinFactory.of(LoginActivity.this).createSimpleBulletin(R.raw.chats_infotip, BuildVars.LOGS_ENABLED ? "Logs enabled." : "Logs disabled.").show();
+2112:            chevronRight.setImageResource(R.drawable.msg_inputarrow);
+2507:                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, getString("SyncContactsOn", R.string.SyncContactsOn)).show();
+2509:                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, getString("SyncContactsOff", R.string.SyncContactsOff)).show();
+2977:                                            resId = R.raw.calls_log;
+2980:                                            resId = R.raw.calls_log;
+2983:                                            resId = R.raw.incoming_calls;
+3054:                                resId = R.raw.calls_log;
+3057:                                resId = R.raw.calls_log;
+3060:                                resId = R.raw.incoming_calls;
+3317:                                        builder.setTopAnimation(R.raw.incoming_calls, 46, false, Theme.getColor(Theme.key_dialogTopBackground)); builder.setTopBackgroundColorKey(Theme.key_dialogTopBackground, null);
+3785:        private RLottieImageView blueImageView;
+3794:        private RLottieImageView openFragmentImageView;
+3892:                missedCallArrowIcon.setImageResource(R.drawable.login_arrow1);
+3893:                missedCallPhoneIcon.setImageResource(R.drawable.login_phone1);
+3949:                blueImageView = new RLottieImageView(context);
+3950:                hintDrawable = new RLottieDrawable(R.raw.phone_flash_call, AndroidUtilities.dp(64), AndroidUtilities.dp(64), true, null);
+3965:                    hintDrawable = new RLottieDrawable(R.raw.code_laptop, AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
+=== ПРОВЕРКА 7 КОНЕЦ ===
+>>> модуль mod/iconguard.sh
+IconGuard: подключён
+
+=================== TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java :: GhostMode.keepDeleted
+17633-        });
+17634-    }
+17635-
+17636-    protected void deleteMessagesByPush(long dialogId, ArrayList<Integer> ids, long channelId) {
+17637:        if (GhostMode.keepDeleted()) {
+17638-            return;
+17639-        }
+17640-        getMessagesStorage().getStorageQueue().postRunnable(() -> {
+17641-            AndroidUtilities.runOnUIThread(() -> {
+17642-                getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, ids, channelId, false);
+17643-                if (channelId == 0) {
+17644-                    for (int b = 0, size2 = ids.size(); b < size2; b++) {
+17645-                        Integer id = ids.get(b);
+--
+18904-                if (arrayList == null) {
+18905-                    arrayList = new ArrayList<>();
+18906-                    deletedMessages.put(0, arrayList);
+18907-                }
+18908:                if (GhostMode.keepDeleted()) {
+18909-    for (int gi = 0; gi < update.messages.size(); gi++) {
+18910-        GhostMode.markDeleted(0, update.messages.get(gi));
+18911-    }
+18912-} else {
+18913-    arrayList.addAll(update.messages);
+18914-}
+18915-            } else if (baseUpdate instanceof TL_update.TL_updateDeleteQuickReplyMessages) {
+18916-                TL_update.TL_updateDeleteQuickReplyMessages update = (TL_update.TL_updateDeleteQuickReplyMessages) baseUpdate;
+--
+19440-                if (arrayList == null) {
+19441-                    arrayList = new ArrayList<>();
+19442-                    deletedMessages.put(dialogId, arrayList);
+19443-                }
+19444:                if (GhostMode.keepDeleted()) {
+19445-    for (int gi = 0; gi < update.messages.size(); gi++) {
+19446-        GhostMode.markDeleted(update.channel_id, update.messages.get(gi));
+19447-    }
+19448-} else {
+19449-    arrayList.addAll(update.messages);
+19450-}
+19451-            } else if (baseUpdate instanceof TL_update.TL_updateChannel) {
+19452-                if (BuildVars.LOGS_ENABLED) {
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java :: languageRow
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java :: void updateRows
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/ActionBar/Theme.java :: static int getColor\(
+9099-
+9100:    public static int getColor(int key, ResourcesProvider provider) {
+9101-        if (provider != null) {
+9102-            if (provider.isCompactMode()) {
+9103-                final Integer compactColor = getCompactColor(key, provider);
+9104-                if (compactColor != null) {
+9105-                    return compactColor;
+9106-                }
+9107-            }
+9108-            return provider.getColor(key);
+9109-        }
+9110-        return getColor(key);
+9111-    }
+9112-
+9113-    public static int getCurrentColor(int key) {
+9114-        return currentColors.get(key);
+9115-    }
+9116-
+9117:    public static int getColor(int key) {
+9118-        return getColor(key, null, false);
+9119-    }
+9120-
+9121-    public static int getColor(int key, boolean[] isDefault) {
+9122-        return getColor(key, isDefault, false);
+9123-    }
+9124-
+9125-    public static int getColor(int key, boolean[] isDefault, boolean ignoreAnimation) {
+9126-        if (SharedConfig.compactMode) {
+9127-            // compact mode swaps some message colors for its own keys, see getCompactColor
+9128-            final Integer compactColor = getCompactColor(key, null);
+9129-            if (compactColor != null) {
+9130-                return compactColor;
+9131-            }
+9132-        }
+9133-        if (!ignoreAnimation && animatingColors != null) {
+9134-            int index = animatingColors.indexOfKey(key);
+9135-            if (index >= 0) {
+9136-                return animatingColors.valueAt(index);
+9137-            }
+9138-        }
+9139-        return getColorFromTable(currentColors, key, isDefault);
+9140-    }
+9141-
+9142-    /**
+9143-     * {@link #getColor(int)} without the animated colors, on the given color table: also used while a new table is computed
+9144-     * and not published yet ({@link ThemeAccent#fillAccentColors}).
+9145-     */
+9146-    private static int getColorFromTable(SparseIntArray currentColors, int key, boolean[] isDefault) {
+9147-        if (serviceBitmapShader != null && (key_chat_serviceText == key || key_chat_serviceLink == key || key_chat_serviceIcon == key
+9148-                || key_chat_stickerReplyLine == key || key_chat_stickerReplyNameText == key || key_chat_stickerReplyMessageText == key)) {
+9149-            return 0xffffffff;
+9150-        }
+9151-        if (currentTheme == defaultTheme) {
+9152-            boolean useDefault;
+
+=================== TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java :: currentTimeString = 
+15661-        if (signString != null) {
+15662-            if (messageObject.messageOwner.via_business_bot_id != 0) {
+15663:                currentTimeString = timeString + ", ";
+15664-            } else if (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.imported) {
+15665:                currentTimeString = " " + timeString;
+15666-            } else {
+15667:                currentTimeString = ", " + timeString;
+15668-            }
+15669-        } else {
+15670-            currentTimeString = timeString;
