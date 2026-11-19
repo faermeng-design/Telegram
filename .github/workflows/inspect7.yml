@@ -1,0 +1,35 @@
+name: Inspect profile name
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part7.txt
+          : > "$OUT"
+          sec() { printf '\n=================== %s\n' "$1" >> "$OUT"; }
+          P=$(find TMessagesProj -name ProfileActivity.java | head -1)
+          D=$(find TMessagesProj -name DialogCell.java | head -1)
+          sec "ProfileActivity: nameTextView"
+          grep -n "nameTextView" "$P" | head -n 80 >> "$OUT" || true
+          sec "ProfileActivity: getUserName / replaceEmoji"
+          grep -n -E "getUserName|replaceEmoji" "$P" | head -n 30 >> "$OUT" || true
+          sec "DialogCell: nameString"
+          grep -n "nameString" "$D" | head -n 40 >> "$OUT" || true
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part7.txt
+          git commit -m "inspect part7" || echo "nothing to commit"
+          git push
