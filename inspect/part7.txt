@@ -1,0 +1,125 @@
+
+=================== ProfileActivity: nameTextView
+367:    private SimpleTextView nameTextView;
+368:    private String nameTextViewRightDrawableContentDescription = null;
+369:    private String nameTextViewRightDrawable2ContentDescription = null;
+3099:                        nameTextView.setTextColor(Color.WHITE);
+3100:                        nameTextView.setPivotY(nameTextView.getMeasuredHeight());
+3101:                        nameTextView.setScaleX(1.38f);
+3102:                        nameTextView.setScaleY(1.38f);
+5486:        nameTextView = new SimpleTextView(context) {
+5497:                if (isFocusable() && (nameTextViewRightDrawableContentDescription != null || nameTextViewRightDrawable2ContentDescription != null)) {
+5499:                    if (nameTextViewRightDrawable2ContentDescription != null) {
+5501:                        s.append(nameTextViewRightDrawable2ContentDescription);
+5503:                    if (nameTextViewRightDrawableContentDescription != null) {
+5505:                        s.append(nameTextViewRightDrawableContentDescription);
+5520:        nameTextView.setTextColor(getThemedColor(Theme.key_profile_title));
+5521:        nameTextView.setPadding(0, AndroidUtilities.dp(6), 0, AndroidUtilities.dp(4));
+5522:        nameTextView.setTextSizePx(dp(17.5f));
+5523:        nameTextView.setGravity(Gravity.LEFT);
+5524:        nameTextView.setTypeface(AndroidUtilities.bold());
+5525:        nameTextView.setLeftDrawableTopPadding(-AndroidUtilities.dp(1.3f));
+5526:        nameTextView.setPivotX(0);
+5527:        nameTextView.setPivotY(0);
+5528:        nameTextView.setScrollNonFitText(true);
+5529:        nameTextView.setFocusable(true);
+5530:        nameTextView.setEllipsizeByGradient(true);
+5531:        avatarContainer2.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109, -6, 0, 0));
+6086:            if (nameTextView != null) {
+6087:                nameTextView.setTextColor(nameTextColor);
+6486:        final float nameTextViewXEnd = AndroidUtilities.dpf2(18f) - ((FrameLayout.LayoutParams) nameTextView.getLayoutParams()).leftMargin;
+6487:        final float nameTextViewYEnd = newTop + extraHeight - getActionsExtraHeight() - AndroidUtilities.dpf2(30f) - nameTextView.getBottom();
+6488:        final float nameTextViewCx = kx + nameX + (nameTextViewXEnd - nameX) / 2f;
+6489:        final float nameTextViewCy = ky + nameY + (nameTextViewYEnd - nameY) / 2f;
+6490:        final float nameTextViewX = (1 - value) * (1 - value) * nameX + 2 * (1 - value) * value * nameTextViewCx + value * value * nameTextViewXEnd;
+6491:        final float nameTextViewY = (1 - value) * (1 - value) * nameY + 2 * (1 - value) * value * nameTextViewCy + value * value * nameTextViewYEnd;
+6508:        nameTextView.setTranslationX(nameTextViewX);
+6509:        nameTextView.setTranslationY(Math.max(minNameY, nameTextViewY));
+6527:            nameTextView.setPivotY(AndroidUtilities.lerp(0, nameTextView.getMeasuredHeight(), value));
+6528:            nameTextView.setScaleX(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
+6529:            nameTextView.setScaleY(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
+6537:        nameTextView.setTextColor(peerColor != null ? Color.WHITE : ColorUtils.blendARGB(getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+6612:        if (nameTextView == null) {
+6615:        if (nameTextView.getRightDrawable() == null) {
+6616:            rect.set(nameTextView.getWidth() - 1, nameTextView.getHeight() / 2 - 1, nameTextView.getWidth() + 1, nameTextView.getHeight() / 2 + 1);
+6619:        rect.set(nameTextView.getRightDrawable().getBounds());
+6620:        rect.offset((int) (rect.centerX() * (nameTextView.getScaleX() - 1f)), 0);
+6621:        rect.offset((int) nameTextView.getX(), (int) nameTextView.getY());
+6862:        int topMarginDp = nameTextView.getScaleX() < 1.5f ? 16 : 32;
+6951:        popupLayout.setScrimDrawable(emojiStatusDrawable, nameTextView);
+6960:        if (nameTextView != null) {
+6961:            nameTextView.getLocationOnScreen(loc);
+7888:            nameTextView.setTextColor(c);
+8491:        backwardInitialValues[7] = nameTextView.getScaleX();
+8492:        backwardInitialValues[8] = nameTextView.getTranslationY();
+8494:        backwardInitialValues[10] = nameTextView.getLayoutParams().width;
+8498:        backwardInitialValues[12] = nameTextView.getTranslationX();
+8578:        final float nameX = lerp(getPreviousHeaderTranslationX(nameTextView, PREVIOUS_HEADER_TITLE, minimizedX), backwardInitialValues[12], backwardDiff);
+8580:        nameTextView.setTranslationX(nameX);
+8581:        nameTextView.setTranslationY(nameY);
+8586:        nameTextView.setScaleX(nameScale);
+8587:        nameTextView.setScaleY(nameScale);
+8818:                        expandNameYStartedFrom = nameTextView.getTranslationY();
+8841:                        nameTextView.setTranslationX(AndroidUtilities.dpf2(18f) - nameTextView.getLeft());
+8842:                        nameTextView.setTranslationY(newTop + h - getActionsExtraHeight() - dpf2(30f) - nameTextView.getBottom() + additionalTranslationY);
+8918:                        nameTextView.setTranslationY(nameY);
+8931:                nameTextView.setPivotY(nameTextView.getMeasuredHeight());
+8932:                nameTextView.setScaleX(1.38f);
+8933:                nameTextView.setScaleY(1.38f);
+8974:                    nameTextView.invalidate();
+8978:                    nameTextView.invalidate();
+9045:                nameTextView.setScaleX(nameScale);
+9046:                nameTextView.setScaleY(nameScale);
+9053:                final FrameLayout.LayoutParams params1 = (FrameLayout.LayoutParams) nameTextView.getLayoutParams();
+9054:                float nameX = viewportWidth / 2f - (params1.leftMargin + Math.min(nameTextView.getExactWidth(), params1.width) * nameScale * 0.5f);
+9065:                    nameX = AndroidUtilities.lerp(getPreviousHeaderTranslationX(nameTextView, PREVIOUS_HEADER_TITLE, minimizedX), nameX, diff);
+9070:                    nameTextView.setTranslationX(nameX);
+9071:                    nameTextView.setTranslationY(nameY);
+9126:        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) nameTextView.getLayoutParams();
+9127:        nameX = listView.getMeasuredWidth() / 2f - (params.leftMargin + nameTextView.getExactWidth() * nameScale * 0.5f);
+9204:        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) nameTextView.getLayoutParams();
+9207:        float x = params.leftMargin + nameTextView.getTranslationX();
+9208:        params.width = Math.min(params.width,(int) ((viewWidth - AndroidUtilities.dp(18f)) / nameTextView.getScaleX() - x));
+
+=================== ProfileActivity: getUserName / replaceEmoji
+2692://                    args.putString("addToGroupAlertString", LocaleController.formatString("AddToTheGroupAlertText", R.string.AddToTheGroupAlertText, UserObject.getUserName(user), "%1$s"));
+2720:                            builder.setMessage(AndroidUtilities.replaceTags(formatString("AddMembersAlertNamesText", R.string.AddMembersAlertNamesText, UserObject.getUserName(user), chatName)));
+11711:            CharSequence newString = UserObject.getUserName(user);
+11755:                newString = Emoji.replaceEmoji(newString, nameTextView.getPaint().getFontMetricsInt(), false);
+12029:                        title = Emoji.replaceEmoji(title, nameTextView.getPaint().getFontMetricsInt(), false);
+14222:                            cell.setText(formatString(R.string.ProfileBotAffiliateProgramInfoOwner, UserObject.getUserName(botUser), percents(userInfo != null && userInfo.starref_program != null ? userInfo.starref_program.commission_permille : 0)));
+14225:                            cell.setText(formatString(R.string.ProfileBotAffiliateProgramInfo, UserObject.getUserName(botUser), percents(userInfo != null && userInfo.starref_program != null ? userInfo.starref_program.commission_permille : 0)));
+
+=================== DialogCell: nameString
+1323:        CharSequence nameString = "";
+1484:            nameString = customDialog.name;
+2242:                nameString = titleOverride;
+2244:                nameString = getString(R.string.ArchivedChats);
+2252:                        nameString = MessagesController.getInstance(currentAccount).getTopicsController().getTopicIconName(chat, message, currentMessagePaint, topicIconInName);
+2253:                        if (nameString == null) {
+2254:                            nameString = "";
+2261:                        nameString = showTopicIconInName ? ForumUtilities.getTopicSpannedName(forumTopic, Theme.dialogs_namePaint[paintIndex], topicIconInName, false) : AndroidUtilities.escape(forumTopic.title);
+2270:                            nameString = sb;
+2272:                            nameString = AndroidUtilities.escape(chat.title);
+2275:                        nameString = AndroidUtilities.escape(chat.title);
+2279:                        nameString = getString(R.string.RepliesTitle);
+2281:                        nameString = getString(R.string.AnonymousForward);
+2284:                            nameString = getString(R.string.MyNotes);
+2286:                            nameString = getString(R.string.FromYou);
+2291:                            nameString = getString(R.string.SavedMessages);
+2298:                        nameString = showTopicIconInName ? ForumUtilities.getTopicSpannedName(forumTopic, Theme.dialogs_namePaint[paintIndex], topicIconInName, false) : AndroidUtilities.escape(forumTopic.title);
+2300:                        nameString = AndroidUtilities.escape(UserObject.getUserName(user));
+2303:                if (nameString != null && nameString.length() == 0) {
+2304:                    nameString = getString(R.string.HiddenName);
+2436:            if (nameString instanceof String) {
+2437:                nameString = ((String) nameString).replace('\n', ' ');
+2439:            CharSequence nameStringFinal = nameString;
+2441:                nameLayoutFits = nameStringFinal.length() == TextUtils.ellipsize(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, TextUtils.TruncateAt.END).length();
+2445:                channelShouldUseLineWidth = nameStringFinal.length() == TextUtils.ellipsize(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, TextUtils.TruncateAt.END).length();
+2447:            nameIsEllipsized = Theme.dialogs_namePaint[paintIndex].measureText(nameStringFinal.toString()) > ellipsizeWidth;
+2449:                nameStringFinal = TextUtils.ellipsize(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, TextUtils.TruncateAt.END);
+2451:            nameStringFinal = Emoji.replaceEmoji(nameStringFinal, Theme.dialogs_namePaint[paintIndex].getFontMetricsInt(), false);
+2453:                CharSequence s = AndroidUtilities.highlightText(nameStringFinal, message.highlightedWords, resourcesProvider);
+2455:                    nameStringFinal = s;
+2459:                nameLayout = StaticLayoutEx.createStaticLayout(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false, TextUtils.TruncateAt.END, ellipsizeWidth, 2);
+2461:                nameLayout = new StaticLayout(nameStringFinal, Theme.dialogs_namePaint[paintIndex], Math.max(ellipsizeWidth, nameWidth), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
