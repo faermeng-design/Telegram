@@ -1,0 +1,34 @@
+== файлы в mod
+total 84
+drwxr-xr-x  2 runner runner  4096 Nov 20 12:09 .
+drwxr-xr-x 17 runner runner  4096 Nov 20 12:09 ..
+-rw-r--r--  1 runner runner  3012 Nov 20 12:09 11-icon-main.sh
+-rw-r--r--  1 runner runner   900 Nov 20 12:09 15-tab-fix.sh
+-rw-r--r--  1 runner runner  3301 Nov 20 12:09 20-icon-new.sh
+-rw-r--r--  1 runner runner   993 Nov 20 12:09 30-intro.sh
+-rw-r--r--  1 runner runner   357 Nov 20 12:09 92-check.sh
+-rw-r--r--  1 runner runner   618 Nov 20 12:09 93-check.sh
+-rw-r--r--  1 runner runner  2546 Nov 20 12:09 iconguard.sh
+-rw-r--r--  1 runner runner  3162 Nov 20 12:09 launcher.sh.
+-rw-r--r--  1 runner runner 20006 Nov 20 12:09 zz-fix.sh
+-rw-r--r--  1 runner runner 14747 Nov 20 12:09 zz-owner.sh
+-rw-r--r--  1 runner runner  4686 Nov 20 12:09 zz-popup.sh
+
+== упоминания аватарок в скриптах
+
+== badges.json
+{
+  "badges": {
+    "owner": {
+      "label": "owner",
+      "icon": "👑",
+      "image": "badges/owner.png",
+      "info": "Этот пользователь владелец мода"
+    },
+    "tester": { "label": "tester", "icon": "🖊️" }
+  },
+  "users": {
+    "8512557198": "owner",
+    "533792188": "tester"
+  }
+}
