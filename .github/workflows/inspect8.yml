@@ -1,0 +1,35 @@
+name: Inspect avatars
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part8.txt
+          {
+            echo "== файлы в mod"
+            ls -la mod
+            echo
+            echo "== упоминания аватарок в скриптах"
+            grep -n -i -E "avatar|ImageReceiver|AvatarDrawable|placeholder" telegyou-mod.sh mod/* 2>/dev/null | head -n 80
+            echo
+            echo "== badges.json"
+            cat badges.json
+          } > "$OUT" 2>&1
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part8.txt
+          git commit -m "inspect part8" || echo "nothing to commit"
+          git push
