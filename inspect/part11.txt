@@ -1,0 +1,28 @@
+== имя в SettingsActivity
+100:import org.telegram.ui.ActionBar.SimpleTextView;
+530:        titleView.setText(UserObject.getUserName(user));
+535:        final String username = UserObject.getPublicUsername(user);
+1092:        private SimpleTextView textView;
+1109:            textView = new SimpleTextView(context);
+1202:            textView.setText(UserObject.getUserName(user));
+1213:            final Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
+
+== классы шапки
+
+== UserObject после мода
+76-
+77-    @NonNull
+78-    public static String getUserName(TLRPC.User user) {
+79:        return BadgeManager.decorate(user == null ? 0 : user.id, getUserNameOriginal(user));
+80-    }
+81-
+82-    public static String getUserNameOriginal(TLRPC.User user) {
+83-        if (user == null || isDeleted(user)) {
+84-            return LocaleController.getString(R.string.HiddenName);
+85-        }
+86-        String name = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(ContactsController.formatName(user.first_name, user.last_name)));
+87-        return name.length() != 0 || TextUtils.isEmpty(user.phone) ? name : PhoneFormat.getInstance().format("+" + user.phone);
+88-    }
+89-
+90-    public static String getPublicUsername(TLRPC.User user, boolean editable) {
+91-        if (user == null) {
