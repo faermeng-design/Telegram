@@ -1,0 +1,33 @@
+name: Inspect user status
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part13.txt
+          L=TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java
+          {
+            echo "== где используется formatUserStatus"
+            grep -rn "formatUserStatus" TMessagesProj/src --include=*.java | head -n 40
+            echo
+            echo "== сама функция"
+            grep -n -A70 "static String formatUserStatus" $L | head -n 220
+          } > "$OUT" 2>&1
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part13.txt
+          git commit -m "inspect part13" || echo "nothing to commit"
+          git push
