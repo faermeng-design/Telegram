@@ -1,0 +1,89 @@
+== currentTimeString в ChatMessageCell
+1658:    CharSequence currentTimeString;
+12267:            if (currentTimeString != null) {
+12268:                timeLayout = new StaticLayout(currentTimeString, Theme.chat_timePaint, timeTextWidth + dp(100), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+15663:                currentTimeString = timeString + ", ";
+15665:                currentTimeString = " " + timeString;
+15667:                currentTimeString = ", " + timeString;
+15670:            currentTimeString = timeString;
+15673:            currentTimeString = TextUtils.concat("💎", StarsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
+15674:            currentTimeString = StarsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
+15678:            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  ", currentTimeString);
+15679:            currentTimeString = StarsIntroActivity.replaceStars(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
+15684:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatYearly), ", ", currentTimeString);
+15686:                currentTimeString = TextUtils.concat(formatPluralString("MessageScheduledRepeatMonthlyMany", 6), ", ", currentTimeString);
+15688:                currentTimeString = TextUtils.concat(formatPluralString("MessageScheduledRepeatMonthlyMany", 3), ", ", currentTimeString);
+15690:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatMonthly), ", ", currentTimeString);
+15692:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatBiweekly), ", ", currentTimeString);
+15694:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatWeekly), ", ", currentTimeString);
+15696:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatDaily), ", ", currentTimeString);
+15698:                currentTimeString = TextUtils.concat(formatString(R.string.MessageScheduledRepeatSeconds, period), ", ", currentTimeString);
+15701:        timeTextWidth = timeWidth = (int) Math.ceil(Theme.chat_timePaint.measureText(currentTimeString, 0, currentTimeString == null ? 0 : currentTimeString.length()));
+15785:            SpannableStringBuilder currentTimeStringBuilder = new SpannableStringBuilder();
+15787:                currentTimeStringBuilder.append(currentTimeString);
+15788:                currentTimeStringBuilder.append(signString);
+15790:                currentTimeStringBuilder.append(signString);
+15791:                currentTimeStringBuilder.append(currentTimeString);
+15793:            currentTimeString = currentTimeStringBuilder;
+
+== где строится время (с окружением)
+15660-        }
+15661-        if (signString != null) {
+15662-            if (messageObject.messageOwner.via_business_bot_id != 0) {
+15663:                currentTimeString = timeString + ", ";
+15664-            } else if (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.imported) {
+15665:                currentTimeString = " " + timeString;
+15666-            } else {
+15667:                currentTimeString = ", " + timeString;
+15668-            }
+15669-        } else {
+15670:            currentTimeString = timeString;
+15671-        }
+15672-        if (currentMessageObject.isStakedDice()) {
+15673:            currentTimeString = TextUtils.concat("💎", StarsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
+15674:            currentTimeString = StarsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
+15675-        }
+15676-        final long starsPrice = currentMessageObject.getDialogId() < 0 ? getStarsPrice() : 0;
+15677-        if (starsPrice > 0) {
+15678:            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  ", currentTimeString);
+15679:            currentTimeString = StarsIntroActivity.replaceStars(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
+15680-        }
+15681-        if (currentMessageObject.messageOwner != null && currentMessageObject.messageOwner.schedule_repeat_period != 0) {
+15682-            final int period = currentMessageObject.messageOwner.schedule_repeat_period;
+15683-            if (period == 365 * 86400) {
+15684:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatYearly), ", ", currentTimeString);
+15685-            } else if (period == 182 * 86400) {
+15686:                currentTimeString = TextUtils.concat(formatPluralString("MessageScheduledRepeatMonthlyMany", 6), ", ", currentTimeString);
+15687-            } else if (period == 91 * 86400) {
+15688:                currentTimeString = TextUtils.concat(formatPluralString("MessageScheduledRepeatMonthlyMany", 3), ", ", currentTimeString);
+15689-            } else if (period == 30 * 86400) {
+15690:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatMonthly), ", ", currentTimeString);
+15691-            } else if (period == 14 * 86400) {
+15692:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatBiweekly), ", ", currentTimeString);
+15693-            } else if (period == 7 * 86400) {
+15694:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatWeekly), ", ", currentTimeString);
+15695-            } else if (period == 86400) {
+15696:                currentTimeString = TextUtils.concat(getString(R.string.MessageScheduledRepeatDaily), ", ", currentTimeString);
+15697-            } else {
+15698:                currentTimeString = TextUtils.concat(formatString(R.string.MessageScheduledRepeatSeconds, period), ", ", currentTimeString);
+15699-            }
+15700-        }
+15701-        timeTextWidth = timeWidth = (int) Math.ceil(Theme.chat_timePaint.measureText(currentTimeString, 0, currentTimeString == null ? 0 : currentTimeString.length()));
+15702-        if (currentMessageObject.scheduled && currentMessageObject.messageOwner.date == 0x7FFFFFFE || currentMessageObject.notime) {
+15703-            timeWidth -= dp(8);
+15704-        }
+--
+15790-                currentTimeStringBuilder.append(signString);
+15791-                currentTimeStringBuilder.append(currentTimeString);
+15792-            }
+15793:            currentTimeString = currentTimeStringBuilder;
+15794-            timeTextWidth += width;
+15795-            timeWidth += width;
+15796-        } else {
+15797-            signWidth = 0;
+15798-        }
+15799-    }
+
+== MessageObject: getId и getChannelId
+10211:    public int getId() {
+10266:    public long getChannelId() {
