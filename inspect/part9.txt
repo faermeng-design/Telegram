@@ -1,0 +1,217 @@
+== nameTextView в оригинальном ProfileActivity
+367:    private SimpleTextView nameTextView;
+368:    private String nameTextViewRightDrawableContentDescription = null;
+369:    private String nameTextViewRightDrawable2ContentDescription = null;
+3099:                        nameTextView.setTextColor(Color.WHITE);
+3100:                        nameTextView.setPivotY(nameTextView.getMeasuredHeight());
+3101:                        nameTextView.setScaleX(1.38f);
+3102:                        nameTextView.setScaleY(1.38f);
+5486:        nameTextView = new SimpleTextView(context) {
+5497:                if (isFocusable() && (nameTextViewRightDrawableContentDescription != null || nameTextViewRightDrawable2ContentDescription != null)) {
+5499:                    if (nameTextViewRightDrawable2ContentDescription != null) {
+5501:                        s.append(nameTextViewRightDrawable2ContentDescription);
+5503:                    if (nameTextViewRightDrawableContentDescription != null) {
+5505:                        s.append(nameTextViewRightDrawableContentDescription);
+5520:        nameTextView.setTextColor(getThemedColor(Theme.key_profile_title));
+5521:        nameTextView.setPadding(0, AndroidUtilities.dp(6), 0, AndroidUtilities.dp(4));
+5522:        nameTextView.setTextSizePx(dp(17.5f));
+5523:        nameTextView.setGravity(Gravity.LEFT);
+5524:        nameTextView.setTypeface(AndroidUtilities.bold());
+5525:        nameTextView.setLeftDrawableTopPadding(-AndroidUtilities.dp(1.3f));
+5526:        nameTextView.setPivotX(0);
+5527:        nameTextView.setPivotY(0);
+5528:        nameTextView.setScrollNonFitText(true);
+5529:        nameTextView.setFocusable(true);
+5530:        nameTextView.setEllipsizeByGradient(true);
+5531:        avatarContainer2.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109, -6, 0, 0));
+6086:            if (nameTextView != null) {
+6087:                nameTextView.setTextColor(nameTextColor);
+6486:        final float nameTextViewXEnd = AndroidUtilities.dpf2(18f) - ((FrameLayout.LayoutParams) nameTextView.getLayoutParams()).leftMargin;
+6487:        final float nameTextViewYEnd = newTop + extraHeight - getActionsExtraHeight() - AndroidUtilities.dpf2(30f) - nameTextView.getBottom();
+6488:        final float nameTextViewCx = kx + nameX + (nameTextViewXEnd - nameX) / 2f;
+6489:        final float nameTextViewCy = ky + nameY + (nameTextViewYEnd - nameY) / 2f;
+6490:        final float nameTextViewX = (1 - value) * (1 - value) * nameX + 2 * (1 - value) * value * nameTextViewCx + value * value * nameTextViewXEnd;
+6491:        final float nameTextViewY = (1 - value) * (1 - value) * nameY + 2 * (1 - value) * value * nameTextViewCy + value * value * nameTextViewYEnd;
+6508:        nameTextView.setTranslationX(nameTextViewX);
+6509:        nameTextView.setTranslationY(Math.max(minNameY, nameTextViewY));
+6527:            nameTextView.setPivotY(AndroidUtilities.lerp(0, nameTextView.getMeasuredHeight(), value));
+6528:            nameTextView.setScaleX(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
+6529:            nameTextView.setScaleY(AndroidUtilities.lerp(1f + 0.12f * diff, 1.38f, value));
+6537:        nameTextView.setTextColor(peerColor != null ? Color.WHITE : ColorUtils.blendARGB(getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+6612:        if (nameTextView == null) {
+6615:        if (nameTextView.getRightDrawable() == null) {
+6616:            rect.set(nameTextView.getWidth() - 1, nameTextView.getHeight() / 2 - 1, nameTextView.getWidth() + 1, nameTextView.getHeight() / 2 + 1);
+6619:        rect.set(nameTextView.getRightDrawable().getBounds());
+6620:        rect.offset((int) (rect.centerX() * (nameTextView.getScaleX() - 1f)), 0);
+6621:        rect.offset((int) nameTextView.getX(), (int) nameTextView.getY());
+6862:        int topMarginDp = nameTextView.getScaleX() < 1.5f ? 16 : 32;
+6951:        popupLayout.setScrimDrawable(emojiStatusDrawable, nameTextView);
+6960:        if (nameTextView != null) {
+6961:            nameTextView.getLocationOnScreen(loc);
+7888:            nameTextView.setTextColor(c);
+8491:        backwardInitialValues[7] = nameTextView.getScaleX();
+8492:        backwardInitialValues[8] = nameTextView.getTranslationY();
+8494:        backwardInitialValues[10] = nameTextView.getLayoutParams().width;
+8498:        backwardInitialValues[12] = nameTextView.getTranslationX();
+8578:        final float nameX = lerp(getPreviousHeaderTranslationX(nameTextView, PREVIOUS_HEADER_TITLE, minimizedX), backwardInitialValues[12], backwardDiff);
+8580:        nameTextView.setTranslationX(nameX);
+8581:        nameTextView.setTranslationY(nameY);
+8586:        nameTextView.setScaleX(nameScale);
+8587:        nameTextView.setScaleY(nameScale);
+8818:                        expandNameYStartedFrom = nameTextView.getTranslationY();
+
+== создание nameTextView
+5486:        nameTextView = new SimpleTextView(context) {
+5487-            @Override
+5488-            public void setTextColor(int color) {
+5489-                // the color of the header's state; over the glass of the hidden avatar the simple screens' title
+5490-                nameTextColor = color;
+5491-                super.setTextColor(ColorUtils.blendARGB(color, getThemedColor(Theme.key_windowBackgroundWhiteBlackText), headerBlurFactor));
+5492-            }
+5493-
+5494-            @Override
+5495-            public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+5496-                super.onInitializeAccessibilityNodeInfo(info);
+5497-                if (isFocusable() && (nameTextViewRightDrawableContentDescription != null || nameTextViewRightDrawable2ContentDescription != null)) {
+5498-                    StringBuilder s = new StringBuilder(getText());
+5499-                    if (nameTextViewRightDrawable2ContentDescription != null) {
+5500-                        if (s.length() > 0) s.append(", ");
+
+== запуск telegyou-mod.sh (что он сообщил)
+Badges URL: https://raw.githubusercontent.com/faermeng-design/Telegram/master/badges.json
+Новые файлы: кодировка готова
+ConnectionsManager: правка внесена
+UserObject: значки подключены
+Удалённые: подключено мест = 2 , push = 1
+Manifest: добавлено в TMessagesProj_App/src/main/AndroidManifest.xml
+=== ПРОВЕРКА НАЧАЛО ===
+TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java
+83:                    request.getClass().getField("offline").setBoolean(request, true);
+=== ПРОВЕРКА КОНЕЦ ===
+=== ПРОВЕРКА 2 НАЧАЛО ===
+154:public class SettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ImageUpdater.ImageUpdaterDelegate, MainTabsActivity.TabFragmentDelegate, FactorAnimator.Target {
+1087:    public static class AccountCell extends LinearLayout implements Theme.Colorable {
+1238:        public static class Factory extends UItem.UItemFactory<AccountCell> {
+323:        listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick);
+717:    private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+720:            search.fillItems(items);
+880:    private void onClick(UItem item, View view, int position, float x, float y) {
+=== ПРОВЕРКА 2 КОНЕЦ ===
+afterSend: добавлен
+ConnectionsManager: afterSend подключён
+=== ПРОВЕРКА 3 НАЧАЛО ===
+    private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+        if (searchItem.isSearchFieldVisible2()) {
+            items.add(UItem.asSpace(ActionBar.getCurrentActionBarHeight()));
+            search.fillItems(items);
+            return;
+        }
+
+        items.add(UItem.asCustomShadow(topView, 200 - 12));
+
+        accountNumbers.clear();
+        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            if (UserConfig.getInstance(a).isClientActivated() && currentAccount != a) {
+                accountNumbers.add(a);
+            }
+        }
+        Collections.sort(accountNumbers, (o1, o2) -> {
+            long l1 = UserConfig.getInstance(o1).loginTime;
+            long l2 = UserConfig.getInstance(o2).loginTime;
+            if (l1 > l2) {
+                return 1;
+            } else if (l1 < l2) {
+                return -1;
+            }
+            return 0;
+        });
+
+        final Set<String> suggestions = getMessagesController().pendingSuggestions;
+        if (suggestions.contains("PREMIUM_GRACE")) {
+            items.add(SuggestionCell.Factory.of(
+--- onClick ---
+    private void onClick(UItem item, View view, int position, float x, float y) {
+        if (item.object instanceof TLRPC.TL_attachMenuBot) {
+            TLRPC.TL_attachMenuBot attachMenuBot = (TLRPC.TL_attachMenuBot) item.object;
+            if (attachMenuBot.inactive || attachMenuBot.side_menu_disclaimer_needed) {
+                WebAppDisclaimerAlert.show(getContext(), (allowSendMessage) -> {
+                    TLRPC.TL_messages_toggleBotInAttachMenu botRequest = new TLRPC.TL_messages_toggleBotInAttachMenu();
+                    botRequest.bot = MessagesController.getInstance(currentAccount).getInputUser(attachMenuBot.bot_id);
+                    botRequest.enabled = true;
+                    botRequest.write_allowed = true;
+                    ConnectionsManager.getInstance(currentAccount).sendRequest(botRequest, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
+                        attachMenuBot.inactive = attachMenuBot.side_menu_disclaimer_needed = false;
+                        LaunchActivity.showAttachMenuBot(LaunchActivity.instance, currentAccount, attachMenuBot, null, true);
+                        MediaDataController.getInstance(currentAccount).updateAttachMenuBotsInCache();
+                    }), ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
+                }, null, null);
+            } else {
+                LaunchActivity.showAttachMenuBot(LaunchActivity.instance, currentAccount, attachMenuBot, null, true);
+            }
+            return;
+        }
+        if (item.instanceOf(AccountCell.Factory.class)) {
+--- Language ---
+806:        items.add(SettingCell.Factory.of(10, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
+945:                presentSettingFragment(new LanguageSelectActivity());
+=== ПРОВЕРКА 3 КОНЕЦ ===
+Вкладка Telegyou: добавлена
+GhostMode исправлен, строк заменено = 3
+Пауза статуса: 0.3 сек
+=== ПРОВЕРКА 4 НАЧАЛО ===
+строка с 7777: 794
+                items.add(AccountCell.Factory.of(i, accountNumbers.get(i)));
+            }
+            items.add(UItem.asShadow(null));
+        }
+
+        final boolean walletAbove = getConnectionsManager().getCurrentTime() - 1791538462 < 4 * 7 * 24 * 60 * 60;
+        if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "Telegyou", "\u0420\u0435\u0436\u0438\u043c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430, \u0437\u043d\u0430\u0447\u043a\u0438"));
+        items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null));
+            items.add(UItem.asShadow(null));
+        }
+=== ПРОВЕРКА 4 КОНЕЦ ===
+>>> модуль mod/11-icon-main.sh
+Новые картинки: готово
+Иконка Основная: заменено файлов = 15
+Адаптивные иконки: изменено = 3 ['ic_launcher_sa.xml', 'ic_launcher_round.xml', 'ic_launcher.xml']
+Список иконок: Основная изменена
+>>> модуль mod/15-tab-fix.sh
+Вкладка Telegyou: перенесена наверх списка
+>>> модуль mod/20-icon-new.sh
+enum: добавлено
+Картинки и название: готово
+Манифест: иконка добавлена
+>>> модуль mod/30-intro.sh
+заменён: TMessagesProj/src/main/res/drawable-xxhdpi/intro_tg_plane.webp 246 222
+заменён: TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp 123 111
+заменён: TMessagesProj/src/main/res/drawable-mdpi/intro_tg_plane.webp 82 74
+заменён: TMessagesProj/src/main/res/drawable-xhdpi/intro_tg_plane.webp 164 148
+Приветственный экран: заменено файлов = 4
+>>> модуль mod/92-check.sh
+=== ПРОВЕРКА 6 НАЧАЛО ===
+798:        items.add(SettingCell.Factory.of(7777, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, "Telegyou", "\u0420\u0435\u0436\u0438\u043c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430, \u0437\u043d\u0430\u0447\u043a\u0438"));
+882:        if (item.id == 7777) {
+883:            getParentActivity().startActivity(new android.content.Intent(getParentActivity(), org.telegram.messenger.TelegyouSettingsActivity.class));
+        if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null));
+
+== после мода: hitBadge и showInfo
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:5536:                    telegyouDown = org.telegram.messenger.BadgeManager.hitBadge(userId, nameTextView.getText(), nameTextView.getPaint(), telegyouEvent.getX(), nameTextView.getPaddingLeft());
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:5541:                        org.telegram.messenger.BadgeManager.showInfo(telegyouView.getContext(), userId);
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:14313:                            TagEditCell.showInfoSheet(getContext(), currentAccount, getDialogId(), user, finalRole, isAdmin, isOwner, canEditAdmin, resourceProvider);
+TMessagesProj/src/main/java/org/telegram/ui/Components/SharedMediaLayout.java:10918:                    TagEditCell.showInfoSheet(getContext(), profileActivity.getCurrentAccount(), dialog_id, user, finalRole, isAdmin, isOwner, canEditAdmin, resourcesProvider);
+TMessagesProj/src/main/java/org/telegram/ui/Components/InviteLinkBottomSheet.java:922:                        TagEditCell.showInfoSheet(getContext(), currentAccount, -chatId, finalUser, finalRole, isAdmin, isOwner, canEditAdmin, resourcesProvider);
+TMessagesProj/src/main/java/org/telegram/ui/Components/TagEditCell.java:372:    public static void showInfoSheet(Context context, int currentAccount, long dialogId, TLRPC.User user, String rank, boolean admin, boolean owner, boolean admin_can_edit, Theme.ResourcesProvider resourcesProvider) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:27810:    private void showInfoHint(MessageObject messageObject, CharSequence text, int type) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:27854:        showInfoHint(messageObject, text, 0);
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:40046:                showInfoHint(messageObject, stringBuilder, 1);
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:43080:            TagEditCell.showInfoSheet(getContext(), currentAccount, -currentChat.id, user, rank, isAdmin, isOwner, canEditAdmin, resourceProvider);
+TMessagesProj/src/main/java/org/telegram/messenger/BadgeManager.java:334:    public static boolean hitBadge(long userId, CharSequence text, Paint paint, float x, int paddingLeft) {
+TMessagesProj/src/main/java/org/telegram/messenger/BadgeManager.java:360:    public static void showInfo(Context ctx, long userId) {
+
+== BadgeManager существует?
+-rw-r--r-- 1 runner runner 15047 Nov 21 14:25 TMessagesProj/src/main/java/org/telegram/messenger/BadgeManager.java
