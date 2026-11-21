@@ -1,0 +1,131 @@
+== где используется formatUserStatus
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity2.java:763:                subtitle.setText(LocaleController.formatUserStatus(currentAccount, user, isOnline, null));
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:11743:                newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null);
+TMessagesProj/src/main/java/org/telegram/ui/Stories/recorder/StoryPrivacyBottomSheet.java:3184:                setSubtitle(LocaleController.formatUserStatus(UserConfig.selectedAccount, user, isOnline));
+TMessagesProj/src/main/java/org/telegram/ui/PopupNotificationActivity.java:1368:                onlineTextView.setText(LocaleController.formatUserStatus(currentMessageObject.currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/Cells/ManageChatUserCell.java:336:                        statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell2.java:289:                    statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/Cells/ProfileSearchCell.java:664:                    statusString = LocaleController.formatUserStatus(currentAccount, user, isOnline);
+TMessagesProj/src/main/java/org/telegram/ui/Cells/UserCell.java:736:                    statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/Cells/GroupCreateUserCell.java:474:                            statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/Adapters/DialogsAdapter.java:1020:                                    subtitle = LocaleController.formatUserStatus(currentAccount, user);
+TMessagesProj/src/main/java/org/telegram/ui/Components/Premium/LimitReachedBottomSheet.java:1470:                                signature = LocaleController.formatUserStatus(currentAccount, user, null, null);
+TMessagesProj/src/main/java/org/telegram/ui/Components/Premium/boosts/cells/selector/SelectorUserCell.java:210:            setSubtitle(LocaleController.formatUserStatus(UserConfig.selectedAccount, user, isOnline));
+TMessagesProj/src/main/java/org/telegram/ui/Components/ChatAvatarContainer.java:1246:                    newStatus = LocaleController.formatUserStatus(currentAccount, user, isOnline, allowShorterStatus ? statusMadeShorter : null);
+TMessagesProj/src/main/java/org/telegram/ui/Components/PhonebookShareAlert.java:130:                status = LocaleController.formatUserStatus(currentAccount, currentUser);
+TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java:5304:            avatarContainer.setSubtitle(LocaleController.formatUserStatus(currentAccount, currentUser));
+TMessagesProj/src/main/java/org/telegram/ui/ContactAddActivity.java:713:        onlineTextView.setText(LocaleController.formatUserStatus(currentAccount, user));
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2922:    public static String formatUserStatus(int currentAccount, TLRPC.User user) {
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2923:        return formatUserStatus(currentAccount, user, null);
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2953:    public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline) {
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2954:        return formatUserStatus(currentAccount, user, isOnline, null);
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2957:    public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
+TMessagesProj/src/main/java/org/telegram/messenger/DialogObject.java:216:            return LocaleController.formatUserStatus(currentAccount, (TLRPC.User) obj, null, null);
+
+== сама функция
+2922:    public static String formatUserStatus(int currentAccount, TLRPC.User user) {
+2923-        return formatUserStatus(currentAccount, user, null);
+2924-    }
+2925-
+2926-    public static String formatJoined(long date) {
+2927-        try {
+2928-            date *= 1000;
+2929-            String format;
+2930-            if (Math.abs(System.currentTimeMillis() - date) < 31536000000L) {
+2931-                format = LocaleController.formatString(R.string.formatDateAtTime, getInstance().getFormatterDayMonth().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
+2932-            } else {
+2933-                format = LocaleController.formatString(R.string.formatDateAtTime, getInstance().getFormatterYear().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
+2934-            }
+2935-            return formatString(R.string.ChannelOtherSubscriberJoined, format);
+2936-        } catch (Exception e) {
+2937-            FileLog.e(e);
+2938-        }
+2939-        return "LOC_ERR";
+2940-    }
+2941-
+2942-    public static String formatImportedDate(long date) {
+2943-        try {
+2944-            date *= 1000;
+2945-            Date dt = new Date(date);
+2946-            return String.format("%1$s, %2$s", getInstance().getFormatterYear().format(dt), getInstance().getFormatterDay().format(dt));
+2947-        } catch (Exception e) {
+2948-            FileLog.e(e);
+2949-        }
+2950-        return "LOC_ERR";
+2951-    }
+2952-
+2953:    public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline) {
+2954-        return formatUserStatus(currentAccount, user, isOnline, null);
+2955-    }
+2956-
+2957:    public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
+2958-        if (user != null && user.status != null && user.status.expires == 0) {
+2959-            if (user.status instanceof TLRPC.TL_userStatusRecently) {
+2960-                user.status.expires = user.status.by_me ? -1000 : -100;
+2961-            } else if (user.status instanceof TLRPC.TL_userStatusLastWeek) {
+2962-                user.status.expires = user.status.by_me ? -1001 : -101;
+2963-            } else if (user.status instanceof TLRPC.TL_userStatusLastMonth) {
+2964-                user.status.expires = user.status.by_me ? -1002 : -102;
+2965-            }
+2966-        }
+2967-        if (user != null && user.status != null && user.status.expires <= 0) {
+2968-            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
+2969-                if (isOnline != null) {
+2970-                    isOnline[0] = true;
+2971-                }
+2972-                return getString("Online", R.string.Online);
+2973-            }
+2974-        }
+2975-        if (user == null || user.status == null || user.status.expires == 0 || UserObject.isDeleted(user) || user instanceof TLRPC.TL_userEmpty) {
+2976-            return getString("ALongTimeAgo", R.string.ALongTimeAgo);
+2977-        } else {
+2978-            int currentTime = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
+2979-            if (user.status.expires > currentTime) {
+2980-                if (isOnline != null) {
+2981-                    isOnline[0] = true;
+2982-                }
+2983-                return getString("Online", R.string.Online);
+2984-            } else {
+2985-                if (user.status.expires == -1) {
+2986-                    return getString("Invisible", R.string.Invisible);
+2987-                } else if (user.status.expires == -100 || user.status.expires == -1000) {
+2988-                    return getString("Lately", R.string.Lately);
+2989-                } else if (user.status.expires == -101 || user.status.expires == -1001) {
+2990-                    return getString("WithinAWeek", R.string.WithinAWeek);
+2991-                } else if (user.status.expires == -102 || user.status.expires == -1002) {
+2992-                    return getString("WithinAMonth", R.string.WithinAMonth);
+2993-                } else {
+2994-                    return formatDateOnline(user.status.expires, madeShorter);
+2995-                }
+2996-            }
+2997-        }
+2998-    }
+2999-
+3000-    private String escapeString(String str) {
+3001-        return escapeXmlText(str, true);
+3002-    }
+3003-
+3004-    // makes str safe as xml element text; with fromServer, CDATA sections and valid entity
+3005-    // references are kept as they are, so these strings read back the same as before
+3006-    private static String escapeXmlText(String str, boolean fromServer) {
+3007-        final int length = str.length();
+3008-        StringBuilder builder = null;
+3009-        for (int i = 0; i < length; i++) {
+3010-            final char c = str.charAt(i);
+3011-            String replacement = null;
+3012-            int skip = 0;
+3013-            if (c == '<') {
+3014-                if (fromServer && str.startsWith("<![CDATA[", i)) {
+3015-                    final int end = str.indexOf("]]>", i + 9);
+3016-                    if (end >= 0) {
+3017-                        skip = end + 3 - i - 1;
+3018-                    } else {
+3019-                        replacement = "&lt;";
+3020-                    }
+3021-                } else {
+3022-                    replacement = "&lt;";
+3023-                }
+3024-            } else if (c == '>') {
+3025-                replacement = "&gt;";
+3026-            } else if (c == '&') {
+3027-                if (!fromServer || !isXmlReference(str, i)) {
