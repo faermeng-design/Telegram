@@ -1,0 +1,259 @@
+== запись текста имени
+3099:                        nameTextView.setTextColor(Color.WHITE);
+5520:        nameTextView.setTextColor(getThemedColor(Theme.key_profile_title));
+5522:        nameTextView.setTextSizePx(dp(17.5f));
+5525:        nameTextView.setLeftDrawableTopPadding(-AndroidUtilities.dp(1.3f));
+6087:                nameTextView.setTextColor(nameTextColor);
+6537:        nameTextView.setTextColor(peerColor != null ? Color.WHITE : ColorUtils.blendARGB(getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+7888:            nameTextView.setTextColor(c);
+9835:            setParentActivityTitle(nameTextView.getText());
+10121:            nameTextView.setTextColor(ColorUtils.blendARGB(titleColor, color, progress));
+10245:                float width2 = nameTextView.getPaint().measureText(nameTextView.getText().toString()) * 1.12f + nameTextView.getSideDrawablesSize();
+10278:                nameTextView.setTextColor(Color.WHITE);
+11764:                nameTextView.setText(newString);
+11778:                nameTextView.setRightDrawableOutside(false);
+11780:                    nameTextView.setRightDrawable2(getScamDrawable(user.scam ? 0 : 1));
+11783:                    nameTextView.setRightDrawable2(getVerifiedCrossfadeDrawable());
+11786:                    nameTextView.setRightDrawable2(null);
+11791:                    nameTextView.setRightDrawable(getEmojiStatusDrawable(user.emoji_status, true, true));
+11795:                    nameTextView.setRightDrawable(getEmojiStatusDrawable(null, true, true));
+11798:                    nameTextView.setRightDrawable(null);
+11802:                    nameTextView.setLeftDrawableOutside(true);
+11805:                    nameTextView.setLeftDrawableOutside(false);
+11807:                nameTextView.setLeftDrawable(leftIcon);
+11809:                    nameTextView.setRightDrawableOutside(true);
+11812:                    nameTextView.setRightDrawableOnClick(v -> {
+11818:                    nameTextView.setRightDrawableOnClick(v -> {
+12032:                    if (nameTextView.setText(title)) {
+12039:                nameTextView.setLeftDrawableOutside(false);
+12040:                nameTextView.setLeftDrawable(null);
+12041:                nameTextView.setRightDrawableOutside(false);
+12042:                nameTextView.setRightDrawableOnClick(null);
+
+== avatarContainer2
+401:    private FrameLayout avatarContainer2;
+3449:                if (pinchToZoomHelper.isInOverlayMode() && (child == avatarContainer2 || child == actionBar || child == writeButton)) {
+3707:                avatarContainer2.setPivotY(avatarContainer.getPivotY() + avatarContainer.getMeasuredHeight() / 2f);
+3708:                avatarContainer2.setPivotX(avatarContainer2.getMeasuredWidth() / 2f);
+3709:                AndroidUtilities.updateViewVisibilityAnimated(avatarContainer2, !expanded, 0.95f, true);
+5214:        avatarContainer2 = new FrameLayout(context) {
+5303:        fallbackImage = new ImageReceiver(avatarContainer2);
+5305:        AndroidUtilities.updateViewVisibilityAnimated(avatarContainer2, true, 1f, false);
+5307:        avatarContainer2.setClipChildren(false);
+5308:        frameLayout.addView(avatarContainer2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.START, 0, 0, 0, 0));
+5313:        avatarContainer2.addView(avatarGooey, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+5314://        avatarContainer2.addView(avatarContainer, LayoutHelper.createFrame(100, 100, Gravity.TOP | Gravity.LEFT, 64, 0, 0, 0));
+5469:        avatarContainer2.addView(avatarsViewPager);
+5470:        avatarContainer2.addView(avatarsBlurView, LayoutHelper.createFrame(-1, 74 + 64));
+5471:        avatarContainer2.addView(overlaysView);
+5473:            avatarContainer2.addView(actionsView, LayoutHelper.createFrame(-1, -1));
+5476:            avatarContainer2.addView(musicView, LayoutHelper.createFrame(-1, -1));
+5477:            avatarContainer2.addView(balanceView, LayoutHelper.createFrame(-1, -1));
+5482:        avatarContainer2.addView(avatarsViewPagerIndicatorView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+5531:        avatarContainer2.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109, -6, 0, 0));
+5576:        avatarContainer2.addView(onlineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109 - 4, -2, 8 - 4, 0));
+5578:        avatarContainer2.addView(animatedStatusView);
+5593:        avatarContainer2.addView(ratingView);
+5625:        avatarContainer2.addView(storyView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+5627:        avatarContainer2.addView(giftsView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+5786:                    avatarContainer2.draw(canvas);
+6863:        yoff = -(avatarContainer2.getHeight() - AndroidUtilities.rectTmp2.centerY()) - AndroidUtilities.dp(topMarginDp);
+8023:        if (avatarContainer2 != null && avatarContainer2.getAlpha() != 1f - actionMode) {
+8024:            avatarContainer2.setAlpha(1f - actionMode);
+8103:        contentView.addView(headerBlurView, contentView.indexOfChild(avatarContainer2), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 0, Gravity.TOP));
+8669:            storyView.setExpandCoords(avatarContainer2.getMeasuredWidth() - AndroidUtilities.dp(40), writeButtonVisible, (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight() / 2.0f/* + extraHeight + searchTransitionOffset*/);
+10362:                    avatarContainer2.invalidate();
+10460:                    avatarContainer2.invalidate();
+10474:                    avatarContainer2.invalidate();
+10546:                avatarContainer2.invalidate();
+15923:                avatarContainer2.invalidate();
+16688:        if (avatarContainer2 == null) return;
+16702:            avatarContainer2.addView(collectibleHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24));
+
+== после создания nameTextView
+        avatarContainer2.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109, -6, 0, 0));
+
+        onlineTextView = new AnimatedClickableSmallTextView(context) {
+            @Override
+            public void setAlpha(float alpha) {
+                super.setAlpha(alpha);
+                checkPhotoDescriptionAlpha();
+            }
+
+            @Override
+            public void setTranslationY(float translationY) {
+                super.setTranslationY(translationY);
+                lastRatingViewTranslationYOffset = getRatingViewTranslationYOffset();
+                if (ratingView != null) {
+                    ratingView.setTranslationY(translationY - dp(5));
+                }
+            }
+
+            @Override
+            public void setTranslationX(float translationX) {
+                super.setTranslationX(translationX);
+                lastRatingViewTranslationXOffset = getRatingViewTranslationXOffset();
+                if (ratingView != null) {
+                    ratingView.setTranslationX(translationX - getRatingViewTranslationXOffset());
+                }
+            }
+
+            @Override
+            public void setTextColor(int color) {
+                onlineTextColor = color;
+                color = ColorUtils.blendARGB(color, getThemedColor(Theme.key_windowBackgroundWhiteGrayText), headerBlurFactor);
+                super.setTextColor(color);
+                if (showStatusButton != null) {
+                    showStatusButton.setTextColor(Theme.multAlpha(Theme.adaptHSV(color, -.02f, +.15f), 1.4f));
+                }
+            }
+        };
+        onlineTextView.setEllipsizeByGradient(true);
+        onlineTextView.setTextColor(applyPeerColor(getThemedColor(Theme.key_actionBarDefaultSubtitle), true, null));
+        onlineTextView.setTextSizePx(dp(13.5f));
+        onlineTextView.setGravity(Gravity.LEFT);
+        onlineTextView.setPivotX(dp(8));
+        onlineTextView.setPivotY(dp(8));
+        onlineTextView.setPadding(AndroidUtilities.dp(4), AndroidUtilities.dp(2), AndroidUtilities.dp(4), AndroidUtilities.dp(2));
+        onlineTextView.setFocusable(true);
+        avatarContainer2.addView(onlineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109 - 4, -2, 8 - 4, 0));
+        checkPhotoDescriptionAlpha();
+        avatarContainer2.addView(animatedStatusView);
+
+        ratingView = new StarRatingView(context);
+        ratingView.setLayoutParams(LayoutHelper.createFrame(32, 32, Gravity.LEFT, 109 - 6, -2, 0, 0));
+        ratingView.setResourcesProvider(resourcesProvider);
+        checkStarRatingVisible();
+        ratingView.setDelegate(visibility -> {
+            onlineTextView.setTranslationX(getOnlineTextViewTranslationXWithOffsets(lastOnlineTextViewX, lastOnlineTextRatingPadding));
+            onlineTextView.setTranslationY(getOnlineTextViewTranslationYWithOffsets(lastOnlineTextViewY));
+        });
+        ratingView.setOnClickListener(this::showStarRatingBottomSheet);
+        if (userInfo != null) {
+            ratingView.set(userInfo.stars_rating);
+        }
+
+        avatarContainer2.addView(ratingView);
+
+        storyView = new ProfileStoriesView(context, currentAccount, getDialogId(), isTopic, avatarContainer, avatarImage, resourcesProvider) {
+            @Override
+            protected void onTap(StoryViewer.PlaceProvider provider) {
+                long did = getDialogId();
+                StoriesController storiesController = getMessagesController().getStoriesController();
+                if (storiesController.hasStories(did) || storiesController.hasUploadingStories(did) || storiesController.isLastUploadingFailed(did)) {
+
+== BadgeManager: hitBadge и вокруг
+                if (sp.charAt(i) != MARK) {
+                    continue;
+                }
+                for (Map.Entry<String, String> e : images.entrySet()) {
+                    String icon = icons.get(e.getKey());
+                    if (icon == null || icon.length() == 0) {
+                        continue;
+                    }
+                    int start = i - icon.length();
+                    if (start < 0 || !icon.equals(sp.subSequence(start, i).toString())) {
+                        continue;
+                    }
+                    Bitmap bmp = bitmapOf(e.getKey());
+                    if (bmp == null) {
+                        continue;
+                    }
+                    Drawable d = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bmp);
+                    d.setBounds(0, 0, size, size);
+                    DynamicDrawableSpan[] old = sp.getSpans(start, i + 1, DynamicDrawableSpan.class);
+                    for (int j = 0; j < old.length; j++) {
+                        sp.removeSpan(old[j]);
+                    }
+                    sp.setSpan(new ImageSpan(d, DynamicDrawableSpan.ALIGN_BOTTOM), start, i + 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    break;
+                }
+            }
+            return sp;
+        } catch (Throwable t) {
+            return cs;
+        }
+    }
+
+    /** True if the tap hit the badge in the name (and the badge has an info text). */
+    public static boolean hitBadge(long userId, CharSequence text, Paint paint, float x, int paddingLeft) {
+        try {
+            String badge = badgeOf(userId);
+            if (badge == null || text == null || paint == null || infoOf(badge).length() == 0) {
+                return false;
+            }
+            String icon = icons.get(badge);
+            if (icon == null || icon.length() == 0) {
+                return false;
+            }
+            String str = text.toString();
+            int start = str.lastIndexOf(icon);
+            if (start < 0) {
+                return false;
+            }
+            int end = start + icon.length();
+            float x0 = paddingLeft + paint.measureText(str, 0, start);
+            float x1 = paddingLeft + paint.measureText(str, 0, end);
+            float tol = AndroidUtilities.dp(24);
+            return x >= x0 - tol && x <= x1 + tol;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** Dialog that explains who gets this badge. */
+    public static void showInfo(Context ctx, long userId) {
+        try {
+            String badge = badgeOf(userId);
+            if (badge == null) {
+                return;
+            }
+            String info = infoOf(badge);
+            if (info.length() == 0) {
+                return;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle(iconOf(badge) + " " + labelOf(badge));
+            builder.setMessage(info);
+            builder.setPositiveButton("OK", null);
+            builder.show();
+        } catch (Throwable ignored) {
+        }
+    }
+}
+
+== наше нажатие в ProfileActivity
+5529-        nameTextView.setFocusable(true);
+5530-        nameTextView.setOnTouchListener(new android.view.View.OnTouchListener() {
+5531:            private boolean telegyouDown;
+5532-            @Override
+5533-            public boolean onTouch(android.view.View telegyouView, android.view.MotionEvent telegyouEvent) {
+5534-                int telegyouAction = telegyouEvent.getAction();
+5535-                if (telegyouAction == android.view.MotionEvent.ACTION_DOWN) {
+5536-                    telegyouDown = org.telegram.messenger.BadgeManager.hitBadge(userId, nameTextView.getText(), nameTextView.getPaint(), telegyouEvent.getX(), nameTextView.getPaddingLeft());
+5537:                    return telegyouDown;
+5538-                }
+5539-                if (telegyouDown) {
+5540-                    if (telegyouAction == android.view.MotionEvent.ACTION_UP) {
+5541-                        org.telegram.messenger.BadgeManager.showInfo(telegyouView.getContext(), userId);
+5542-                    }
+5543-                    if (telegyouAction == android.view.MotionEvent.ACTION_UP || telegyouAction == android.view.MotionEvent.ACTION_CANCEL) {
+5544-                        telegyouDown = false;
+5545-                    }
+5546-                    return true;
+5547-                }
+5548-                return false;
+5549-            }
+5550-        });
+5551-        nameTextView.setEllipsizeByGradient(true);
+5552-        avatarContainer2.addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 109, -6, 0, 0));
+5553-
+5554-        onlineTextView = new AnimatedClickableSmallTextView(context) {
+5555-            @Override
+5556-            public void setAlpha(float alpha) {
+5557-                super.setAlpha(alpha);
+5558-                checkPhotoDescriptionAlpha();
+5559-            }
+5560-
+5561-            @Override
