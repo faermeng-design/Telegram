@@ -1,0 +1,37 @@
+name: Inspect message time
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part14.txt
+          C=TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+          M=TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
+          {
+            echo "== currentTimeString в ChatMessageCell"
+            grep -n "currentTimeString" $C | head -n 60
+            echo
+            echo "== где строится время (с окружением)"
+            grep -n -B3 -A6 "currentTimeString = " $C | head -n 160
+            echo
+            echo "== MessageObject: getId и getChannelId"
+            grep -n "public int getId()\|public long getChannelId()" $M
+          } > "$OUT" 2>&1
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part14.txt
+          git commit -m "inspect part14" || echo "nothing to commit"
+          git push
