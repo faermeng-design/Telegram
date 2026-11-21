@@ -1,0 +1,74 @@
+== titleView
+184:    private TextView titleView;
+185:    private TextView subtitleView;
+444:        titleView = new TextView(context);
+445:        titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
+446:        titleView.setTypeface(AndroidUtilities.bold());
+447:        titleView.setGravity(Gravity.CENTER);
+448:        titleView.setSingleLine();
+449:        titleView.setEllipsize(TextUtils.TruncateAt.END);
+450:        topView.addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 16, 138.333f - 12, 16, 0));
+452:        subtitleView = new TextView(context);
+453:        subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+454:        subtitleView.setGravity(Gravity.CENTER);
+455:        subtitleView.setSingleLine();
+456:        subtitleView.setEllipsize(TextUtils.TruncateAt.END);
+457:        topView.addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 168 - 12, 0, 0));
+530:        titleView.setText(UserObject.getUserName(user));
+539:        subtitleView.setText(sb);
+548:        titleView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+549:        subtitleView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
+1286:        private final TextView titleView;
+1287:        private final TextView subtitleView;
+1313:            titleView = new TextView(context);
+1314:            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+1315:            textLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 0));
+1317:            subtitleView = new TextView(context);
+1318:            subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+1319:            textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 4, 0, 0));
+1337:            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+1338:            subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+1359:            titleView.setTranslationX(icon == 0 ? dp(2) : 0);
+1360:            subtitleView.setTranslationX(icon == 0 ? dp(2) : 0);
+1364:            titleView.setText(title);
+1365:            subtitleView.setVisibility((twoLines = !TextUtils.isEmpty(subtitle)) ? View.VISIBLE : View.GONE);
+1366:            subtitleView.setText(subtitle);
+1486:        private LinkSpanDrawable.LinksTextView titleView;
+1496:            titleView = TextHelper.makeLinkTextView(context, 15, Theme.key_windowBackgroundWhiteBlackText, true, resourcesProvider);
+1497:            titleView.setGravity(Gravity.CENTER);
+1498:            addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 32, 20, 32, 0));
+1516:            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+1530:            titleView.setText(Emoji.replaceEmoji(title, titleView.getPaint().getFontMetricsInt(), false));
+
+== строки 515-545
+                listView.adapter.update(true);
+            }
+        }
+    }
+
+    public void setInfo() {
+        setInfo(getUserConfig().getCurrentUser());
+    }
+
+    public void setInfo(TLRPC.User user) {
+        if (avatarView == null) return;
+        if (avatarUploadingRequest != -1) return;
+
+        avatarDrawable.setInfo(user);
+        avatarView.setForUserOrChat(user, avatarDrawable);
+        titleView.setText(UserObject.getUserName(user));
+        final StringBuilder sb = new StringBuilder();
+        if (user != null) {
+            sb.append(PhoneFormat.getInstance().format("+" + user.phone));
+        }
+        final String username = UserObject.getPublicUsername(user);
+        if (username != null) {
+            sb.append(" • @").append(username);
+        }
+        subtitleView.setText(sb);
+
+        versionView.setText(getVersionName());
+    }
+
+
+    private int lastNavigationBarColor;
