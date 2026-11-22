@@ -1,0 +1,57 @@
+name: Inspect all
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part18.txt
+          J=TMessagesProj/src/main/java/org/telegram
+          R=TMessagesProj/src/main/res
+          {
+            echo "== файлы в mod"
+            ls mod
+            echo
+            echo "== icon.png"
+            ls -la icon.png icon2.png 2>&1
+          } > "$OUT" 2>&1
+          bash telegyou-mod.sh > inspect/modlog.tmp 2>&1 || echo "telegyou-mod.sh завершился с ошибкой" >> "$OUT"
+          {
+            echo
+            echo "== что сообщили скрипты"
+            grep -n -i "warning\|Приветств\|название\|Сгорающ\|Переключатель\|Основная иконка\|Заставка\|Статус\|Удалённые\|ошибка\|Error" inspect/modlog.tmp | head -n 80
+            echo
+            echo "== картинки приветственного экрана"
+            ls -la $R/drawable*/intro_tg_plane.* 2>&1 | head -n 10
+            echo
+            echo "== Page1Title и AppName"
+            grep -rn "name=\"Page1Title\"\|name=\"AppName\"" $R/values*/ | head -n 20
+            echo
+            echo "== AppName в DialogsActivity и IntroActivity"
+            grep -n "AppName\|\"Telegram\"" $J/ui/DialogsActivity.java | head -n 15
+            grep -n "Page1Title\|AppName" $J/ui/IntroActivity.java | head -n 15
+            echo
+            echo "== burn в MessagesController"
+            grep -n -B1 -A4 "keep_burn" $J/messenger/MessagesController.java | head -n 20
+            echo
+            echo "== кто вызывает markMessageContentAsRead"
+            grep -rn "markMessageContentAsRead" $J --include=*.java | head -n 20
+          } >> "$OUT" 2>&1
+          rm -f inspect/modlog.tmp
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part18.txt
+          git commit -m "inspect part18" || echo "nothing to commit"
+          git push
