@@ -1,0 +1,112 @@
+== объявления функций
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6042:    public void createTaskForMid(long dialogId, int messageId, int time, int readTime, int ttl, boolean inner) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14494:    public long createDeleteShowOnceTask(long dialogId, int mid) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14514:    public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14518:    public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId, boolean createDeleteTask) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14575:    public void markMessageAsRead(long dialogId, long randomId, int ttl) {
+
+== кто их вызывает
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16261:                getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16273:                    getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16283:        final long taskId = getMessagesController().createDeleteShowOnceTask(dialog_id, messageObject.getId());
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:1137:                                AndroidUtilities.runOnUIThread(() -> getMessagesController().markMessageAsRead2(-channelId, mid, inputChannel, ttl, taskId));
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:1151:                                AndroidUtilities.runOnUIThread(() -> getMessagesController().markMessageAsRead2(dialogId, mid, inputChannel, ttl, taskId, type == 23));
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6042:    public void createTaskForMid(long dialogId, int messageId, int time, int readTime, int ttl, boolean inner) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:8331:                            final long taskId = createDeleteShowOnceTask(dialogId, id);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14494:    public long createDeleteShowOnceTask(long dialogId, int mid) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14514:    public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14515:        markMessageAsRead2(dialogId, mid, inputChannel, ttl, taskId, true);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14518:    public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId, boolean createDeleteTask) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14549:            getMessagesStorage().createTaskForMid(dialogId, mid, time, time, ttl, false);
+
+== начало функции перед readMessageContents
+        markMessageAsRead2(dialogId, mid, inputChannel, ttl, taskId, true);
+    }
+
+    public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId, boolean createDeleteTask) {
+        if (mid == 0 || ttl < 0) {
+            return;
+        }
+        if (DialogObject.isChatDialog(dialogId) && inputChannel == null) {
+            inputChannel = getInputChannel(dialogId);
+            if (inputChannel == null) {
+                return;
+            }
+        }
+        long newTaskId;
+        if (taskId == 0) {
+            NativeByteBuffer data = null;
+            try {
+                data = new NativeByteBuffer(20 + (inputChannel != null ? inputChannel.getObjectSize() : 0));
+                data.writeInt32(createDeleteTask ? 23 : 101);
+                data.writeInt64(dialogId);
+                data.writeInt32(mid);
+                data.writeInt32(ttl);
+                if (inputChannel != null) {
+                    inputChannel.serializeToStream(data);
+                }
+            } catch (Exception e) {
+
+== MediaController вокруг 3741
+    public boolean playMessage(final MessageObject messageObject, boolean silent) {
+        if (messageObject == null) {
+            return false;
+        }
+        isSilent = silent;
+        checkVolumeBarUI();
+        if ((audioPlayer != null || videoPlayer != null) && isSamePlayingMessage(messageObject)) {
+            if (isPaused) {
+                resumeAudio(messageObject);
+            }
+            if (!SharedConfig.enabledRaiseTo(true)) {
+                startRaiseToEarSensors(raiseChat);
+            }
+            return true;
+        }
+        if (!messageObject.isOut() && (messageObject.isContentUnread())) {
+            MessagesController.getInstance(messageObject.currentAccount).markMessageContentAsRead(messageObject);
+        }
+        boolean saved = false;
+        boolean notify = !playMusicAgain;
+        MessageObject oldMessageObject = playingMessageObject;
+        if (playingMessageObject != null) {
+            if (playingMessageObject.isMusic() && messageObject.isVoice() || messageObject.isRoundVideo() || messageObject.isVideo()) {
+                saved = saveMusicPlaylistStateIfNeeded();
+            }
+            notify = false;
+            if (!playMusicAgain) {
+                playingMessageObject.resetPlayingProgress();
+                NotificationCenter.getInstance(playingMessageObject.currentAccount).postNotificationName(NotificationCenter.messagePlayingProgressDidChanged, playingMessageObject.getId(), 0);
+            }
+        }
+        cleanupPlayer(notify, false);
+        shouldSavePositionForCurrentAudio = null;
+        lastSaveTime = 0;
+        playMusicAgain = false;
+        seekToProgressPending = 0;
+
+== once и сгорание в ChatActivity и MessageObject
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:12690:        return !isPeerNoForwards() && !(messageObject.messageOwner != null && messageObject.messageOwner.noforwards) && !messageObject.isRoundOnce() && !messageObject.isVoiceOnce();
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:14348:        restoreVoiceRecordingOnce = chatActivityEnterView.isVoiceOnce();
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16283:        final long taskId = getMessagesController().createDeleteShowOnceTask(dialog_id, messageObject.getId());
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16285:        if (messageObject.isOutOwner() || !messageObject.isRoundOnce() && !messageObject.isVoiceOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16290:        return () -> getMessagesController().doDeleteShowOnceTask(taskId, dialog_id, messageObject.getId());
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:20105:                                if (msg.isVoiceOnce() || msg.isRoundOnce()) continue;
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:31433:                if (messageObject.isRoundOnce() || messageObject.isVoiceOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:36024:                if ((currentEncryptedChat == null && messageObject.getId() > messageId || currentEncryptedChat != null && messageObject.getId() < messageId) && (messageObject.isVoice() || messageObject.isRoundVideo()) && !messageObject.isVoiceOnce() && !messageObject.isRoundOnce() && (!playingUnreadMedia || messageObject.isContentUnread() && !messageObject.isOut())) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:40427:            if (messageObject.isVoiceOnce() || messageObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46768:                        } else if (selectedObject.isMusic() && !noforwardsOrPaidMedia && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46772:                        } else if (selectedObject.isDocument() && !noforwardsOrPaidMedia && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46795:                        } else if (selectedObject.isMusic() && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46802:                        } else if (selectedObject.getDocument() != null && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46826:                    if (!noforwardsOrPaidMedia && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46838:                    if (!noforwardsOrPaidMedia && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:46847:                    if (!selectedObject.needDrawBluredPreview() && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:47030:                    } else if (selectedObject.isMusic() && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:47037:                    } else if (!selectedObject.isVideo() && selectedObject.getDocument() != null && !selectedObject.isVoiceOnce() && !selectedObject.isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:6230:                } else if (isVoiceOnce()) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:6232:                } else if (isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:11524:    public boolean isVoiceOnce() {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:11528:    public boolean isRoundOnce() {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:12310:                if (type == TYPE_VIDEO && needDrawBluredPreview() || isVoiceOnce() || isRoundOnce()) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java:12855:        if (isVoiceOnce()) return false;
