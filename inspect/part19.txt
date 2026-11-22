@@ -1,0 +1,89 @@
+== кто вызывает markMentionMessageAsRead и markMessagesContentAsRead
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:1307:            NotificationCenter.messagesReadContent,
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:2878:                .add(NotificationCenter.messagesReadContent)
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:24421:        } else if (id == NotificationCenter.messagesReadContent) {
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:30629:                        getMessagesController().markMentionMessageAsRead(message.getId(), ChatObject.isChannel(currentChat) ? currentChat.id : 0, dialog_id);
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:39235:                            getMessagesController().markMentionMessageAsRead(message.getId(), ChatObject.isChannel(currentChat) ? currentChat.id : 0, dialog_id);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:5930:    public void markMentionMessageAsRead(long dialogId, int messageId, long did) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6055:                        markMessagesContentAsRead(dialogId, midsArray, 0, 0);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6057:                    getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, dialogId, midsArray);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6095://                        markMessagesContentAsRead(dialogId, mids, 0, 0);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6096://                        getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, dialogId, mids);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6183:                        markMessagesContentAsRead(dialogId, midsArray, 0, 0);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:6184:                        getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, dialogId, midsArray);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14487:    private void markMessagesContentAsReadInternal(long dialogId, ArrayList<Integer> mids, int date) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14559:    public void markMessagesContentAsRead(long dialogId, ArrayList<Integer> mids, int currentDate, int readDate) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14597:                        markMessagesContentAsReadInternal(toDelete.keyAt(a), toDelete.valueAt(a), currentDate);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14610:                markMessagesContentAsReadInternal(dialogId, mids, currentDate);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14438:            getMessagesStorage().markMentionMessageAsRead(-messageObject.messageOwner.peer_id.channel_id, messageObject.getId(), messageObject.getDialogId());
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14442:        getMessagesStorage().markMessagesContentAsRead(dialogId, arrayList, 0, 0);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14443:        getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, dialogId, arrayList);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14470:    public void markMentionMessageAsRead(int mid, long channelId, long did) {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14471:        getMessagesStorage().markMentionMessageAsRead(-channelId, mid, did);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:21204:                    getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, key, value);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:21324:                getMessagesStorage().markMessagesContentAsRead(key, arrayList, currentTime2, markContentAsReadMessagesDate);
+TMessagesProj/src/main/java/org/telegram/messenger/NotificationCenter.java:102:    public static final int messagesReadContent = totalEvents++;
+
+== функция около 14545
+                    inputChannel.serializeToStream(data);
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            newTaskId = getMessagesStorage().createPendingTask(data);
+        } else {
+            newTaskId = taskId;
+        }
+        int time = getConnectionsManager().getCurrentTime();
+        if (createDeleteTask) {
+            getMessagesStorage().createTaskForMid(dialogId, mid, time, time, ttl, false);
+        }
+        if (inputChannel != null) {
+            TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+            req.channel = inputChannel;
+            req.id.add(mid);
+            getConnectionsManager().sendRequest(req, (response, error) -> {
+                if (newTaskId != 0) {
+                    getMessagesStorage().removePendingTask(newTaskId);
+                }
+            });
+        } else {
+            TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+            req.id.add(mid);
+            getConnectionsManager().sendRequest(req, (response, error) -> {
+                if (error == null) {
+                    TLRPC.TL_messages_affectedMessages res = (TLRPC.TL_messages_affectedMessages) response;
+                    processNewDifferenceParams(-1, res.pts, -1, res.pts_count);
+                }
+                if (newTaskId != 0) {
+                    getMessagesStorage().removePendingTask(newTaskId);
+                }
+            });
+        }
+    }
+
+    public void markMessageAsRead(long dialogId, long randomId, int ttl) {
+        if (randomId == 0 || dialogId == 0 || ttl <= 0 && ttl != Integer.MIN_VALUE) {
+            return;
+        }
+        if (!DialogObject.isEncryptedDialog(dialogId)) {
+            return;
+
+== SecretMediaViewer: ttl, destroy, read
+161:        private long destroyTime;
+162:        private long destroyTtl;
+196:        private void setDestroyTime(long time, long ttl, boolean videoProgress) {
+198:            destroyTime = time;
+199:            destroyTtl = ttl;
+230:            if (currentMessageObject == null || currentMessageObject.messageOwner.destroyTime == 0 && currentMessageObject.messageOwner.ttl != 0x7FFFFFFF) {
+249:                if (destroyTime == 0) {
+253:                    progress = Math.max(0, destroyTime - msTime) / (destroyTtl * 1000.0f);
+509:                        currentMessageObject.messageOwner.destroyTime = key;
+1382:        //messageObject.messageOwner.destroyTime = (int) (System.currentTimeMillis() / 1000 + ConnectionsManager.getInstance().getTimeDifference()) + 4;
+1384:        ignoreDelete = messageObject.messageOwner.ttl == 0x7FFFFFFF;
+1474:            activityVisibilityController.destroy();
+1547:                if (currentMessageObject == null || currentMessageObject.messageOwner.destroyTime == 0 && currentMessageObject.messageOwner.ttl != 0x7FFFFFFF) {
+1608:            secretDeleteTimer.setDestroyTime(messageObject.messageOwner.destroyTimeMillis, messageObject.messageOwner.ttl, false);
+1704:    public void destroyPhotoViewer() {
+1710:            activityVisibilityController.destroy();
+1996:            activityVisibilityController.destroy();
