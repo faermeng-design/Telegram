@@ -1,0 +1,89 @@
+== манифест: иконки
+TMessagesProj_App/src/main/AndroidManifest.xml:32:            <activity-alias
+TMessagesProj_App/src/main/AndroidManifest.xml:33:            android:name="org.telegram.messenger.TelegyouSettingsIcon"
+TMessagesProj_App/src/main/AndroidManifest.xml:42:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:114:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:116:            android:name="org.telegram.messenger.DefaultIcon"
+TMessagesProj/src/main/AndroidManifest.xml:126:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:128:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:130:            android:name="org.telegram.messenger.VintageIcon"
+TMessagesProj/src/main/AndroidManifest.xml:132:            android:icon="@mipmap/icon_6_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:133:            android:roundIcon="@mipmap/icon_6_launcher_round"
+TMessagesProj/src/main/AndroidManifest.xml:142:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:144:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:146:            android:name="org.telegram.messenger.AquaIcon"
+TMessagesProj/src/main/AndroidManifest.xml:148:            android:icon="@mipmap/icon_4_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:149:            android:roundIcon="@mipmap/icon_4_launcher_round"
+TMessagesProj/src/main/AndroidManifest.xml:158:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:160:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:162:            android:name="org.telegram.messenger.PremiumIcon"
+TMessagesProj/src/main/AndroidManifest.xml:164:            android:icon="@mipmap/icon_3_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:165:            android:roundIcon="@mipmap/icon_3_launcher_round"
+TMessagesProj/src/main/AndroidManifest.xml:174:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:176:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:178:            android:name="org.telegram.messenger.TurboIcon"
+TMessagesProj/src/main/AndroidManifest.xml:180:            android:icon="@mipmap/icon_5_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:181:            android:roundIcon="@mipmap/icon_5_launcher_round"
+TMessagesProj/src/main/AndroidManifest.xml:190:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:192:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:194:            android:name="org.telegram.messenger.NoxIcon"
+TMessagesProj/src/main/AndroidManifest.xml:196:            android:icon="@mipmap/icon_2_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:197:            android:roundIcon="@mipmap/icon_2_launcher_round"
+TMessagesProj/src/main/AndroidManifest.xml:206:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:266:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
+TMessagesProj/src/main/AndroidManifest.xml:272:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
+TMessagesProj/src/main/AndroidManifest.xml:278:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
+TMessagesProj/src/main/AndroidManifest.xml:284:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
+TMessagesProj/src/main/AndroidManifest.xml:301:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:312:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:313:        <activity-alias
+TMessagesProj/src/main/AndroidManifest.xml:315:            android:name="org.telegram.messenger.TelegyouIcon"
+TMessagesProj/src/main/AndroidManifest.xml:316:            android:icon="@mipmap/telegyou_icon_launcher"
+TMessagesProj/src/main/AndroidManifest.xml:327:        </activity-alias>
+TMessagesProj/src/main/AndroidManifest.xml:347:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
+TMessagesProj/src/main/AndroidManifest.xml:360:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
+TMessagesProj/src/main/AndroidManifest.xml:371:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
+TMessagesProj/src/main/AndroidManifest.xml:381:            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
+TMessagesProj/src/main/AndroidManifest.xml:390:<!--            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">-->
+TMessagesProj/src/main/AndroidManifest.xml:710:        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />
+
+== mipmap-anydpi-v26
+ic_launcher.xml
+ic_launcher_round.xml
+icon_2_launcher.xml
+icon_2_launcher_round.xml
+icon_3_launcher.xml
+icon_3_launcher_round.xml
+icon_4_launcher.xml
+icon_4_launcher_round.xml
+icon_5_launcher.xml
+icon_5_launcher_round.xml
+icon_6_launcher.xml
+icon_6_launcher_round.xml
+
+== ic_launcher.xml
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/telegyou_main_bg"/>
+    <foreground android:drawable="@mipmap/telegyou_main_fg"/>
+</adaptive-icon>
+
+== стили заставки
+TMessagesProj/src/main/res/values-night/styles.xml:14:    <style name="Theme.TMessages.Start" parent="Theme.AppCompat.DayNight">
+TMessagesProj/src/main/res/values-night/styles.xml:25:        <item name="android:windowSplashScreenAnimatedIcon">@drawable/tg_splash_320</item>
+TMessagesProj/src/main/res/values-night/styles.xml:26:        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
+TMessagesProj/src/main/res/values-night/styles.xml:27:        <item name="android:windowSplashScreenBackground">#1f2732</item>
+TMessagesProj/src/main/res/values-v21/styles.xml:14:    <style name="Theme.TMessages.Start" parent="Theme.AppCompat.Light">
+TMessagesProj/src/main/res/values-v31/styles.xml:19:    <style name="Theme.TMessages.Start" parent="Theme.AppCompat.Light">
+TMessagesProj/src/main/res/values-v31/styles.xml:31:        <item name="android:windowSplashScreenAnimatedIcon">@drawable/tg_splash_320</item>
+TMessagesProj/src/main/res/values-v31/styles.xml:32:        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
+TMessagesProj/src/main/res/values-v31/styles.xml:33:        <item name="android:windowSplashScreenBackground">?android:windowBackground</item>
+TMessagesProj/src/main/res/values/styles.xml:6:    <style name="Theme.TMessages.Start" parent="Theme.AppCompat.Light">
+
+== вкл. заставки в values-v31
+values-v21
+values-v24
+values-v31
+TMessagesProj/src/main/res/values-v31/styles.xml:31:        <item name="android:windowSplashScreenAnimatedIcon">@drawable/tg_splash_320</item>
+TMessagesProj/src/main/res/values-v31/styles.xml:32:        <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
+TMessagesProj/src/main/res/values-v31/styles.xml:33:        <item name="android:windowSplashScreenBackground">?android:windowBackground</item>
