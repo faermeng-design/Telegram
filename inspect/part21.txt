@@ -1,0 +1,136 @@
+== файл: TMessagesProj/src/main/java/org/telegram/ui/Components/AlertsCreator.java
+
+== AlertsCreator: удаление сообщений
+1395:        CheckBoxCell[] cells = new CheckBoxCell[1];
+1460:        CheckBoxCell[] cells;
+2219:        CheckBoxCell[] cell = new CheckBoxCell[1];
+2548:        final CheckBoxCell[] cell = new CheckBoxCell[1];
+2644:        CheckBoxCell[] cell = new CheckBoxCell[1];
+2722:        final boolean[] deleteForAll = new boolean[1];
+2736:            cell[0].setChecked(deleteForAll[0] = true, false);
+2741:                deleteForAll[0] = !deleteForAll[0];
+2742:                cell1.setChecked(deleteForAll[0], true);
+2769:                    if (deleteForAll[0]) {
+2784:                deleteForAll[0] = !deleteForAll[0];
+2785:                cell1.setChecked(deleteForAll[0], true);
+2790:                cell[0].setChecked(deleteForAll[0] = true, false);
+2885:                if (deleteChatForAll && deleteForAll[0]) {
+2903:                    createClearOrDeleteDialogAlert(fragment, clear, true, chat, user, false, checkDeleteForAll, deleteForAll[0], canDeleteHistory, onProcessRunnable, resourcesProvider);
+2905:                } else if (user != null && deleteForAll[0]) {
+2908:                            createClearOrDeleteDialogAlert(fragment, clear, true, chat, user, false, checkDeleteForAll, deleteForAll[0], canDeleteHistory, onProcessRunnable, resourcesProvider);
+2911:                                onProcessRunnable.run(deleteForAll[0]);
+2917:                if (ChatObject.isChannel(chat) && chat.creator && !deleteForAll[0]) {
+2929:                                onProcessRunnable.run(second || deleteForAll[0]);
+2953:                onProcessRunnable.run(second || deleteForAll[0]);
+3042:        CheckBoxCell[] cell = new CheckBoxCell[1];
+3043:        boolean[] deleteForAll = new boolean[1];
+3078:                    deleteForAll[0] = !deleteForAll[0];
+3079:                    cell1.setChecked(deleteForAll[0], true);
+3102:                onProcessRunnable.run(deleteForAll[0]);
+3124:        CheckBoxCell[] cell = new CheckBoxCell[1];
+3184:        final boolean[] deleteForAll = new boolean[]{false};
+3187:            deleteForAll[0] = true;
+3204:                deleteForAll[0] = !deleteForAll[0];
+3205:                cell1.setChecked(deleteForAll[0], true);
+3214:            onProcessRunnable.run(deleteForAll[0]);
+3731:        CheckBoxCell[] cell = new CheckBoxCell[2];
+7725:    public static void createDeleteMessagesAlert(BaseFragment fragment, TLRPC.User user, TLRPC.Chat chat, TLRPC.EncryptedChat encryptedChat, TLRPC.ChatFull chatInfo, long mergeDialogId, MessageObject selectedMessage, SparseArray<MessageObject>[] selectedMessages, MessageObject.GroupedMessages selectedGroup, int topicId, int mode, TLRPC.ChannelParticipant[] channelParticipants, Runnable onDelete, Runnable hideDim, Theme.ResourcesProvider resourcesProvider) {
+7896:        final boolean[] deleteForAll = new boolean[1];
+7997:                                createDeleteMessagesAlert(fragment, user, chat, encryptedChat, chatInfo, mergeDialogId, selectedMessage, selectedMessages, selectedGroup, topicId, mode, channelParticipantsLoad, onDelete, hideDim, resourcesProvider);
+8042:                    deleteForAll[0] = !deleteForAll[0];
+8043:                    cell12.setChecked(deleteForAll[0], true);
+8101:                    deleteForAll[0] = !deleteForAll[0];
+8102:                    cell1.setChecked(deleteForAll[0], true);
+8150:                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, thisDialogId, topicId, deleteForAll[0], mode);
+8171:                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, (a == 1 && mergeDialogId != 0) ? mergeDialogId : thisDialogId, topicId, deleteForAll[0], mode);
+
+== AlertsCreator: вызовы deleteMessages
+7821:                            MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, thisDialogId, topicId, true, mode);
+7838:                                MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, (a == 1 && mergeDialogId != 0) ? mergeDialogId : thisDialogId, topicId, true, mode);
+8150:                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, thisDialogId, topicId, deleteForAll[0], mode);
+8171:                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, (a == 1 && mergeDialogId != 0) ? mergeDialogId : thisDialogId, topicId, deleteForAll[0], mode);
+
+== MessagesController: deleteMessages
+9336:    public void deleteMessages(ArrayList<Integer> messages, ArrayList<Long> randoms, TLRPC.EncryptedChat encryptedChat, long dialogId, int topicId, boolean forAll, int mode) {
+9337-        deleteMessages(messages, randoms, encryptedChat, dialogId, forAll, mode, false, 0, null, topicId);
+9338-    }
+9339-
+9340:    public void deleteMessages(ArrayList<Integer> messages, ArrayList<Long> randoms, TLRPC.EncryptedChat encryptedChat, long dialogId, int topicId, boolean forAll, int mode, boolean cacheOnly) {
+9341-        deleteMessages(messages, randoms, encryptedChat, dialogId, forAll, mode, cacheOnly, 0, null, topicId);
+9342-    }
+9343-
+9344:    public void deleteMessages(ArrayList<Integer> messages, ArrayList<Long> randoms, TLRPC.EncryptedChat encryptedChat, long dialogId, boolean forAll, int mode, boolean cacheOnly, long taskId, TLObject taskRequest, int topicId) {
+9345-        deleteMessages(messages, randoms, encryptedChat, dialogId, forAll, mode, cacheOnly, taskId, taskRequest, topicId, false, 0);
+9346-    }
+9347-
+9348:    public void deleteMessages(ArrayList<Integer> messages, ArrayList<Long> randoms, TLRPC.EncryptedChat encryptedChat, long dialogId, boolean forAll, int mode, boolean cacheOnly, long taskId, TLObject taskRequest, int topicId, boolean movedToScheduled, int movedToScheduledMessageId) {
+9349-        final boolean scheduled = mode == ChatActivity.MODE_SCHEDULED;
+9350-        final boolean quickReplies = mode == ChatActivity.MODE_QUICK_REPLIES;
+9351-        final boolean welcomeMessages = mode == ChatActivity.MODE_WELCOME_MESSAGES;
+9352-        if ((messages == null || messages.isEmpty()) && taskId == 0) {
+9353-            return;
+9354-        }
+9355-        ArrayList<Integer> toSend = null;
+9356-        long channelId;
+9357-        if (taskId == 0) {
+9358-            if (dialogId != 0 && DialogObject.isChatDialog(dialogId)) {
+9359-                TLRPC.Chat chat = getChat(-dialogId);
+9360-                channelId = ChatObject.isChannel(chat) ? chat.id : 0;
+9361-            } else {
+9362-                channelId = 0;
+9363-            }
+9364-            if (!cacheOnly) {
+9365-                toSend = new ArrayList<>();
+9366-                for (int a = 0, N = messages.size(); a < N; a++) {
+9367-                    Integer mid = messages.get(a);
+9368-                    if (mid > 0) {
+9369-                        toSend.add(mid);
+9370-                    }
+9371-                }
+9372-            }
+9373-            if (scheduled) {
+9374-                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_SCHEDULED, 0);
+9375-            } else if (quickReplies) {
+9376-                if (mode == ChatActivity.MODE_QUICK_REPLIES) {
+9377-                    QuickRepliesController.getInstance(currentAccount).deleteLocalMessages(messages);
+9378-                }
+9379-                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_QUICK_REPLIES, topicId);
+9380-            } else if (welcomeMessages) {
+9381-                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_WELCOME_MESSAGES, topicId);
+9382-            } else {
+9383-                if (channelId == 0) {
+9384-                    for (int a = 0; a < messages.size(); a++) {
+9385-                        Integer id = messages.get(a);
+9386-                        MessageObject obj = dialogMessagesByIds.get(id);
+9387-                        if (obj != null) {
+9388-                            obj.deleted = true;
+9389-                        }
+9390-                    }
+9391-                } else {
+9392-                    markDialogMessageAsDeleted(dialogId, messages);
+9393-                }
+9394-                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
+9395-                getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
+9396-            }
+9397-            getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
+9398-        } else {
+9399-            if (taskRequest instanceof TLRPC.TL_channels_deleteMessages) {
+9400-                channelId = ((TLRPC.TL_channels_deleteMessages) taskRequest).channel.channel_id;
+9401-            } else {
+9402-                channelId = 0;
+9403-            }
+9404-        }
+9405-        if (cacheOnly) {
+9406-            return;
+9407-        }
+9408-
+9409-        long newTaskId;
+9410-        if (scheduled) {
+9411-            TLRPC.TL_messages_deleteScheduledMessages req;
+9412-
+9413-            if (taskRequest instanceof TLRPC.TL_messages_deleteScheduledMessages) {
+9414-                req = (TLRPC.TL_messages_deleteScheduledMessages) taskRequest;
+9415-                newTaskId = taskId;
+9416-            } else {
+9417-                req = new TLRPC.TL_messages_deleteScheduledMessages();
+9418-                req.id = toSend;
