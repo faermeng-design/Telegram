@@ -1,0 +1,22 @@
+== formatUserStatus в ProfileActivity
+11737-                    newString2 = LocaleController.formatPluralStringComma("BotUsers", user.bot_active_users, ',');
+11738-                } else {
+11739-                    newString2 = UserObject.getBotStatus(user);
+11740-                }
+11741-            } else {
+11742-                isOnline[0] = false;
+11743:                newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null);
+11744-                hiddenStatusButton = user != null && !isOnline[0] && !getUserConfig().isPremium() && user.status != null && (user.status instanceof TLRPC.TL_userStatusRecently || user.status instanceof TLRPC.TL_userStatusLastMonth || user.status instanceof TLRPC.TL_userStatusLastWeek) && user.status.by_me;
+11745-                if (onlineTextView != null && !mediaHeaderVisible) {
+11746-                    int key = isOnline[0] && peerColor == null ? Theme.key_profile_status : Theme.key_actionBarDefaultSubtitle;
+11747-                    onlineTextView.setTag(key);
+11748-                    if (!isPulledDown) {
+11749-                        onlineTextView.setTextColor(applyPeerColor(getThemedColor(key), true, isOnline[0]));
+11750-                    }
+11751-                }
+
+== R.string.Online в ui и messenger
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:11726:                        newString2 = LocaleController.getString(R.string.Online);
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:11882:                        newString2 = LocaleController.getString(R.string.Online);
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2972:                return getString("Online", R.string.Online);
+TMessagesProj/src/main/java/org/telegram/messenger/LocaleController.java:2983:                return getString("Online", R.string.Online);
