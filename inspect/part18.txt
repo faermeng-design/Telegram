@@ -1,0 +1,88 @@
+== файлы в mod
+11-icon-main.sh
+15-tab-fix.sh
+20-icon-new.sh
+30-intro.sh
+92-check.sh
+93-check.sh
+iconguard.sh
+launcher.sh.
+zz-burn.sh
+zz-deleted.sh
+zz-fix.sh
+zz-icon.sh
+zz-menu.sh
+zz-name.sh
+zz-owner.sh
+zz-popup.sh
+zz-selfstatus.sh
+zz-settings.sh
+zz-size.sh
+zz-splash.sh
+zz-status.sh
+zz-tabicon.sh
+
+== icon.png
+-rw-r--r-- 1 runner runner 178597 Nov 22 16:55 icon.png
+-rw-r--r-- 1 runner runner 126264 Nov 22 16:55 icon2.png
+
+== что сообщили скрипты
+5:Удалённые: подключено мест = 2 , push = 1
+62:                    ConnectionsManager.getInstance(currentAccount).sendRequest(botRequest, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
+66:                    }), ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
+80:Пауза статуса: 0.3 сек
+105:Картинки и название: готово
+112:Приветственный экран: заменено файлов = 4
+199:Сгорающие фото: правка внесена
+202:FileNotFoundError: [Errno 2] No such file or directory: 'TMessagesProj/src/main/java/org/telegram/ui/TelegyouSettingsFragment.java'
+203:WARNING: модуль mod/zz-burn.sh завершился с ошибкой
+205:Удалённые (дизайн): пометка добавлена
+212:Основная иконка: PNG = 15 , адаптивных XML = 3
+216:Основная иконка: по центру, PNG = 15
+217:Приветственный экран: иконка крупнее, файлов = 4
+219:Приветственный экран: название Telegyou, файлов = 6
+223:Название Telegyou: изменено файлов = 10
+238:Заставка запуска: заменено в файлах = 2
+240:Статус: правка внесена
+
+== картинки приветственного экрана
+-rw-r--r-- 1 runner runner 1490 Nov 22 16:55 TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner  972 Nov 22 16:55 TMessagesProj/src/main/res/drawable-mdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner 2154 Nov 22 16:55 TMessagesProj/src/main/res/drawable-xhdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner 3640 Nov 22 16:55 TMessagesProj/src/main/res/drawable-xxhdpi/intro_tg_plane.webp
+
+== Page1Title и AppName
+TMessagesProj/src/main/res/values-ar/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-ar/strings.xml:1194:    <string name="Page1Title">Telegyou</string>
+TMessagesProj/src/main/res/values-de/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-es/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-es/strings.xml:1261:    <string name="Page1Title">Telegyou</string>
+TMessagesProj/src/main/res/values-it/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-ko/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-nl/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-pt-rBR/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-pt-rBR/strings.xml:1195:    <string name="Page1Title">Telegyou</string>
+TMessagesProj/src/main/res/values-ru/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-ru/strings.xml:212:    <string name="Page1Title">Telegyou</string>
+TMessagesProj/src/main/res/values-uk/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values-uk/strings.xml:225:    <string name="Page1Title">Telegyou</string>
+TMessagesProj/src/main/res/values/strings.xml:3:    <string name="AppName">Telegyou</string>
+TMessagesProj/src/main/res/values/strings.xml:4216:    <string name="Page1Title">Telegyou</string>
+
+== AppName в DialogsActivity и IntroActivity
+3444:                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.AppName));
+159:        SpannableStringBuilder ssb = new SpannableStringBuilder(LocaleController.getString(R.string.Page1Title));
+
+== burn в MessagesController
+14432-    public void markMessageContentAsRead(MessageObject messageObject) {
+14433:        if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media != null && messageObject.messageOwner.media.ttl_seconds != 0 && GhostMode.get("keep_burn")) {
+14434-            return;
+14435-        }
+14436-        if (messageObject.scheduled) {
+14437-            return;
+
+== кто вызывает markMessageContentAsRead
+TMessagesProj/src/main/java/org/telegram/ui/Components/PopupAudioView.java:235:                    MessagesController.getInstance(currentAccount).markMessageContentAsRead(currentMessageObject);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14553:                    getMessagesController().markMessageContentAsRead(mo);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14432:    public void markMessageContentAsRead(MessageObject messageObject) {
+TMessagesProj/src/main/java/org/telegram/messenger/MediaController.java:3741:            MessagesController.getInstance(messageObject.currentAccount).markMessageContentAsRead(messageObject);
