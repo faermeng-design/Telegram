@@ -13,29 +13,25 @@ jobs:
 
       - name: Collect
         run: |
+          set +e
           mkdir -p inspect
           OUT=inspect/part21.txt
           J=TMessagesProj/src/main/java/org/telegram
-          A=$J/ui/ActionBar/AlertsCreator.java
-          # на случай другого расположения
-          [ -f "$A" ] || A=$(grep -rl "class AlertsCreator" $J | head -n 1)
+          A=$(grep -rl "class AlertsCreator" $J | head -n 1)
+          MC=$J/messenger/MessagesController.java
           {
             echo "== файл: $A"
-            echo "== объявления createDeleteMessagesAlert"
-            grep -n "void createDeleteMessagesAlert" $A
             echo
-            echo "== deleteForAll / CheckBoxCell / deleteMessages в AlertsCreator"
-            grep -n "deleteForAll\|CheckBoxCell\[\]\|\.deleteMessages(" $A | head -n 70
+            echo "== AlertsCreator: удаление сообщений"
+            grep -n "createDeleteMessagesAlert\|deleteForAll\|CheckBoxCell\[\]" "$A" | head -n 60
             echo
-            echo "== MessagesController.deleteMessages"
-            grep -n "public .* deleteMessages(" $J/messenger/MessagesController.java
+            echo "== AlertsCreator: вызовы deleteMessages"
+            grep -n "\.deleteMessages(" "$A" | head -n 30
+            echo
+            echo "== MessagesController: deleteMessages"
+            grep -n -A70 "public void deleteMessages(" $MC | head -n 260
           } > "$OUT" 2>&1
-          L=$(grep -n "public void deleteMessages(ArrayList<Integer> messages, ArrayList<Long> randoms, TLRPC.EncryptedChat encryptedChat, long dialogId, boolean forAll, int mode, boolean cacheOnly, long taskId, TLObject taskRequest, int taskMode, boolean scheduled, int topicId, int quickReplyShortcut" $J/messenger/MessagesController.java | head -n 1 | cut -d: -f1)
-          {
-            echo
-            echo "== тело главной deleteMessages (строка $L)"
-            [ -n "$L" ] && sed -n "${L},$((L+110))p" $J/messenger/MessagesController.java
-          } >> "$OUT" 2>&1
+          true
 
       - name: Commit result
         run: |
