@@ -1,0 +1,42 @@
+name: Inspect burn tasks
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          mkdir -p inspect
+          OUT=inspect/part20.txt
+          J=TMessagesProj/src/main/java/org/telegram
+          {
+            echo "== объявления функций"
+            grep -rn "void createTaskForMid\|long createDeleteShowOnceTask\|void markMessageAsRead2\|void markMessageAsRead(" $J --include=*.java | head -n 10
+            echo
+            echo "== кто их вызывает"
+            grep -rn "createTaskForMid(\|createDeleteShowOnceTask(\|markMessageAsRead2(" $J --include=*.java | head -n 40
+            echo
+            echo "== начало функции перед readMessageContents"
+            sed -n '14515,14540p' $J/messenger/MessagesController.java
+            echo
+            echo "== MediaController вокруг 3741"
+            sed -n '3725,3760p' $J/messenger/MediaController.java
+            echo
+            echo "== once и сгорание в ChatActivity и MessageObject"
+            grep -n "isVoiceOnce\|isRoundOnce\|isOnce\|ShowOnce" $J/ui/ChatActivity.java $J/messenger/MessageObject.java | head -n 40
+          } > "$OUT" 2>&1
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part20.txt
+          git commit -m "inspect part20" || echo "nothing to commit"
+          git push
