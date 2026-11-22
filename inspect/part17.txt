@@ -1,0 +1,190 @@
+== markMessageContentAsRead
+14432:    public void markMessageContentAsRead(MessageObject messageObject) {
+14433-        if (messageObject.scheduled) {
+14434-            return;
+14435-        }
+14436-        ArrayList<Integer> arrayList = new ArrayList<>();
+14437-        if (messageObject.messageOwner.mentioned) {
+14438-            getMessagesStorage().markMentionMessageAsRead(-messageObject.messageOwner.peer_id.channel_id, messageObject.getId(), messageObject.getDialogId());
+14439-        }
+14440-        arrayList.add(messageObject.getId());
+14441-        long dialogId = messageObject.getDialogId();
+14442-        getMessagesStorage().markMessagesContentAsRead(dialogId, arrayList, 0, 0);
+14443-        getNotificationCenter().postNotificationName(NotificationCenter.messagesReadContent, dialogId, arrayList);
+14444-        if (messageObject.getId() < 0) {
+14445-            markMessageAsRead(messageObject.getDialogId(), messageObject.messageOwner.random_id, Integer.MIN_VALUE);
+14446-        } else {
+14447-            if (messageObject.messageOwner.peer_id.channel_id != 0) {
+14448-                TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+14449-                req.channel = getInputChannel(messageObject.messageOwner.peer_id.channel_id);
+14450-                if (req.channel == null) {
+14451-                    return;
+14452-                }
+14453-                req.id.add(messageObject.getId());
+14454-                getConnectionsManager().sendRequest(req, (response, error) -> {
+14455-
+14456-                });
+14457-            } else {
+14458-                TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+14459-                req.id.add(messageObject.getId());
+14460-                getConnectionsManager().sendRequest(req, (response, error) -> {
+14461-                    if (error == null) {
+14462-                        TLRPC.TL_messages_affectedMessages res = (TLRPC.TL_messages_affectedMessages) response;
+14463-                        processNewDifferenceParams(-1, res.pts, -1, res.pts_count);
+14464-                    }
+14465-                });
+14466-            }
+14467-        }
+14468-    }
+14469-
+14470-    public void markMentionMessageAsRead(int mid, long channelId, long did) {
+14471-        getMessagesStorage().markMentionMessageAsRead(-channelId, mid, did);
+14472-        if (channelId != 0) {
+14473-            TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+14474-            req.channel = getInputChannel(channelId);
+14475-            if (req.channel == null) {
+14476-                return;
+14477-            }
+14478-            req.id.add(mid);
+14479-            getConnectionsManager().sendRequest(req, (response, error) -> {
+14480-
+14481-            });
+14482-        } else {
+14483-            TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+14484-            req.id.add(mid);
+14485-            getConnectionsManager().sendRequest(req, (response, error) -> {
+14486-                if (error == null) {
+14487-                    TLRPC.TL_messages_affectedMessages res = (TLRPC.TL_messages_affectedMessages) response;
+14488-                    processNewDifferenceParams(-1, res.pts, -1, res.pts_count);
+14489-                }
+14490-            });
+14491-        }
+14492-    }
+14493-
+14494-    public long createDeleteShowOnceTask(long dialogId, int mid) {
+14495-        NativeByteBuffer data = null;
+14496-        try {
+14497-            data = new NativeByteBuffer(16);
+14498-            data.writeInt32(102);
+14499-            data.writeInt64(dialogId);
+14500-            data.writeInt32(mid);
+14501-        } catch (Exception e) {
+14502-            FileLog.e(e);
+
+== TL_updateReadMessagesContents
+17752:        if (update instanceof TL_update.TL_updateNewMessage || update instanceof TL_update.TL_updateReadMessagesContents || update instanceof TL_update.TL_updateReadHistoryInbox ||
+17753-                update instanceof TL_update.TL_updateReadHistoryOutbox || update instanceof TL_update.TL_updateDeleteMessages || update instanceof TL_update.TL_updateWebPage ||
+17754-                update instanceof TL_update.TL_updateEditMessage || update instanceof TL_update.TL_updateFolderPeers || update instanceof TL_update.TL_updatePinnedMessages ||
+17755-                update instanceof TL_update.TL_updateMessageWidgetData) {
+17756-            return 0;
+17757-        } else if (update instanceof TL_update.TL_updateNewEncryptedMessage) {
+17758-            return 1;
+17759-        } else if (update instanceof TL_update.TL_updateNewChannelMessage || update instanceof TL_update.TL_updateDeleteChannelMessages || update instanceof TL_update.TL_updateEditChannelMessage ||
+17760-                update instanceof TL_update.TL_updateChannelWebPage || update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17761-            return 2;
+17762-        } else {
+17763-            return 3;
+17764-        }
+17765-    }
+17766-
+17767-    private static int getUpdatePts(TLRPC.Update update) {
+17768-        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17769-            return ((TL_update.TL_updateDeleteMessages) update).pts;
+17770-        } else if (update instanceof TL_update.TL_updateNewChannelMessage) {
+17771-            return ((TL_update.TL_updateNewChannelMessage) update).pts;
+17772-        } else if (update instanceof TL_update.TL_updateReadHistoryOutbox) {
+17773-            return ((TL_update.TL_updateReadHistoryOutbox) update).pts;
+17774-        } else if (update instanceof TL_update.TL_updateNewMessage) {
+17775-            return ((TL_update.TL_updateNewMessage) update).pts;
+17776-        } else if (update instanceof TL_update.TL_updateEditMessage) {
+17777-            return ((TL_update.TL_updateEditMessage) update).pts;
+17778-        } else if (update instanceof TL_update.TL_updateWebPage) {
+17779-            return ((TL_update.TL_updateWebPage) update).pts;
+17780-        } else if (update instanceof TL_update.TL_updateReadHistoryInbox) {
+17781-            return ((TL_update.TL_updateReadHistoryInbox) update).pts;
+17782-        } else if (update instanceof TL_update.TL_updateChannelWebPage) {
+--
+17788:        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17789:            return ((TL_update.TL_updateReadMessagesContents) update).pts;
+17790-        } else if (update instanceof TL_update.TL_updateChannelTooLong) {
+17791-            return ((TL_update.TL_updateChannelTooLong) update).pts;
+17792-        } else if (update instanceof TL_update.TL_updateFolderPeers) {
+17793-            return ((TL_update.TL_updateFolderPeers) update).pts;
+17794-        } else if (update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17795-            return ((TL_update.TL_updatePinnedChannelMessages) update).pts;
+17796-        } else if (update instanceof TL_update.TL_updatePinnedMessages) {
+17797-            return ((TL_update.TL_updatePinnedMessages) update).pts;
+17798-        } else if (update instanceof TL_update.TL_updateMessageWidgetData) {
+17799-            return ((TL_update.TL_updateMessageWidgetData) update).pts;
+17800-        } else {
+17801-            return 0;
+17802-        }
+17803-    }
+17804-
+17805-    private static int getUpdatePtsCount(TLRPC.Update update) {
+17806-        if (update instanceof TL_update.TL_updateDeleteMessages) {
+17807-            return ((TL_update.TL_updateDeleteMessages) update).pts_count;
+17808-        } else if (update instanceof TL_update.TL_updateNewChannelMessage) {
+17809-            return ((TL_update.TL_updateNewChannelMessage) update).pts_count;
+17810-        } else if (update instanceof TL_update.TL_updateReadHistoryOutbox) {
+17811-            return ((TL_update.TL_updateReadHistoryOutbox) update).pts_count;
+17812-        } else if (update instanceof TL_update.TL_updateNewMessage) {
+17813-            return ((TL_update.TL_updateNewMessage) update).pts_count;
+17814-        } else if (update instanceof TL_update.TL_updateEditMessage) {
+17815-            return ((TL_update.TL_updateEditMessage) update).pts_count;
+17816-        } else if (update instanceof TL_update.TL_updateWebPage) {
+17817-            return ((TL_update.TL_updateWebPage) update).pts_count;
+17818-        } else if (update instanceof TL_update.TL_updateReadHistoryInbox) {
+17819-            return ((TL_update.TL_updateReadHistoryInbox) update).pts_count;
+--
+17826:        } else if (update instanceof TL_update.TL_updateReadMessagesContents) {
+17827:            return ((TL_update.TL_updateReadMessagesContents) update).pts_count;
+17828-        } else if (update instanceof TL_update.TL_updateFolderPeers) {
+17829-            return ((TL_update.TL_updateFolderPeers) update).pts_count;
+17830-        } else if (update instanceof TL_update.TL_updatePinnedChannelMessages) {
+17831-            return ((TL_update.TL_updatePinnedChannelMessages) update).pts_count;
+17832-        } else if (update instanceof TL_update.TL_updatePinnedMessages) {
+17833-            return ((TL_update.TL_updatePinnedMessages) update).pts_count;
+17834-        } else if (update instanceof TL_update.TL_updateMessageWidgetData) {
+17835-            return ((TL_update.TL_updateMessageWidgetData) update).pts_count;
+17836-        } else {
+17837-            return 0;
+17838-        }
+17839-    }
+17840-
+17841-    private static int getUpdateQts(TLRPC.Update update) {
+17842-        if (update instanceof TL_update.TL_updateNewEncryptedMessage) {
+17843-            return ((TL_update.TL_updateNewEncryptedMessage) update).qts;
+17844-        } else {
+17845-            return 0;
+17846-        }
+17847-    }
+17848-
+17849-    public static long getUpdateChannelId(TLRPC.Update update) {
+17850-        if (update instanceof TL_update.TL_updateNewChannelMessage) {
+
+== где ставится destroyTime
+TMessagesProj/src/main/java/org/telegram/ui/SecretMediaViewer.java:198:            destroyTime = time;
+TMessagesProj/src/main/java/org/telegram/ui/SecretMediaViewer.java:509:                        currentMessageObject.messageOwner.destroyTime = key;
+TMessagesProj/src/main/java/org/telegram/ui/SecretMediaViewer.java:1382:        //messageObject.messageOwner.destroyTime = (int) (System.currentTimeMillis() / 1000 + ConnectionsManager.getInstance().getTimeDifference()) + 4;
+TMessagesProj/src/main/java/org/telegram/ui/Components/SharedMediaLayout.java:8915:                    msg.destroyTime = omsg.destroyTime;
+TMessagesProj/src/main/java/org/telegram/ui/Components/Paint/Views/MessageEntityView.java:1460:        newmsg.destroyTime = msg.destroyTime;
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16257:            messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:16268:                messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:23657:                        messageObject.messageOwner.destroyTime = key;
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:39935:        msg.destroyTime = omsg.destroyTime;
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:9933:                                    message.destroyTime = cursor2.intValue(0);
+
+== где создаётся readMessageContents
+TMessagesProj/src/main/java/org/telegram/tgnet/TLRPC.java:54039:    public static class TL_messages_readMessageContents extends TLObject {
+TMessagesProj/src/main/java/org/telegram/tgnet/TLRPC.java:58049:    public static class TL_channels_readMessageContents extends TLObject {
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14448:                TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14458:                TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14473:            TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14483:            TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14552:            TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:14561:            TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/LocationController.java:950:            TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/LocationController.java:957:            TLRPC.TL_messages_readMessageContents req = new TLRPC.TL_messages_readMessageContents();
+TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java:49:                || n.equals("TL_messages_readMessageContents")
+TMessagesProj/src/main/java/org/telegram/messenger/GhostMode.java:50:                || n.equals("TL_channels_readMessageContents")
