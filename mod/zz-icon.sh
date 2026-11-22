@@ -1,8 +1,7 @@
 #!/bin/bash
 python3 -m pip install --quiet pillow 2>/dev/null || true
 python3 - <<'PY'
-import glob, os
-from collections import Counter
+import glob, os, re
 try:
     from PIL import Image, ImageDraw
 except Exception:
@@ -10,27 +9,47 @@ except Exception:
     raise SystemExit(0)
 
 DEFAULT_BG = (0x15, 0x0d, 0x2d, 255)
+INTRO_SIZE = 0.62   # размер иконки на приветственном экране (доля круга)
+
+def keep_main(counts):
+    m = max(counts) if counts else 0
+    if m == 0:
+        return None
+    idx = [i for i, c in enumerate(counts) if c >= m * 0.25]
+    return idx[0], idx[-1]
 
 def find_tile(path):
     img = Image.open(path).convert("RGBA")
-    small = img.resize((128, 128))
-    cnt = Counter(c for c in small.getdata() if c[3] >= 250)
-    bg = cnt.most_common(1)[0][0] if cnt else DEFAULT_BG
-    px = img.load()
     w, h = img.size
-    x0, y0, x1, y1 = w, h, -1, -1
+    px = img.load()
+    transparent = sum(1 for y in range(0, h, 4) for x in range(0, w, 4) if px[x, y][3] < 128)
+    share = transparent / float(((h + 3) // 4) * ((w + 3) // 4))
+    if share > 0.2:
+        bg = DEFAULT_BG
+        def is_tile(p):
+            return p[3] > 128
+    else:
+        small = img.resize((128, 128))
+        cnt = {}
+        for c in small.getdata():
+            if c[3] >= 250:
+                cnt[c] = cnt.get(c, 0) + 1
+        bg = max(cnt, key=cnt.get) if cnt else DEFAULT_BG
+        def is_tile(p):
+            return p[3] > 128 and max(abs(p[0] - bg[0]), abs(p[1] - bg[1]), abs(p[2] - bg[2])) > 45
+    cols = [0] * w
+    rows = [0] * h
     for y in range(h):
         for x in range(w):
-            r, g, b, a = px[x, y]
-            if a > 128 and max(abs(r - bg[0]), abs(g - bg[1]), abs(b - bg[2])) > 45:
-                if x < x0: x0 = x
-                if x > x1: x1 = x
-                if y < y0: y0 = y
-                if y > y1: y1 = y
-    if x1 < 0 or (x1 - x0) < w * 0.15:
-        box = img.getchannel("A").getbbox() or (0, 0, w, h)
+            if is_tile(px[x, y]):
+                cols[x] += 1
+                rows[y] += 1
+    cx = keep_main(cols)
+    ry = keep_main(rows)
+    if cx and ry:
+        box = (cx[0], ry[0], cx[1] + 1, ry[1] + 1)
     else:
-        box = (x0, y0, x1 + 1, y1 + 1)
+        box = img.getchannel("A").getbbox() or (0, 0, w, h)
     return bg, img.crop(box)
 
 def square(tile):
@@ -76,6 +95,20 @@ if os.path.exists("icon.png"):
             legacy(f, bg, art, "round" in name)
             n += 1
     print("Основная иконка: по центру, PNG =", n)
+    # приветственный экран: иконка крупнее
+    m = 0
+    for f in glob.glob("TMessagesProj*/src/*/res/drawable*/intro_tg_plane.*"):
+        ext = os.path.splitext(f)[1].lower()
+        fmt = {".webp": "WEBP", ".png": "PNG"}.get(ext)
+        if not fmt:
+            continue
+        w, h = Image.open(f).size
+        k = int(min(w, h) * INTRO_SIZE)
+        out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        out.alpha_composite(art.resize((k, k), Image.LANCZOS), dest=((w - k) // 2, (h - k) // 2))
+        out.save(f, fmt)
+        m += 1
+    print("Приветственный экран: иконка крупнее, файлов =", m)
 else:
     print("WARNING: icon.png не найден")
 
@@ -86,4 +119,14 @@ if os.path.exists("icon2.png"):
     if os.path.exists(lp):
         legacy(lp, bg2, art2, False)
     print("Вторая иконка: по центру")
+
+# название на приветственном экране
+cnt = 0
+for f in glob.glob("TMessagesProj*/src/*/res/values*/strings*.xml"):
+    s = open(f, encoding="utf-8").read()
+    t = re.sub(r'(<string name="Page1Title"[^>]*>)[^<]*(</string>)', r'\1Telegyou\2', s)
+    if t != s:
+        open(f, "w", encoding="utf-8").write(t)
+        cnt += 1
+print("Приветственный экран: название Telegyou, файлов =", cnt)
 PY
