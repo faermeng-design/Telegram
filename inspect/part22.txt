@@ -1,0 +1,299 @@
+== AlertsCreator 7896-8040
+        final boolean[] deleteForAll = new boolean[1];
+        boolean canRevokeInbox = user != null && MessagesController.getInstance(currentAccount).canRevokePmInbox;
+        int revokeTimeLimit;
+        if (user != null) {
+            revokeTimeLimit = MessagesController.getInstance(currentAccount).revokeTimePmLimit;
+        } else {
+            revokeTimeLimit = MessagesController.getInstance(currentAccount).revokeTimeLimit;
+        }
+        boolean hasDeleteForAllCheck = false;
+        boolean hasNotOut = false;
+        int myMessagesCount = 0;
+        boolean canDeleteInbox = encryptedChat == null && user != null && canRevokeInbox && revokeTimeLimit == 0x7fffffff;
+        if (chat != null && chat.megagroup && !scheduled && !isSavedMessages) {
+            ArrayList<MessageObject> messages = new ArrayList<>();
+            if (selectedMessage != null) {
+                if (selectedMessage.messageOwner.action == null || selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionEmpty ||
+                        selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionChatDeleteUser ||
+                        selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByLink ||
+                        selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionChatAddUser) {
+                    if (selectedGroup != null) {
+                        messages.addAll(selectedGroup.messages);
+                    } else {
+                        messages.add(selectedMessage);
+                    }
+                }
+                boolean hasOutgoing = !selectedMessage.isSendError() && selectedMessage.getDialogId() == mergeDialogId && (selectedMessage.messageOwner.action == null || selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionEmpty) && selectedMessage.isOut() && (currentDate - selectedMessage.messageOwner.date) <= revokeTimeLimit;
+                if (hasOutgoing) {
+                    myMessagesCount++;
+                }
+            } else {
+                for (int a = 1; a >= 0; a--) {
+                    for (int b = 0; b < selectedMessages[a].size(); b++) {
+                        MessageObject msg = selectedMessages[a].valueAt(b);
+                        if (a == 1) {
+                            if (msg.isOut() && msg.messageOwner.action == null) {
+                                if ((currentDate - msg.messageOwner.date) <= revokeTimeLimit) {
+                                    myMessagesCount++;
+                                }
+                            }
+                        }
+                        messages.add(msg);
+                    }
+                }
+            }
+
+            long clientUserId = UserConfig.getInstance(currentAccount).getClientUserId();
+            ArrayList<TLObject> actionParticipants = messages
+                    .stream()
+                    .filter(a -> !a.isEphemeral())
+                    .mapToLong(MessageObject::getFromChatId)
+                    .distinct()
+                    .mapToObj(fromId -> {
+                        if (fromId > 0) {
+                            return MessagesController.getInstance(currentAccount).getUser(fromId);
+                        } else {
+                            return MessagesController.getInstance(currentAccount).getChat(-fromId);
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .filter(userOrChat -> {
+                        if (userOrChat instanceof TLRPC.User) {
+                            TLRPC.User user1 = (TLRPC.User) userOrChat;
+                            return user1.id != clientUserId;
+                        } else if (userOrChat instanceof TLRPC.Chat) {
+                            TLRPC.Chat chat1 = (TLRPC.Chat) userOrChat;
+                            return !ChatObject.hasAdminRights(chat1);
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            if (!actionParticipants.isEmpty()) {
+                if (channelParticipants == null) {
+                    final AlertDialog[] progressDialog = new AlertDialog[]{new AlertDialog(activity, AlertDialog.ALERT_TYPE_SPINNER)};
+
+                    final int participantCount = actionParticipants.size();
+                    TLRPC.ChannelParticipant[] channelParticipantsLoad = new TLRPC.ChannelParticipant[participantCount];
+                    int[] requestIds = new int[participantCount];
+                    int[] responseCounter = new int[1];
+
+                    for (int i = 0; i < participantCount; i++) {
+                        TLRPC.TL_channels_getParticipant req = new TLRPC.TL_channels_getParticipant();
+                        req.channel = MessagesController.getInputChannel(chat);
+                        req.participant = MessagesController.getInputPeer(actionParticipants.get(i));
+                        final int index = i;
+                        requestIds[i] = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                            responseCounter[0]++;
+                            requestIds[index] = 0;
+
+                            if (response != null) {
+                                TLRPC.TL_channels_channelParticipant participant = (TLRPC.TL_channels_channelParticipant) response;
+                                channelParticipantsLoad[index] = participant.participant;
+                            }
+
+                            if (responseCounter[0] == participantCount) {
+                                try {
+                                    progressDialog[0].dismiss();
+                                } catch (Throwable ignore) {
+                                }
+                                progressDialog[0] = null;
+
+                                createDeleteMessagesAlert(fragment, user, chat, encryptedChat, chatInfo, mergeDialogId, selectedMessage, selectedMessages, selectedGroup, topicId, mode, channelParticipantsLoad, onDelete, hideDim, resourcesProvider);
+                            }
+                        }));
+                    }
+
+                    AndroidUtilities.runOnUIThread(() -> {
+                        if (progressDialog[0] == null) {
+                            return;
+                        }
+                        progressDialog[0].setOnCancelListener(dialog -> {
+                            for (int requestId : requestIds) {
+                                if (requestId != 0) {
+                                    ConnectionsManager.getInstance(currentAccount).cancelRequest(requestId, true);
+                                }
+                            }
+                            if (hideDim != null) {
+                                hideDim.run();
+                            }
+                        });
+                        fragment.showDialog(progressDialog[0]);
+                    }, 1000);
+                    return;
+                }
+                DeleteMessagesBottomSheet deleteMessagesBottomSheet = new DeleteMessagesBottomSheet(fragment, chat, messages, actionParticipants, channelParticipants, mergeDialogId, topicId, mode, false, onDelete);
+                if (hideDim != null) {
+                    deleteMessagesBottomSheet.setOnHideListener(i -> {
+                        hideDim.run();
+                    });
+                }
+                deleteMessagesBottomSheet.show();
+                return;
+            } else if (!hasNotOut && myMessagesCount > 0 && hasNonDiceMessages) {
+                hasDeleteForAllCheck = true;
+                FrameLayout frameLayout = new FrameLayout(activity);
+                CheckBoxCell cell = new CheckBoxCell(activity, 1, resourcesProvider);
+                cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
+                if (chat != null && hasNotOut) {
+                    cell.setText(LocaleController.getString(R.string.DeleteForAll), "", false, false);
+                } else {
+                    cell.setText(LocaleController.getString(R.string.DeleteMessagesOption), "", false, false);
+                }
+                cell.setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
+                frameLayout.addView(cell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
+                cell.setOnClickListener(v -> {
+
+== AlertsCreator 8040-8190
+                cell.setOnClickListener(v -> {
+                    CheckBoxCell cell12 = (CheckBoxCell) v;
+                    deleteForAll[0] = !deleteForAll[0];
+                    cell12.setChecked(deleteForAll[0], true);
+                });
+                builder.setView(frameLayout);
+                builder.setCustomViewOffset(9);
+            }
+        } else if (!scheduled && !isSavedMessages && !ChatObject.isChannel(chat) && encryptedChat == null) {
+            if (user != null && user.id != UserConfig.getInstance(currentAccount).getClientUserId() && (!user.bot || user.support) || chat != null) {
+                if (selectedMessage != null) {
+                    boolean hasOutgoing = !selectedMessage.isSendError() && (
+                            selectedMessage.messageOwner.action == null ||
+                                    selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionEmpty ||
+                                    selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionPhoneCall ||
+                                    selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionPinMessage ||
+                                    selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionGeoProximityReached ||
+                                    selectedMessage.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme) && (selectedMessage.isOut() || canRevokeInbox || ChatObject.hasAdminRights(chat)) && (currentDate - selectedMessage.messageOwner.date) <= revokeTimeLimit;
+                    if (hasOutgoing) {
+                        myMessagesCount++;
+                    }
+                    hasNotOut = !selectedMessage.isOut();
+                } else {
+                    for (int a = 1; a >= 0; a--) {
+                        for (int b = 0; b < selectedMessages[a].size(); b++) {
+                            MessageObject msg = selectedMessages[a].valueAt(b);
+                            if (!(msg.messageOwner.action == null ||
+                                    msg.messageOwner.action instanceof TLRPC.TL_messageActionEmpty ||
+                                    msg.messageOwner.action instanceof TLRPC.TL_messageActionPhoneCall ||
+                                    msg.messageOwner.action instanceof TLRPC.TL_messageActionPinMessage ||
+                                    msg.messageOwner.action instanceof TLRPC.TL_messageActionGeoProximityReached)) {
+                                continue;
+                            }
+                            if ((msg.isOut() || canRevokeInbox) || chat != null && ChatObject.canBlockUsers(chat)) {
+                                if ((currentDate - msg.messageOwner.date) <= revokeTimeLimit) {
+                                    myMessagesCount++;
+                                    if (!hasNotOut && !msg.isOut()) {
+                                        hasNotOut = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (myMessagesCount > 0 && hasNonDiceMessages && (user == null || !UserObject.isDeleted(user))) {
+                hasDeleteForAllCheck = true;
+                FrameLayout frameLayout = new FrameLayout(activity);
+                CheckBoxCell cell = new CheckBoxCell(activity, 1, resourcesProvider);
+                cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
+                if (canDeleteInbox) {
+                    cell.setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
+                } else if (chat != null && (hasNotOut || myMessagesCount == count)) {
+                    cell.setText(LocaleController.getString(R.string.DeleteForAll), "", false, false);
+                } else {
+                    cell.setText(LocaleController.getString(R.string.DeleteMessagesOption), "", false, false);
+                }
+                cell.setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
+                frameLayout.addView(cell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
+                cell.setOnClickListener(v -> {
+                    CheckBoxCell cell1 = (CheckBoxCell) v;
+                    deleteForAll[0] = !deleteForAll[0];
+                    cell1.setChecked(deleteForAll[0], true);
+                });
+                builder.setView(frameLayout);
+                builder.setCustomViewOffset(9);
+            }
+        }
+
+        AlertDialog.OnButtonClickListener deleteAction = (dialogInterface, i) -> {
+            ArrayList<Integer> ids = null;
+            long thisDialogId = dialogId;
+            if (isSavedMessages) {
+                thisDialogId = UserConfig.getInstance(currentAccount).getClientUserId();
+            }
+            if (selectedMessage != null) {
+                ArrayList<MessageObject> ephemeralMessages = new ArrayList<>();
+                ids = new ArrayList<>();
+                ArrayList<Long> random_ids = null;
+                if (selectedGroup != null) {
+                    for (int a = 0; a < selectedGroup.messages.size(); a++) {
+                        MessageObject messageObject = selectedGroup.messages.get(a);
+                        if (messageObject.isEphemeral()) {
+                            ephemeralMessages.add(messageObject);
+                            continue;
+                        }
+
+                        ids.add(messageObject.getId());
+                        if (encryptedChat != null && messageObject.messageOwner.random_id != 0 && messageObject.type != 10) {
+                            if (random_ids == null) {
+                                random_ids = new ArrayList<>();
+                            }
+                            random_ids.add(messageObject.messageOwner.random_id);
+                        }
+                    }
+                } else {
+                    if (selectedMessage.isEphemeral()) {
+                        ephemeralMessages.add(selectedMessage);
+                    } else {
+                        ids.add(selectedMessage.getId());
+                        if (encryptedChat != null && selectedMessage.messageOwner.random_id != 0 && selectedMessage.type != 10) {
+                            random_ids = new ArrayList<>();
+                            random_ids.add(selectedMessage.messageOwner.random_id);
+                        }
+                    }
+                }
+                if (mergeDialogId != 0 && selectedMessage.messageOwner.peer_id != null && selectedMessage.messageOwner.peer_id.chat_id == -mergeDialogId) {
+                    thisDialogId = mergeDialogId;
+                }
+                if (!ids.isEmpty()) {
+                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, thisDialogId, topicId, deleteForAll[0], mode);
+                }
+                for (MessageObject msg: ephemeralMessages) {
+                    MessagesController.getInstance(currentAccount).deleteEphemeralMessage(thisDialogId, topicId, msg);
+                }
+            } else {
+                for (int a = 1; a >= 0; a--) {
+                    ids = new ArrayList<>();
+                    for (int b = 0; b < selectedMessages[a].size(); b++) {
+                        ids.add(selectedMessages[a].keyAt(b));
+                    }
+                    ArrayList<Long> random_ids = null;
+                    if (encryptedChat != null) {
+                        random_ids = new ArrayList<>();
+                        for (int b = 0; b < selectedMessages[a].size(); b++) {
+                            MessageObject msg = selectedMessages[a].valueAt(b);
+                            if (msg.messageOwner.random_id != 0 && msg.type != 10) {
+                                random_ids.add(msg.messageOwner.random_id);
+                            }
+                        }
+                    }
+                    MessagesController.getInstance(currentAccount).deleteMessages(ids, random_ids, encryptedChat, (a == 1 && mergeDialogId != 0) ? mergeDialogId : thisDialogId, topicId, deleteForAll[0], mode);
+                    selectedMessages[a].clear();
+                }
+            }
+            if (onDelete != null) {
+                onDelete.run();
+            }
+        };
+
+        if (isSavedMessages) {
+            if (count == 1) {
+                builder.setTitle(LocaleController.getString(R.string.UnsaveSingleMessagesTitle));
+            } else {
+                builder.setTitle(LocaleController.formatString(R.string.UnsaveMessagesTitle, LocaleController.formatPluralString("messages", count)));
+            }
+        } else {
+            if (count == 1) {
+                builder.setTitle(LocaleController.getString(R.string.DeleteSingleMessagesTitle));
+            } else {
+                builder.setTitle(LocaleController.formatString(R.string.DeleteMessagesTitle, LocaleController.formatPluralString("messages", count)));
