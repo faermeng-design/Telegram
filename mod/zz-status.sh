@@ -9,15 +9,11 @@ elif sig not in s:
     print("WARNING: статус: formatUserStatus не найдена")
 else:
     new = r'''public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
-        boolean telegyouGhost = false;
         boolean telegyouSelf = false;
         try {
-            telegyouGhost = user != null && GhostMode.get("no_online");
-            telegyouSelf = user != null && user.id == UserConfig.getInstance(currentAccount).getClientUserId();
+            telegyouSelf = user != null && GhostMode.get("no_online")
+                    && user.id == UserConfig.getInstance(currentAccount).getClientUserId();
         } catch (Throwable ignored) {
-        }
-        if (!telegyouGhost) {
-            return formatUserStatusTelegyou(currentAccount, user, isOnline, madeShorter);
         }
         if (telegyouSelf) {
             if (isOnline != null) {
@@ -25,13 +21,7 @@ else:
             }
             return "\u041e\u043d\u043b\u0430\u0439\u043d?";
         }
-        boolean[] telegyouOn = isOnline != null ? isOnline : new boolean[1];
-        String telegyouResult = formatUserStatusTelegyou(currentAccount, user, telegyouOn, madeShorter);
-        if (telegyouOn[0]) {
-            telegyouOn[0] = false;
-            return "";
-        }
-        return telegyouResult;
+        return formatUserStatusTelegyou(currentAccount, user, isOnline, madeShorter);
     }
 
     private static String formatUserStatusTelegyou(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {'''
