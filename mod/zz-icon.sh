@@ -9,7 +9,7 @@ except Exception:
     raise SystemExit(0)
 
 DEFAULT_BG = (0x15, 0x0d, 0x2d, 255)
-INTRO_SIZE = 0.62   # размер иконки на приветственном экране (доля круга)
+INTRO_SIZE = 0.92   # размер иконки на приветственном экране (доля круга)
 
 def keep_main(counts):
     m = max(counts) if counts else 0
