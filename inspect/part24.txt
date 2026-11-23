@@ -1,0 +1,63 @@
+== IntroActivity: названия и картинки
+159:        SpannableStringBuilder ssb = new SpannableStringBuilder(LocaleController.getString(R.string.Page1Title));
+161:        titles[0] = ssb;
+606:            headerTextView.setText(titles[position]);
+774:            loadTexture(R.drawable.intro_fast_arrow_shadow, 0);
+775:            loadTexture(R.drawable.intro_fast_arrow, 1);
+776:            loadTexture(R.drawable.intro_fast_body, 2);
+777:            loadTexture(R.drawable.intro_fast_spiral, 3);
+778:            loadTexture(R.drawable.intro_ic_bubble_dot, 4);
+779:            loadTexture(R.drawable.intro_ic_bubble, 5);
+780:            loadTexture(R.drawable.intro_ic_cam_lens, 6);
+781:            loadTexture(R.drawable.intro_ic_cam, 7);
+782:            loadTexture(R.drawable.intro_ic_pencil, 8);
+783:            loadTexture(R.drawable.intro_ic_pin, 9);
+784:            loadTexture(R.drawable.intro_ic_smile_eye, 10);
+785:            loadTexture(R.drawable.intro_ic_smile, 11);
+786:            loadTexture(R.drawable.intro_ic_videocam, 12);
+787:            loadTexture(R.drawable.intro_knot_down, 13);
+788:            loadTexture(R.drawable.intro_knot_up, 14);
+789:            loadTexture(R.drawable.intro_powerful_infinity_white, 15);
+790:            loadTexture(R.drawable.intro_powerful_infinity, 16);
+791:            loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), false);
+792:            loadTexture(R.drawable.intro_powerful_star, 18);
+793:            loadTexture(R.drawable.intro_private_door, 19);
+794:            loadTexture(R.drawable.intro_private_screw, 20);
+795:            loadTexture(R.drawable.intro_tg_plane, 21);
+796:            loadTexture(v -> {
+805:            loadTexture(telegramMaskProvider, 23);
+820:            Intro.setTelegramTextures(textures[22], textures[21], textures[23]);
+885:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index) {
+886:            loadTexture(bitmapProvider, index, false);
+889:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index, boolean rebind) {
+904:        private void loadTexture(int resId, int index) {
+905:            loadTexture(resId, index, 0, false);
+908:        private void loadTexture(int resId, int index, int tintColor, boolean rebind) {
+978:                    eglThread.loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), true);
+981:                    eglThread.loadTexture(eglThread.telegramMaskProvider, 23, true);
+1074:                eglThread.loadTexture(R.drawable.intro_powerful_mask, 17, color, true);
+1077:                eglThread.loadTexture(eglThread.telegramMaskProvider, 23, true);
+
+== intro_tg_plane в ресурсах
+-rw-r--r-- 1 runner runner  650 Nov 23 11:09 TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner  512 Nov 23 11:09 TMessagesProj/src/main/res/drawable-mdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner  890 Nov 23 11:09 TMessagesProj/src/main/res/drawable-xhdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner 1256 Nov 23 11:09 TMessagesProj/src/main/res/drawable-xxhdpi/intro_tg_plane.webp
+
+== после мода: размеры intro_tg_plane
+TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp (123, 111) content: (27, 21, 95, 89)
+TMessagesProj/src/main/res/drawable-mdpi/intro_tg_plane.webp (82, 74) content: (18, 14, 63, 59)
+TMessagesProj/src/main/res/drawable-xhdpi/intro_tg_plane.webp (164, 148) content: (36, 28, 127, 119)
+TMessagesProj/src/main/res/drawable-xxhdpi/intro_tg_plane.webp (246, 222) content: (54, 42, 191, 179)
+
+== после мода: что в IntroActivity
+159:        SpannableStringBuilder ssb = new SpannableStringBuilder("Telegyou");
+
+== лог скриптов про приветственный экран
+105:Картинки и название: готово
+112:Приветственный экран: заменено файлов = 4
+211:Приветственный экран: иконка крупнее, файлов = 4
+213:Приветственный экран: название Telegyou, файлов = 6
+221:Название Telegyou в ресурсах: изменено файлов = 10
+222:Название в коде: заменено в DialogsActivity.java
+223:Название в коде: заменено в IntroActivity.java
