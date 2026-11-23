@@ -75,3 +75,20 @@ else:
         open(f, "w", encoding="ascii").write(t)
         print("Переключатель: добавлен")
 PY
+python3 - <<'PY'
+p = "TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java"
+s = open(p, encoding="utf-8").read()
+changed = 0
+for sig, tag in (("private Runnable sendSecretMessageRead(MessageObject messageObject, boolean readNow) {", "keep_burn:chat_read"),
+                 ("private Runnable sendSecretMediaDelete(MessageObject messageObject) {", "keep_burn:chat_delete")):
+    if tag in s:
+        print("Сгорающие (чат):", tag, "- уже есть")
+    elif sig not in s:
+        print("WARNING: сгорающие (чат): не найдена", sig[:50])
+    else:
+        s = s.replace(sig, sig + '\n        if (org.telegram.messenger.GhostMode.get("keep_burn")) { return null; } // ' + tag, 1)
+        changed += 1
+        print("Сгорающие (чат):", tag, "- правка внесена")
+if changed:
+    open(p, "w", encoding="utf-8").write(s)
+PY
