@@ -1,0 +1,91 @@
+== markMessageAsRead2 в ChatActivity (с окружением)
+16247-        }
+16248-    }
+16249-
+16250-    private Runnable sendSecretMessageRead(MessageObject messageObject, boolean readNow) {
+16251-        if (messageObject == null || messageObject.isOut() || !messageObject.isSecretMedia() || messageObject.messageOwner.destroyTime != 0 || messageObject.messageOwner.ttl <= 0) {
+16252-            return null;
+16253-        }
+16254-        if (readNow) {
+16255-            final boolean delete = messageObject.messageOwner.ttl != 0x7FFFFFFF;
+16256-            final int ttl = messageObject.messageOwner.ttl == 0x7FFFFFFF ? 0 : messageObject.messageOwner.ttl;
+16257-            messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
+16258-            if (currentEncryptedChat != null) {
+16259-                getMessagesController().markMessageAsRead(dialog_id, messageObject.messageOwner.random_id, ttl);
+16260-            } else {
+16261:                getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
+16262-            }
+16263-            return null;
+16264-        } else {
+16265-            return () -> {
+16266-                final boolean delete = messageObject.messageOwner.ttl != 0x7FFFFFFF;
+16267-                final int ttl = messageObject.messageOwner.ttl == 0x7FFFFFFF ? 0 : messageObject.messageOwner.ttl;
+16268-                messageObject.messageOwner.destroyTime = ttl + getConnectionsManager().getCurrentTime();
+16269-                messageObject.messageOwner.destroyTimeMillis = ttl * 1000L + getConnectionsManager().getCurrentTimeMillis();
+16270-                if (currentEncryptedChat != null) {
+16271-                    getMessagesController().markMessageAsRead(dialog_id, messageObject.messageOwner.random_id, ttl);
+16272-                } else {
+16273:                    getMessagesController().markMessageAsRead2(dialog_id, messageObject.getId(), null, ttl, 0, delete);
+16274-                }
+16275-            };
+16276-        }
+16277-    }
+16278-
+16279-    private Runnable sendSecretMediaDelete(MessageObject messageObject) {
+16280-        if (messageObject == null || messageObject.isOut() || !messageObject.isSecretMedia() || messageObject.messageOwner.ttl != 0x7FFFFFFF) {
+16281-            return null;
+16282-        }
+16283-        final long taskId = getMessagesController().createDeleteShowOnceTask(dialog_id, messageObject.getId());
+16284-        messageObject.forceExpired = true;
+16285-        if (messageObject.isOutOwner() || !messageObject.isRoundOnce() && !messageObject.isVoiceOnce()) {
+16286-            ArrayList<MessageObject> msgs = new ArrayList<>();
+16287-            msgs.add(messageObject);
+
+== SecretMediaViewer: удаление и закрытие
+161:        private long destroyTime;
+196:        private void setDestroyTime(long time, long ttl, boolean videoProgress) {
+198:            destroyTime = time;
+199:            destroyTtl = ttl;
+230:            if (currentMessageObject == null || currentMessageObject.messageOwner.destroyTime == 0 && currentMessageObject.messageOwner.ttl != 0x7FFFFFFF) {
+249:                if (destroyTime == 0) {
+253:                    progress = Math.max(0, destroyTime - msTime) / (destroyTtl * 1000.0f);
+472:        if (id == NotificationCenter.messagesDeleted) {
+489:                    if (!closePhoto(true, true)) {
+509:                        currentMessageObject.messageOwner.destroyTime = key;
+521:                    if (!closePhoto(true, true)) {
+601:                                closePhoto(true, !ignoreDelete);
+872:                    closePhoto(true, false);
+1222://                    closePhoto(false, false);
+1382:        //messageObject.messageOwner.destroyTime = (int) (System.currentTimeMillis() / 1000 + ConnectionsManager.getInstance().getTimeDifference()) + 4;
+1384:        ignoreDelete = messageObject.messageOwner.ttl == 0x7FFFFFFF;
+1479:        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagesDeleted);
+1547:                if (currentMessageObject == null || currentMessageObject.messageOwner.destroyTime == 0 && currentMessageObject.messageOwner.ttl != 0x7FFFFFFF) {
+1608:            secretDeleteTimer.setDestroyTime(messageObject.messageOwner.destroyTimeMillis, messageObject.messageOwner.ttl, false);
+1610:                closePhoto(true, true);
+1713:        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDeleted);
+1976:    public boolean closePhoto(boolean animated, boolean byDelete) {
+1999:        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDeleted);
+2094:                onPhotoClosed(object);
+2138:                onPhotoClosed(object);
+2163:    private void onPhotoClosed(PhotoViewer.PlaceProviderObject object) {
+2351:                    closePhoto(true, false);
+
+== кто отправляет messagesDeleted
+TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java:35216:                                AndroidUtilities.runOnUIThread(() -> NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.messagesDeleted, req.id, getUserConfig().getClientUserId() == dialog_id ? 0 : -dialog_id, true, true));
+TMessagesProj/src/main/java/org/telegram/ui/ContactAddActivity.java:847:                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.messagesDeleted, ids, 0L, false);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:2258:                        getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, mids, 0L, false);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:4430:                    AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, mids, DialogObject.isChatDialog(dialogId) ? -dialogId : 0, false));
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesStorage.java:14648:                        AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, mids, 0L, false));
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:9397:            getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:9572:        getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, false, false, false, 0);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:17639:                getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, ids, channelId, false);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:21083:                    getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, ids, -dialogId, false);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:21214:                    getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, arrayList, -dialogId, false);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:21263:                    getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, arrayList, DialogObject.isChatDialog(key) && ChatObject.isChannel(getChat(-key)) ? -key : 0, true, false, false, 0, sentMessageIds);
+TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java:23240:                        getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, dbMessages, channelId, false);
+
+== ChatActivity: messagesDeleted и ttl
+23110:        } else if (id == NotificationCenter.messagesDeleted) {
+24087:                if (message.media.ttl_seconds != 0 && (message.media.photo instanceof TLRPC.TL_photoEmpty || message.media.document instanceof TLRPC.TL_documentEmpty)) {
+26457:                    avatarContainer.setTime(action.encryptedAction.ttl_seconds, true);
+26606:                    avatarContainer.setTime(action.encryptedAction.ttl_seconds, true);
