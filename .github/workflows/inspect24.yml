@@ -21,24 +21,22 @@ jobs:
           {
             echo "== IntroActivity: названия и картинки"
             grep -n "Page1Title\|AppName\|titles\[\|intro_tg_plane\|setTelegramTextures\|loadTexture\|R.drawable.intro" $I | head -n 60
-          } > "$OUT" 2>&1
-          pip install --quiet pillow 2>/dev/null
-          {
             echo
             echo "== intro_tg_plane в ресурсах"
             ls -la TMessagesProj/src/main/res/drawable*/intro_tg_plane.* 2>&1
-          } >> "$OUT" 2>&1
+          } > "$OUT" 2>&1
+          pip install --quiet pillow 2>/dev/null
           bash telegyou-mod.sh > inspect/modlog.tmp 2>&1
           {
             echo
             echo "== после мода: размеры intro_tg_plane"
-            python3 -c "
-import glob
-from PIL import Image
-for f in sorted(glob.glob('TMessagesProj/src/main/res/drawable*/intro_tg_plane.*')):
-    im = Image.open(f).convert('RGBA')
-    print(f, im.size, 'контент:', im.getchannel('A').getbbox())
-"
+            python3 - <<'PY'
+          import glob
+          from PIL import Image
+          for f in sorted(glob.glob('TMessagesProj/src/main/res/drawable*/intro_tg_plane.*')):
+              im = Image.open(f).convert('RGBA')
+              print(f, im.size, 'content:', im.getchannel('A').getbbox())
+          PY
             echo
             echo "== после мода: что в IntroActivity"
             grep -n "Telegyou\|Page1Title" $I | head -n 10
