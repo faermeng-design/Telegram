@@ -10,6 +10,7 @@ except Exception:
 
 DEFAULT_BG = (0x15, 0x0d, 0x2d, 255)
 INTRO_SIZE = 0.92   # размер иконки на приветственном экране (доля круга)
+LAYER = 1152        # размер слоёв иконки (больше = чётче заставка)
 
 def keep_main(counts):
     m = max(counts) if counts else 0
@@ -63,10 +64,10 @@ def layers(src, bg_path, fg_path):
     bg, tile = find_tile(src)
     art = square(tile)
     os.makedirs(os.path.dirname(bg_path), exist_ok=True)
-    Image.new("RGBA", (432, 432), bg).save(bg_path)
-    fg = Image.new("RGBA", (432, 432), (0, 0, 0, 0))
-    k = 294
-    fg.alpha_composite(art.resize((k, k), Image.LANCZOS), dest=((432 - k) // 2, (432 - k) // 2))
+    Image.new("RGBA", (LAYER, LAYER), bg).save(bg_path)
+    fg = Image.new("RGBA", (LAYER, LAYER), (0, 0, 0, 0))
+    k = int(LAYER * 0.68)
+    fg.alpha_composite(art.resize((k, k), Image.LANCZOS), dest=((LAYER - k) // 2, (LAYER - k) // 2))
     fg.save(fg_path)
     return bg, art
 
