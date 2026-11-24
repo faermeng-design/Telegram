@@ -11,7 +11,12 @@ buildscript {
         classpath 'com.huawei.agconnect:agcp:1.9.1.301'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:2.3.20"
     }
+}
+plugins {
+    id("com.chaquo.python") version "17.0.2" apply false
+    id("com.google.devtools.ksp") version "2.3.14" apply false
 }
 repositories {
     google()
