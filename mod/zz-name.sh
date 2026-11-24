@@ -24,3 +24,16 @@ ui = "TMessagesProj/src/main/java/org/telegram/ui/"
 patch(ui + "DialogsActivity.java", "new SpannableStringBuilder(getString(R.string.AppName))", 'new SpannableStringBuilder("Telegyou")')
 patch(ui + "IntroActivity.java", "new SpannableStringBuilder(LocaleController.getString(R.string.Page1Title))", 'new SpannableStringBuilder("Telegyou")')
 PY
+python3 - <<'PY'
+d = "TMessagesProj/src/main/java/org/telegram/ui/DialogsActivity.java"
+s = open(d, encoding="utf-8").read()
+old = "ssb.setSpan(new ImageSpan(logoDrawable), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);"
+new = "ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);"
+if old in s:
+    open(d, "w", encoding="utf-8").write(s.replace(old, new, 1))
+    print("Заголовок списка чатов: логотип-картинка заменён текстом Telegyou")
+elif new in s:
+    print("Заголовок списка чатов: уже текст")
+else:
+    print("WARNING: заголовок списка чатов: строка с логотипом не найдена")
+PY
