@@ -1,0 +1,48 @@
+name: Inspect mod log
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          set +e
+          mkdir -p inspect
+          OUT=inspect/part25.txt
+          pip install --quiet pillow 2>/dev/null
+          bash telegyou-mod.sh > inspect/modlog.tmp 2>&1
+          J=TMessagesProj/src/main/java/org/telegram
+          {
+            echo "== ошибки и предупреждения скриптов"
+            grep -n "WARNING\|Traceback\|Error\|No such file\|не найден" inspect/modlog.tmp | head -n 80
+            echo
+            echo "== что сообщили нужные скрипты"
+            grep -n "Название\|Приветств\|Плашка\|Вид удалённых\|Оставить у меня\|Сгорающ\|Заставка" inspect/modlog.tmp | head -n 60
+            echo
+            echo "== DialogsActivity: заголовок"
+            grep -n "Telegyou\|R.string.AppName" $J/ui/DialogsActivity.java | head -n 10
+            echo
+            echo "== IntroActivity: заголовок"
+            grep -n "Telegyou\|Page1Title" $J/ui/IntroActivity.java | head -n 10
+            echo
+            echo "== файлы настроек и стиля"
+            ls $J/messenger/TelegyouStyle.java $J/ui/TelegyouSettingsFragment.java 2>&1
+            grep -c "TelegyouStyle" $J/ui/TelegyouSettingsFragment.java 2>&1
+          } > "$OUT" 2>&1
+          rm -f inspect/modlog.tmp
+          true
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part25.txt
+          git commit -m "inspect part25" || echo "nothing to commit"
+          git push
