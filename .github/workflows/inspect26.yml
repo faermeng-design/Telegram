@@ -1,0 +1,44 @@
+name: Inspect title and intro
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect
+        run: |
+          set +e
+          mkdir -p inspect
+          OUT=inspect/part26.txt
+          J=TMessagesProj/src/main/java/org/telegram
+          {
+            echo "== AppName везде в коде"
+            grep -rn "R.string.AppName\|\"AppName\"" $J --include=*.java | head -n 40
+            echo
+            echo "== DialogsActivity вокруг строки 3444"
+            sed -n '3430,3465p' $J/ui/DialogsActivity.java
+            echo
+            echo "== файлы с Tabs в названии"
+            ls $J/ui | grep -i "tab"
+            echo
+            echo "== IntroActivity: картинка и тексты"
+            grep -n "intro_tg_plane\|loadTexture\|setTelegramTextures\|R.drawable.intro\|titles\[" $J/ui/IntroActivity.java | head -n 40
+            echo
+            echo "== intro-файлы в ресурсах"
+            ls -la TMessagesProj/src/main/res/drawable*/intro_* 2>&1 | head -n 40
+          } > "$OUT" 2>&1
+          true
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add inspect/part26.txt
+          git commit -m "inspect part26" || echo "nothing to commit"
+          git push
