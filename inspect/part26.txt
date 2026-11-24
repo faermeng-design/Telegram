@@ -1,0 +1,171 @@
+== AppName везде в коде
+TMessagesProj/src/main/java/org/telegram/ui/ChannelAdminLogActivity.java:2166:                            builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/ChannelAdminLogActivity.java:2181:                            builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/ChannelAdminLogActivity.java:2774:        builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:4549:                builder1.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java:7322:                                            .setTitle(LocaleController.getString(R.string.AppName))
+TMessagesProj/src/main/java/org/telegram/ui/PrivacyControlActivity.java:1250:        builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/PrivacyControlActivity.java:1746:                builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:601:                        showAlertWithText(getString(R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:603:                        showAlertWithText(getString(R.string.AppName), error.text);
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:978:                        showAlertWithText(getString(R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:980:                        showAlertWithText(getString(R.string.AppName), error.text);
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:1117:                                showAlertWithText(getString(R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+TMessagesProj/src/main/java/org/telegram/ui/TwoStepVerificationActivity.java:1119:                                showAlertWithText(getString(R.string.AppName), error.text);
+TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java:3758:        builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/Stories/recorder/StoryUploadingService.java:101:            builder.setContentTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/Stories/DialogStoriesCell.java:337:        telegramLogoView.setContentDescription(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/ExternalActionActivity.java:288:                    builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/PopupNotificationActivity.java:566:            builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/Business/ChatAttachAlertQuickRepliesLayout.java:457:        new AlertDialog.Builder(getContext(), resourcesProvider).setTitle(LocaleController.getString(R.string.AppName)).setMessage(error).setPositiveButton(LocaleController.getString(R.string.OK), null).show();
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:2685:                builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:3759:                        showAlertWithText(LocaleController.getString(R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:3761:                        showAlertWithText(LocaleController.getString(R.string.AppName), error.text);
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:3858:                                    showAlertWithText(LocaleController.getString(R.string.AppName), LocaleController.getString(R.string.PasswordEmailInvalid));
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:3867:                                    showAlertWithText(LocaleController.getString(R.string.AppName), LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
+TMessagesProj/src/main/java/org/telegram/ui/PaymentFormActivity.java:3869:                                    showAlertWithText(LocaleController.getString(R.string.AppName), error.text);
+TMessagesProj/src/main/java/org/telegram/ui/Cells/ThemePreviewMessagesCell.java:138:            message.media.webpage.site_name = LocaleController.getString(R.string.AppName);
+TMessagesProj/src/main/java/org/telegram/ui/PhotoViewer.java:4596:        builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/PhotoViewer.java:10554:                    builder.setTitle(getString("AppName", R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/PhotoViewer.java:12511:                        builder.setTitle(getString("AppName", R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/GroupCreateActivity.java:582:                        builder.setTitle(getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java:4158:                builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java:5128:                            builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java:5196:                                builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java:7468:            builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/LaunchActivity.java:7536:            builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/Components/ChatAttachAlertAudioLayout.java:677:        new AlertDialog.Builder(getContext(), resourcesProvider).setTitle(LocaleController.getString(R.string.AppName)).setMessage(error).setPositiveButton(LocaleController.getString(R.string.OK), null).show();
+TMessagesProj/src/main/java/org/telegram/ui/Components/AlertsCreator.java:731:        builder.setTitle(LocaleController.getString(R.string.AppName));
+TMessagesProj/src/main/java/org/telegram/ui/Components/AlertsCreator.java:891:        builder.setTitle(title == null ? LocaleController.getString(R.string.AppName) : title);
+TMessagesProj/src/main/java/org/telegram/ui/Components/AlertsCreator.java:926:        builder.setTitle(title == null ? LocaleController.getString(R.string.AppName) : title);
+TMessagesProj/src/main/java/org/telegram/ui/Components/AlertsCreator.java:6772:        builder.setTitle(LocaleController.getString(R.string.AppName));
+grep: write error: Broken pipe
+
+== DialogsActivity вокруг строки 3444
+                actionBar.setAdditionalTextLeft(dp(28));
+                communityAvatarDrawable = new AvatarDrawable(community);
+                communityAvatarImage = new BackupImageView(getContext());
+                communityAvatarImage.setRoundRadius(dp(11));
+                communityAvatarImage.setForUserOrChat(community, communityAvatarDrawable);
+                actionBar.addView(communityAvatarImage, LayoutHelper.createFrame(32, 32, Gravity.BOTTOM | Gravity.LEFT, 58, 0, 0, 12f));
+            } else {
+                statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
+                statusDrawable.center = true;
+                logoDrawable = context.getResources().getDrawable(R.drawable.telegram_logo_2).mutate();
+                logoDrawable.setBounds(0, dp(2), logoDrawable.getIntrinsicWidth(), dp(2) + logoDrawable.getIntrinsicHeight());
+                // a new drawable (also when the view is recreated after a theme switch made elsewhere): remember its tint, the
+                // theme hook only recolors when the color differs from the last one applied
+                logoDrawable.setColorFilter(lastLogoDrawableColor = getThemedColor(Theme.key_telegram_color_dialogsLogo), PorterDuff.Mode.MULTIPLY);
+                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.AppName));
+                ssb.setSpan(new ImageSpan(logoDrawable), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                actionBar.setTitle(ssb, statusDrawable);
+                updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
+            }
+            if (folderId == 0) {
+                actionBar.setSupportsHolidayImage(true);
+            }
+        }
+        //if (!onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) {
+            actionBar.setAddToContainer(false);
+            actionBar.setCastShadows(false);
+            actionBar.setClipContent(true);
+        //}
+        actionBar.setTitleActionRunnable(() -> {
+            if (initialDialogsType != DIALOGS_TYPE_WIDGET) {
+                hideFloatingButton(false);
+            }
+            if (hasOnlySlefStories && getStoriesController().hasOnlySelfStories()) {
+                dialogStoriesCell.openSelfStories();
+            } else {
+                scrollToTop(true, true);
+
+== файлы с Tabs в названии
+DatabaseMigrationHint.java
+GroupCallTabletGridAdapter.java
+MainTabsActivity.java
+MainTabsActivityController.java
+MainTabsLayout.java
+ProfileStoriesCollectionTabs.java
+SearchTabsAndFiltersLayout.java
+SuggestClearDatabaseBottomSheet.java
+
+== IntroActivity: картинка и тексты
+161:        titles[0] = ssb;
+606:            headerTextView.setText(titles[position]);
+774:            loadTexture(R.drawable.intro_fast_arrow_shadow, 0);
+775:            loadTexture(R.drawable.intro_fast_arrow, 1);
+776:            loadTexture(R.drawable.intro_fast_body, 2);
+777:            loadTexture(R.drawable.intro_fast_spiral, 3);
+778:            loadTexture(R.drawable.intro_ic_bubble_dot, 4);
+779:            loadTexture(R.drawable.intro_ic_bubble, 5);
+780:            loadTexture(R.drawable.intro_ic_cam_lens, 6);
+781:            loadTexture(R.drawable.intro_ic_cam, 7);
+782:            loadTexture(R.drawable.intro_ic_pencil, 8);
+783:            loadTexture(R.drawable.intro_ic_pin, 9);
+784:            loadTexture(R.drawable.intro_ic_smile_eye, 10);
+785:            loadTexture(R.drawable.intro_ic_smile, 11);
+786:            loadTexture(R.drawable.intro_ic_videocam, 12);
+787:            loadTexture(R.drawable.intro_knot_down, 13);
+788:            loadTexture(R.drawable.intro_knot_up, 14);
+789:            loadTexture(R.drawable.intro_powerful_infinity_white, 15);
+790:            loadTexture(R.drawable.intro_powerful_infinity, 16);
+791:            loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), false);
+792:            loadTexture(R.drawable.intro_powerful_star, 18);
+793:            loadTexture(R.drawable.intro_private_door, 19);
+794:            loadTexture(R.drawable.intro_private_screw, 20);
+795:            loadTexture(R.drawable.intro_tg_plane, 21);
+796:            loadTexture(v -> {
+805:            loadTexture(telegramMaskProvider, 23);
+820:            Intro.setTelegramTextures(textures[22], textures[21], textures[23]);
+885:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index) {
+886:            loadTexture(bitmapProvider, index, false);
+889:        private void loadTexture(GenericProvider<Void, Bitmap> bitmapProvider, int index, boolean rebind) {
+904:        private void loadTexture(int resId, int index) {
+905:            loadTexture(resId, index, 0, false);
+908:        private void loadTexture(int resId, int index, int tintColor, boolean rebind) {
+978:                    eglThread.loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), true);
+981:                    eglThread.loadTexture(eglThread.telegramMaskProvider, 23, true);
+1074:                eglThread.loadTexture(R.drawable.intro_powerful_mask, 17, color, true);
+1077:                eglThread.loadTexture(eglThread.telegramMaskProvider, 23, true);
+
+== intro-файлы в ресурсах
+-rw-r--r-- 1 runner runner  200 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_fast_arrow.webp
+-rw-r--r-- 1 runner runner  462 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_fast_arrow_shadow.webp
+-rw-r--r-- 1 runner runner 2134 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_fast_body.webp
+-rw-r--r-- 1 runner runner  588 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_fast_spiral.webp
+-rw-r--r-- 1 runner runner  150 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_bubble.webp
+-rw-r--r-- 1 runner runner   74 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_bubble_dot.webp
+-rw-r--r-- 1 runner runner  292 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_cam.webp
+-rw-r--r-- 1 runner runner  140 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_cam_lens.webp
+-rw-r--r-- 1 runner runner  132 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_pencil.webp
+-rw-r--r-- 1 runner runner  400 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_pin.webp
+-rw-r--r-- 1 runner runner  546 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_smile.webp
+-rw-r--r-- 1 runner runner   70 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_smile_eye.webp
+-rw-r--r-- 1 runner runner  206 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_ic_videocam.webp
+-rw-r--r-- 1 runner runner  708 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_knot_down.webp
+-rw-r--r-- 1 runner runner  690 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_knot_up.webp
+-rw-r--r-- 1 runner runner 1418 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_powerful_infinity.webp
+-rw-r--r-- 1 runner runner 1336 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_powerful_infinity_white.webp
+-rw-r--r-- 1 runner runner  488 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_powerful_mask.webp
+-rw-r--r-- 1 runner runner   60 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_powerful_star.webp
+-rw-r--r-- 1 runner runner 2350 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_private_door.webp
+-rw-r--r-- 1 runner runner  126 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_private_screw.webp
+-rw-r--r-- 1 runner runner  650 Nov 24 12:42 TMessagesProj/src/main/res/drawable-hdpi/intro_tg_plane.webp
+-rw-r--r-- 1 runner runner  170 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_fast_arrow.webp
+-rw-r--r-- 1 runner runner  264 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_fast_arrow_shadow.webp
+-rw-r--r-- 1 runner runner 1608 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_fast_body.webp
+-rw-r--r-- 1 runner runner  428 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_fast_spiral.webp
+-rw-r--r-- 1 runner runner  122 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_bubble.webp
+-rw-r--r-- 1 runner runner   54 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_bubble_dot.webp
+-rw-r--r-- 1 runner runner  202 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_cam.webp
+-rw-r--r-- 1 runner runner   90 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_cam_lens.webp
+-rw-r--r-- 1 runner runner   98 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_pencil.webp
+-rw-r--r-- 1 runner runner  302 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_pin.webp
+-rw-r--r-- 1 runner runner  364 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_smile.webp
+-rw-r--r-- 1 runner runner   52 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_smile_eye.webp
+-rw-r--r-- 1 runner runner  156 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_ic_videocam.webp
+-rw-r--r-- 1 runner runner  736 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_knot_down.webp
+-rw-r--r-- 1 runner runner  688 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_knot_up.webp
+-rw-r--r-- 1 runner runner  976 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_powerful_infinity.webp
+-rw-r--r-- 1 runner runner  940 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_powerful_infinity_white.webp
+-rw-r--r-- 1 runner runner  354 Nov 24 12:42 TMessagesProj/src/main/res/drawable-mdpi/intro_powerful_mask.webp
