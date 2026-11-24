@@ -1,0 +1,35 @@
+== ошибки и предупреждения скриптов
+66:                    }), ConnectionsManager.RequestFlagInvokeAfter | ConnectionsManager.RequestFlagFailOnServerErrors);
+
+== что сообщили нужные скрипты
+112:Приветственный экран: заменено файлов = 4
+211:Приветственный экран: иконка крупнее, файлов = 4
+213:Приветственный экран: название Telegyou, файлов = 6
+215:Оставить у меня: GhostMode дополнен
+216:Оставить у меня: MessagesController подключён
+217:Оставить у меня: галочек добавлено = 2 , вызовов удаления = 2
+221:Название Telegyou в ресурсах: изменено файлов = 10
+222:Название в коде: заменено в DialogsActivity.java
+223:Название в коде: заменено в IntroActivity.java
+238:Заставка запуска: заменено в файлах = 2
+244:Плашка значка: подключена (снизу, 2 секунды)
+246:Сгорающие: не отмечать прочитанным - правка внесена
+247:Сгорающие: таймер сгорания фото - правка внесена
+248:Сгорающие: задание на удаление гс - правка внесена
+249:Сгорающие: удаление гс после прослушивания - правка внесена
+251:Сгорающие (чат): keep_burn:chat_read - правка внесена
+252:Сгорающие (чат): keep_burn:chat_delete - правка внесена
+254:Вид удалённых: хранилище стиля создано
+255:Вид удалённых: сообщение подключено (старый блок убран: 1 )
+256:Вид удалённых: пункты в настройках добавлены
+
+== DialogsActivity: заголовок
+3444:                SpannableStringBuilder ssb = new SpannableStringBuilder("Telegyou");
+
+== IntroActivity: заголовок
+159:        SpannableStringBuilder ssb = new SpannableStringBuilder("Telegyou");
+
+== файлы настроек и стиля
+TMessagesProj/src/main/java/org/telegram/messenger/TelegyouStyle.java
+TMessagesProj/src/main/java/org/telegram/ui/TelegyouSettingsFragment.java
+8
