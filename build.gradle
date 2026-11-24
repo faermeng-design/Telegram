@@ -15,7 +15,7 @@ buildscript {
     }
 }
 plugins {
-    id("com.chaquo.python") version "17.0.2" apply false
+    id("com.chaquo.python") version "17.0.0" apply false
     id("com.google.devtools.ksp") version "2.3.14" apply false
 }
 repositories {
