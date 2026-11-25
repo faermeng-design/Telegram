@@ -63,7 +63,7 @@ jobs:
       - name: Build APK
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --max-workers=2 -Dorg.gradle.jvmargs="-Xmx4g" assembleAfatDebug
+          ./gradlew --no-daemon --max-workers=2 -Dorg.gradle.jvmargs="-Xmx4g" :TMessagesProj_App:assembleAfatDebug
 
       - uses: actions/upload-artifact@v4
         with:
