@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.telegram.build-app-plugin'
-apply plugin: 'com.chaquo.python'
 
 repositories {
     mavenCentral()
@@ -167,9 +166,6 @@ android {
     }
 
     defaultConfig {
-                python {
-            version = "3.11"
-                }
         minSdkVersion 23
         targetSdkVersion 36
         versionName APP_VERSION_NAME
