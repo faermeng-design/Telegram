@@ -1,0 +1,65 @@
+== telegramLogoView во всём файле
+162:    ImageView telegramLogoView;
+336:        telegramLogoView = new ImageView(context);
+337:        telegramLogoView.setContentDescription(getString(R.string.AppName));
+338:        telegramLogoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+339:        telegramLogoView.setImageResource(R.drawable.telegram_logo_2);
+340:        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
+341:        telegramLogoView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+342:        telegramLogoView.setFocusableInTouchMode(true);
+343:        addView(telegramLogoView, LayoutHelper.createFrame(90, 22));
+946:            telegramLogoView.setTranslationX(titleView.getTranslationX() + dp(1));
+947:            telegramLogoView.setTranslationY(bottomY - barOffset + dp(14 + FAKE_TOP_PADDING + 4.333f) + translationOffset /*titleView.getTranslationY() + dpf2(37.33f)*/);
+949:            emojiStatusView.setTranslationX(titleView.getTranslationX() - dpf2(3.33f) + telegramLogoView.getMeasuredWidth());
+1161:        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
+2235:        if (telegramLogoView != null) {
+2236:            telegramLogoView.setAlpha(logoAlpha);
+2237:            telegramLogoView.setVisibility(logoAlpha > 0 ? VISIBLE : GONE);
+
+== строки 315-360
+        recyclerListView.setOnItemClickListener(itemClickListener);
+        recyclerListView.setOnItemLongClickListener((view, position) -> {
+            if (collapsedProgress == 0 && overscrollProgress == 0) {
+                onUserLongPressed(view, ((StoryCell) view).dialogId);
+            }
+            return false;
+        });
+
+        recyclerListView.setAdapter(adapter);
+        addView(recyclerListView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, FAKE_TOP_PADDING, 0, 0));
+
+        titleView = new AnimatedTextView(getContext(), true, true, false);
+        titleView.setGravity(Gravity.LEFT);
+        titleView.setTextColor(getTextLogoColor());
+        titleView.setTypeface(AndroidUtilities.bold());
+        titleView.setPadding(0, dp(8), 0, dp(8));
+        titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
+        titleView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        titleView.setFocusableInTouchMode(true);
+        addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        telegramLogoView = new ImageView(context);
+        telegramLogoView.setContentDescription(getString(R.string.AppName));
+        telegramLogoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        telegramLogoView.setImageResource(R.drawable.telegram_logo_2);
+        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
+        telegramLogoView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        telegramLogoView.setFocusableInTouchMode(true);
+        addView(telegramLogoView, LayoutHelper.createFrame(90, 22));
+
+        statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
+        statusDrawable.center = true;
+        statusDrawable.setCallback(this);
+
+        emojiStatusView = new ImageView(context);
+        emojiStatusView.setScaleType(ImageView.ScaleType.CENTER);
+        emojiStatusView.setImageDrawable(statusDrawable);
+        addView(emojiStatusView, LayoutHelper.createFrame(40, 40));
+
+        subtitleOverlayContainer = new ActionBarAnimatedSubtitleOverlayContainer(context, null, ellipsizeSpanAnimator) {
+            @Override
+            public void onItemChanged(ReplaceAnimator<?> animator) {
+                super.onItemChanged(animator);
+                DialogStoriesCell.this.invalidate();
+            }
+        };
