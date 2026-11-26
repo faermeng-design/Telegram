@@ -1,0 +1,531 @@
+name: Import exteraGram plugin core
+on:
+  push:
+    branches: [Plugins-1]
+    paths:
+      - '.github/workflows/import-extera-core.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: exteraSquad/exteraGram
+          path: extera
+          sparse-checkout: |
+            TMessagesProj/src/full/java/com/exteragram/messenger/plugins
+            TMessagesProj/src/main/res/values
+            TMessagesProj/src/full/res/values
+
+      - name: Copy plugin core
+        run: |
+          set -e
+          SRC=extera/TMessagesProj/src/full/java/com/exteragram/messenger/plugins
+          DST=TMessagesProj/src/main/java/com/exteragram/messenger/plugins
+          mkdir -p "$DST"
+          for f in Plugin.kt PluginsController.kt PluginsConstants.kt PythonPluginsEngine.kt; do cp "$SRC/$f" "$DST/"; done
+          for d in hooks models utils xposed pip updates; do
+            mkdir -p "$DST/$d"
+            cp -r "$SRC/$d/." "$DST/$d/"
+          done
+          mkdir -p licenses
+          cp extera/LICENSE licenses/EXTERAGRAM_LICENSE.txt || true
+          cp extera/ADDITIONAL_TERMS.md licenses/EXTERAGRAM_ADDITIONAL_TERMS.md || true
+
+      - name: Write compatibility stubs
+        run: |
+          set -e
+          J=TMessagesProj/src/main/java
+          E=$J/com/exteragram
+          mkdir -p $J/de/robv/android/xposed $E/hook $E/messenger/utils/chats $E/messenger/utils/text $E/messenger/utils/network $E/messenger/preferences/utils $E/messenger/plugins/ui/components $E/messenger/plugins/catalog $E/messenger/plugins/analyzer
+
+          cat > $J/de/robv/android/xposed/XC_MethodHook.java <<'EOF1'
+          package de.robv.android.xposed;
+
+          import java.lang.reflect.Member;
+
+          /** Temporary compile-time stub (not exteraGram code). */
+          public abstract class XC_MethodHook {
+              public final int priority;
+
+              public XC_MethodHook() {
+                  this(50);
+              }
+
+              public XC_MethodHook(int priority) {
+                  this.priority = priority;
+              }
+
+              protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+              }
+
+              protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+              }
+
+              public static class MethodHookParam {
+                  public Member method;
+                  public Object thisObject;
+                  public Object[] args;
+                  private Object result = null;
+                  private Throwable throwable = null;
+                  public boolean returnEarly = false;
+
+                  public Object getResult() {
+                      return result;
+                  }
+
+                  public void setResult(Object result) {
+                      this.result = result;
+                      this.throwable = null;
+                      this.returnEarly = true;
+                  }
+
+                  public Throwable getThrowable() {
+                      return throwable;
+                  }
+
+                  public boolean hasThrowable() {
+                      return throwable != null;
+                  }
+
+                  public void setThrowable(Throwable throwable) {
+                      this.throwable = throwable;
+                      this.result = null;
+                      this.returnEarly = true;
+                  }
+
+                  public Object getResultOrThrowable() throws Throwable {
+                      if (throwable != null) {
+                          throw throwable;
+                      }
+                      return result;
+                  }
+              }
+
+              public class Unhook {
+                  private final Member hookMethod;
+
+                  public Unhook(Member hookMethod) {
+                      this.hookMethod = hookMethod;
+                  }
+
+                  public Member getHookedMethod() {
+                      return hookMethod;
+                  }
+
+                  public XC_MethodHook getCallback() {
+                      return XC_MethodHook.this;
+                  }
+
+                  public void unhook() {
+                  }
+              }
+          }
+          EOF1
+
+          cat > $J/de/robv/android/xposed/XC_MethodReplacement.java <<'EOF2'
+          package de.robv.android.xposed;
+
+          /** Temporary compile-time stub (not exteraGram code). */
+          public abstract class XC_MethodReplacement extends XC_MethodHook {
+              public XC_MethodReplacement() {
+                  super();
+              }
+
+              public XC_MethodReplacement(int priority) {
+                  super(priority);
+              }
+
+              @Override
+              protected final void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                  try {
+                      param.setResult(replaceHookedMethod(param));
+                  } catch (Throwable t) {
+                      param.setThrowable(t);
+                  }
+              }
+
+              @Override
+              protected final void afterHookedMethod(MethodHookParam param) throws Throwable {
+              }
+
+              protected abstract Object replaceHookedMethod(MethodHookParam param) throws Throwable;
+          }
+          EOF2
+
+          cat > $J/de/robv/android/xposed/XposedBridge.java <<'EOF3'
+          package de.robv.android.xposed;
+
+          import java.lang.reflect.Constructor;
+          import java.lang.reflect.Member;
+          import java.lang.reflect.Method;
+
+          /** Temporary compile-time stub (not exteraGram code). */
+          public final class XposedBridge {
+              private XposedBridge() {
+              }
+
+              public static void disableProfileSaver() {
+              }
+
+              public static Object invokeOriginalMethod(Member method, Object thisObject, Object[] args) throws Throwable {
+                  if (method instanceof Method) {
+                      ((Method) method).setAccessible(true);
+                      return ((Method) method).invoke(thisObject, args);
+                  }
+                  if (method instanceof Constructor) {
+                      ((Constructor<?>) method).setAccessible(true);
+                      return ((Constructor<?>) method).newInstance(args);
+                  }
+                  throw new IllegalArgumentException("Unsupported member: " + method);
+              }
+          }
+          EOF3
+
+          cat > $E/hook/HookHandle.java <<'EOF4'
+          package com.exteragram.hook;
+
+          /** Temporary compile-time stub (not exteraGram code). */
+          public interface HookHandle {
+              void unhook();
+          }
+          EOF4
+
+          cat > $E/messenger/utils/AppUtils.java <<'EOF5'
+          package com.exteragram.messenger.utils;
+
+          import org.telegram.messenger.FileLog;
+
+          import java.io.PrintWriter;
+          import java.io.StringWriter;
+          import java.util.ArrayList;
+
+          /** Minimal replacement for the exteraGram helper of the same name. */
+          public class AppUtils {
+              public static void log(Throwable t) {
+                  FileLog.e(t);
+              }
+
+              public static void log(String message) {
+                  FileLog.d(message);
+              }
+
+              public static void log(String message, Throwable t) {
+                  FileLog.e(message, t);
+              }
+
+              public static String stackTraceToString(Throwable t) {
+                  StringWriter sw = new StringWriter();
+                  t.printStackTrace(new PrintWriter(sw));
+                  return sw.toString();
+              }
+
+              public static boolean compareVersions(String operator, String a, String b) {
+                  int c = compare(a, b);
+                  if (operator == null) {
+                      return c == 0;
+                  }
+                  switch (operator.trim()) {
+                      case ">":
+                          return c > 0;
+                      case ">=":
+                          return c >= 0;
+                      case "<":
+                          return c < 0;
+                      case "<=":
+                          return c <= 0;
+                      case "!=":
+                          return c != 0;
+                      default:
+                          return c == 0;
+                  }
+              }
+
+              private static int compare(String a, String b) {
+                  int[] x = parse(a);
+                  int[] y = parse(b);
+                  int n = Math.max(x.length, y.length);
+                  for (int i = 0; i < n; i++) {
+                      int p = i < x.length ? x[i] : 0;
+                      int q = i < y.length ? y[i] : 0;
+                      if (p != q) {
+                          return p < q ? -1 : 1;
+                      }
+                  }
+                  return 0;
+              }
+
+              private static int[] parse(String v) {
+                  ArrayList<Integer> out = new ArrayList<>();
+                  if (v != null) {
+                      for (String s : v.trim().split("[^0-9]+")) {
+                          if (!s.isEmpty()) {
+                              try {
+                                  out.add(Integer.parseInt(s));
+                              } catch (NumberFormatException ignored) {
+                              }
+                          }
+                      }
+                  }
+                  int[] r = new int[out.size()];
+                  for (int i = 0; i < r.length; i++) {
+                      r[i] = out.get(i);
+                  }
+                  return r;
+              }
+          }
+          EOF5
+
+          cat > $E/messenger/utils/chats/ChatUtils.java <<'EOF6'
+          package com.exteragram.messenger.utils.chats;
+
+          import android.text.TextUtils;
+
+          import org.telegram.messenger.FileLoader;
+          import org.telegram.messenger.MessageObject;
+
+          import java.io.File;
+
+          /** Minimal replacement for the exteraGram helper of the same name. */
+          public class ChatUtils {
+              private static ChatUtils instance;
+
+              public static synchronized ChatUtils getInstance() {
+                  if (instance == null) {
+                      instance = new ChatUtils();
+                  }
+                  return instance;
+              }
+
+              public String getPathToMessage(MessageObject messageObject) {
+                  if (messageObject == null || messageObject.messageOwner == null) {
+                      return null;
+                  }
+                  try {
+                      String path = messageObject.messageOwner.attachPath;
+                      if (!TextUtils.isEmpty(path) && new File(path).exists()) {
+                          return path;
+                      }
+                      File file = FileLoader.getInstance(messageObject.currentAccount).getPathToMessage(messageObject.messageOwner);
+                      if (file != null && file.exists()) {
+                          return file.getAbsolutePath();
+                      }
+                  } catch (Throwable ignored) {
+                  }
+                  return null;
+              }
+          }
+          EOF6
+
+          cat > $E/messenger/utils/text/LocaleUtils.java <<'EOF7'
+          package com.exteragram.messenger.utils.text;
+
+          import org.telegram.messenger.LocaleController;
+          import org.telegram.messenger.R;
+          import org.telegram.ui.ActionBar.BaseFragment;
+
+          /** Minimal replacement for the exteraGram helper of the same name. */
+          public class LocaleUtils {
+              public static String createCopySpan(BaseFragment fragment) {
+                  return LocaleController.getString(R.string.Copy);
+              }
+          }
+          EOF7
+
+          cat > $E/messenger/preferences/utils/SettingsRegistry.java <<'EOF8'
+          package com.exteragram.messenger.preferences.utils;
+
+          import org.telegram.ui.ActionBar.BaseFragment;
+
+          /** Minimal replacement for the exteraGram class of the same name. */
+          public class SettingsRegistry {
+              public static final String SHRUG_MAN = "\u00af\\_(\u30c4)_/\u00af";
+              public static final String deeplinkPrefix = "telegyou_settings";
+              public static final String deeplinkPluginIdQueryKey = "plugin";
+              public static final String deeplinkSettingQueryKey = "setting";
+
+              private static SettingsRegistry instance;
+
+              public static synchronized SettingsRegistry getInstance() {
+                  if (instance == null) {
+                      instance = new SettingsRegistry();
+                  }
+                  return instance;
+              }
+
+              public void onSettingNotFound(BaseFragment fragment) {
+              }
+          }
+          EOF8
+
+          cat > $E/messenger/PluginPrefs.kt <<'EOF9'
+          package com.exteragram.messenger
+
+          import android.content.Context
+          import android.content.SharedPreferences
+          import org.telegram.messenger.ApplicationLoader
+
+          // Minimal replacement for the exteraGram settings used by the plugin core.
+
+          val preferences: SharedPreferences
+              get() {
+                  val prefs = ApplicationLoader.applicationContext.getSharedPreferences("telegyou_plugins", Context.MODE_PRIVATE)
+                  if (!prefs.contains("pluginsEngine")) {
+                      prefs.edit().putBoolean("pluginsEngine", true).apply()
+                  }
+                  return prefs
+              }
+
+          val editor: SharedPreferences.Editor
+              get() = preferences.edit()
+
+          var pinnedPlugins: Set<String>
+              get() = preferences.getStringSet("pinnedPlugins", emptySet()) ?: emptySet()
+              set(value) {
+                  preferences.edit().putStringSet("pinnedPlugins", HashSet(value)).apply()
+              }
+
+          var sdkUpdateScheduleTimestamp: Long
+              get() = preferences.getLong("sdkUpdateScheduleTimestamp", 0L)
+              set(value) {
+                  preferences.edit().putLong("sdkUpdateScheduleTimestamp", value).apply()
+              }
+          EOF9
+
+          cat > $E/messenger/utils/network/NetworkStubs.kt <<'EOF10'
+          package com.exteragram.messenger.utils.network
+
+          import okhttp3.OkHttpClient
+          import org.telegram.tgnet.TLRPC
+
+          object ExteraHttpClient {
+              val client: OkHttpClient = OkHttpClient.Builder().build()
+          }
+
+          object RemoteUtils {
+              // Stub: the update search is disabled for now.
+              @JvmStatic
+              fun searchMessages(
+                  account: Int,
+                  limit: Int,
+                  query: String,
+                  filter: Any?,
+                  callback: (TLRPC.messages_Messages?, TLRPC.TL_error?) -> Unit,
+                  timeoutMs: Long,
+              ) {
+                  callback(null, null)
+              }
+          }
+          EOF10
+
+          cat > $E/messenger/plugins/ui/UiStubs.kt <<'EOF11'
+          package com.exteragram.messenger.plugins.ui
+
+          import org.telegram.ui.ActionBar.BaseFragment
+
+          // Temporary stubs: a real plugins screen will be added later.
+          class PluginsActivity : BaseFragment()
+
+          class PluginSettingsActivity : BaseFragment {
+              constructor(plugin: Any?) : super()
+              constructor(plugin: Any?, a: Any?) : super()
+              constructor(plugin: Any?, a: Any?, b: Any?, c: Any?, d: Any?) : super()
+
+              fun setSettingsLinkPrefix(prefix: String?): PluginSettingsActivity = this
+          }
+          EOF11
+
+          cat > $E/messenger/plugins/ui/components/ComponentStubs.kt <<'EOF12'
+          package com.exteragram.messenger.plugins.ui.components
+
+          import android.app.Dialog
+          import org.telegram.ui.ActionBar.BaseFragment
+
+          // Temporary stubs.
+          class SafeModeBottomSheet(fragment: BaseFragment?) {
+              fun show() {}
+          }
+
+          class InstallPluginBottomSheet(fragment: BaseFragment?, validationResult: Any?, params: Any?) {
+              fun show() {}
+
+              class PluginInstallParams {
+                  companion object {
+                      @JvmStatic
+                      fun of(messageObject: Any?, filePath: String?): PluginInstallParams = PluginInstallParams()
+
+                      @JvmStatic
+                      fun untrusted(filePath: String?): PluginInstallParams = PluginInstallParams()
+                  }
+              }
+          }
+
+          class PythonSdkUpdateAlert(fragment: BaseFragment, update: Any?) : Dialog(fragment.parentActivity!!)
+
+          object PluginFileViewer {
+              @JvmStatic
+              fun open(fragment: BaseFragment?, file: Any?, name: String?) {}
+          }
+          EOF12
+
+          cat > $E/messenger/plugins/catalog/CatalogStubs.kt <<'EOF13'
+          package com.exteragram.messenger.plugins.catalog
+
+          import org.telegram.ui.ActionBar.BaseFragment
+
+          object PluginRepositoryLinks {
+              @JvmStatic
+              fun open(fragment: BaseFragment?, username: String?) {}
+
+              @JvmStatic
+              fun openGit(fragment: BaseFragment?, url: String?) {}
+          }
+          EOF13
+
+          cat > $E/messenger/plugins/analyzer/AnalyzerStubs.kt <<'EOF14'
+          package com.exteragram.messenger.plugins.analyzer
+
+          object AnalyzerUpdater {
+              @JvmStatic
+              fun check() {}
+          }
+          EOF14
+
+      - name: Add missing strings
+        run: |
+          python3 - <<'PY'
+          import re, glob, pathlib
+          core = pathlib.Path("TMessagesProj/src/main/java/com/exteragram/messenger/plugins")
+          used = set()
+          for p in core.rglob("*"):
+              if p.suffix in (".kt", ".java"):
+                  used |= set(re.findall(r"\bR\.string\.(\w+)", p.read_text(encoding="utf-8", errors="ignore")))
+          have = set()
+          for f in glob.glob("TMessagesProj/src/main/res/values/*.xml"):
+              have |= set(re.findall(r'<string\s+name="([^"]+)"', open(f, encoding="utf-8", errors="ignore").read()))
+          src = {}
+          for f in sorted(glob.glob("extera/TMessagesProj/src/*/res/values/*.xml")):
+              t = open(f, encoding="utf-8", errors="ignore").read()
+              for m in re.finditer(r'<string\s+name="([^"]+)"[^>]*>.*?</string>', t, re.S):
+                  src.setdefault(m.group(1), m.group(0))
+          missing = sorted(n for n in used if n not in have)
+          found = [n for n in missing if n in src]
+          lost = [n for n in missing if n not in src]
+          lines = ['<?xml version="1.0" encoding="utf-8"?>', "<resources>"] + ["    " + src[n] for n in found] + ["</resources>"]
+          pathlib.Path("TMessagesProj/src/main/res/values/telegyou_plugins_strings.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print("used:", len(used), "added:", len(found), "not found:", lost)
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TMessagesProj/src/main/java TMessagesProj/src/main/res/values licenses
+          git commit -m "Import exteraGram plugin core and compatibility stubs" || echo "nothing to commit"
+          git push
