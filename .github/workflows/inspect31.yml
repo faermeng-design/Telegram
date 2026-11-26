@@ -1,0 +1,30 @@
+name: Inspect31
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          O=inspect/part31.txt
+          F=$(find . -name ProfileActivity.java | head -1)
+          echo "=== nameTextView setText ===" > $O
+          grep -n "nameTextView.setText\|nameTextView\[.*setText\|chat.title\|long chatId\|chatId = " "$F" | head -60 >> $O
+          echo "=== getPublicUsername ===" >> $O
+          grep -n "getPublicUsername" $(find . -name ChatObject.java | head -1) | head -5 >> $O
+          echo "=== UserObject getUserName ===" >> $O
+          grep -n "BadgeManager" $(find . -name UserObject.java | head -1) | head -10 >> $O
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part31.txt
+          git commit -m "inspect31" || echo none
+          git pull --rebase
+          git push
