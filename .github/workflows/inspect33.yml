@@ -1,0 +1,40 @@
+name: Inspect33
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          O=inspect/part33.txt
+          F=$(find . -name ChatActivity.java | head -1)
+          echo "=== menu add ===" > $O
+          grep -n "lazilyAddSubItem\|addSubItem(" "$F" | head -50 >> $O
+          echo "=== menu click ===" >> $O
+          N=$(grep -n "id == clear_history\|== clear_history\|case clear_history" "$F" | head -1 | cut -d: -f1)
+          echo "line $N" >> $O
+          sed -n "$((N-6)),$((N+10))p" "$F" >> $O
+          echo "=== fields ===" >> $O
+          grep -n "messagesDict = \|ArrayList<MessageObject> messages = \|long dialog_id\b\|long dialog_id;" "$F" | head -10 >> $O
+          echo "=== onResume ===" >> $O
+          grep -n "public void onResume()" "$F" | head -3 >> $O
+          echo "=== menu create ===" >> $O
+          M=$(grep -n "headerItem = menu.addItem(chat_menu_options" "$F" | tail -1 | cut -d: -f1)
+          sed -n "$M,$((M+30))p" "$F" >> $O
+          echo "=== MessageObject ===" >> $O
+          MO=$(find . -name MessageObject.java | head -1)
+          grep -n "public boolean isPhoto()\|public boolean isVideo()\|public boolean isVoice()\|public boolean isRoundVideo()\|public long getDialogId()\|public long getFromChatId()" "$MO" | head -10 >> $O
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part33.txt
+          git commit -m "inspect33" || echo none
+          git pull --rebase
+          git push
