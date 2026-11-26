@@ -1,0 +1,31 @@
+name: Inspect29
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          O=inspect/part29.txt
+          echo "=== badges.json ===" > $O
+          cat badges.json >> $O
+          echo "=== zz-owner.sh ===" >> $O
+          cat mod/zz-owner.sh >> $O
+          echo "=== zz-popup.sh ===" >> $O
+          cat mod/zz-popup.sh >> $O
+          echo "=== hitBadge in ProfileActivity ===" >> $O
+          F=$(find . -name ProfileActivity.java | head -1)
+          grep -n -B4 -A12 "hitBadge" "$F" >> $O
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part29.txt
+          git commit -m "inspect29" || echo none
+          git push
