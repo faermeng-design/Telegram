@@ -1,0 +1,31 @@
+name: Analyze exteraGram
+on:
+  push:
+    branches: [Plugins-1]
+    paths:
+      - '.github/workflows/analyze-extera.yml'
+      - 'tools/analyze_extera.py'
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: exteraSquad/exteraGram
+          path: extera
+          sparse-checkout: |
+            TMessagesProj/src
+      - name: Analyze
+        run: python3 tools/analyze_extera.py
+      - name: Report to summary
+        run: |
+          echo '~~~' >> $GITHUB_STEP_SUMMARY
+          cat analysis-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '~~~' >> $GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extera-analysis
+          path: analysis-report.txt
