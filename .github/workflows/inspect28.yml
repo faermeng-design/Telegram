@@ -1,0 +1,27 @@
+name: Inspect28
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          F=$(find . -name DialogStoriesCell.java | head -1)
+          echo "FILE $F" > inspect/part28.txt
+          echo "--- grep ---" >> inspect/part28.txt
+          grep -n "titleView\|logoAlpha\|telegramLogoView\|telegram_logo_2" "$F" >> inspect/part28.txt
+          echo "--- setText context ---" >> inspect/part28.txt
+          grep -n -B3 -A3 "titleView.setText\|titleView.setVisibility\|telegramLogoView.setAlpha\|telegramLogoView.setVisibility" "$F" >> inspect/part28.txt
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part28.txt
+          git commit -m "inspect28" || echo none
+          git push
