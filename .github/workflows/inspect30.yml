@@ -1,0 +1,31 @@
+name: Inspect30
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          O=inspect/part30.txt
+          echo "=== badges.json ===" > $O
+          cat badges.json >> $O
+          echo "=== zz-owner.sh ===" >> $O
+          cat mod/zz-owner.sh >> $O
+          echo "=== zz-popup.sh ===" >> $O
+          cat mod/zz-popup.sh >> $O
+          echo "=== files ===" >> $O
+          ls inspect | tail -5 >> $O
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part30.txt
+          git commit -m "inspect30" || echo none
+          git pull --rebase
+          git push
