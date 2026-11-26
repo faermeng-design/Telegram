@@ -1,0 +1,32 @@
+=== nameTextView setText ===
+476:    private long chatId;
+2090:        chatId = arguments.getLong("chat_id", 0);
+2719:                            String chatName = chat == null ? "" : chat.title;
+3099:                        nameTextView.setTextColor(Color.WHITE);
+5162:                                        BulletinFactory.createRemoveFromChatBulletin(fragment, user, chat.title).show();
+5520:        nameTextView.setTextColor(getThemedColor(Theme.key_profile_title));
+5522:        nameTextView.setTextSizePx(dp(17.5f));
+6087:                nameTextView.setTextColor(nameTextColor);
+6537:        nameTextView.setTextColor(peerColor != null ? Color.WHITE : ColorUtils.blendARGB(getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+7888:            nameTextView.setTextColor(c);
+9340:            Long chatId = (Long) args[0];
+9377:            Long chatId = (Long) args[0];
+9685:            final long chatId = (long) args[0];
+10121:            nameTextView.setTextColor(ColorUtils.blendARGB(titleColor, color, progress));
+10278:                nameTextView.setTextColor(Color.WHITE);
+11496:        // the first status is not a change: popping it in from zero blinks over the chat title at the start of the open transition
+11764:                nameTextView.setText(newString);
+11953:                            statusString = formatString("TopicProfileStatus", R.string.TopicProfileStatus, chat.title);
+11957:                        profileStatusString = new SpannableStringBuilder(chat.title).append(' ').append(arrowString);
+12024:                } else if (chat.title != null) {
+12025:                    title = chat.title;
+12032:                    if (nameTextView.setText(title)) {
+12209:            nameTextView.setTextColor(ColorUtils.blendARGB(ColorUtils.blendARGB(peerColor != null ? Color.WHITE : getThemedColor(Theme.key_profile_title), getThemedColor(Theme.key_player_actionBarTitle), mediaHeaderAnimationProgress), Color.WHITE, currentExpandAnimatorValue));
+17147:            nameTextView.setTextColor(peerColor != null ? Color.WHITE : ColorUtils.blendARGB(getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+17169:                            nameTextView.setTextColor(getThemedColor(Theme.key_profile_title));
+=== getPublicUsername ===
+2394:    public static String getPublicUsername(TLRPC.Chat chat) {
+2395:        return getPublicUsername(chat, false);
+2398:    public static String getPublicUsername(TLRPC.Chat chat, boolean editable) {
+2438:        return !TextUtils.isEmpty(getPublicUsername(chat));
+=== UserObject getUserName ===
