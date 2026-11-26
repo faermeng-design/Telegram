@@ -1,0 +1,107 @@
+=== menu add ===
+4296:                savedChatsItem = headerItem.lazilyAddSubItem(view_as_topics, R.drawable.msg_topics, LocaleController.getString(R.string.SavedViewAsChats));
+4379:                headerItem.lazilyAddSubItem(open_direct, R.drawable.msg_markunread, getString(R.string.ChannelOpenDirect));
+4383:                headerItem.lazilyAddSubItem(call, R.drawable.msg_callback, LocaleController.getString(R.string.Call));
+4384:                headerItem.lazilyAddSubItem(video_call, R.drawable.msg_videocall, LocaleController.getString(R.string.VideoCall));
+4399:                headerItem.lazilyAddSubItem(search, R.drawable.msg_search, LocaleController.getString(R.string.Search));
+4403:                headerItem.lazilyAddSubItem(boost_group, drawable, LocaleController.getString(ChatObject.isChannelAndNotMegaGroup(currentChat) ? R.string.BoostingBoostChannelMenu : R.string.BoostingBoostGroupMenu));
+4405:            translateItem = headerItem.lazilyAddSubItem(translate, R.drawable.msg_translate, LocaleController.getString(R.string.TranslateMessage));
+4408:                headerItem.lazilyAddSubItem(report, R.drawable.msg_report, LocaleController.getString(R.string.ReportChat));
+4411:                addContactItem = headerItem.lazilyAddSubItem(share_contact, R.drawable.msg_addcontact, LocaleController.getString(R.string.AddToContacts));
+4414:                timeItem2 = headerItem.lazilyAddSubItem(chat_enc_timer, R.drawable.msg_autodelete, LocaleController.getString(R.string.SetTimer));
+4417:                viewAsTopics = headerItem.lazilyAddSubItem(view_as_topics, R.drawable.msg_topics, LocaleController.getString(R.string.TopicViewAsTopics));
+4420:                headerItem.lazilyAddSubItem(change_colors, R.drawable.msg_background, LocaleController.getString(R.string.SetWallpapers));
+4423:                headerItem.lazilyAddSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+4426:                clearHistoryItem = headerItem.lazilyAddSubItem(clear_history, R.drawable.msg_clear,
+4434:                            headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveConversationMenu));
+4436:                            headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveMegaMenu));
+4438:                            headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveChannelMenu));
+4443:                        headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.DeleteAndExit));
+4445:                        headerItem.lazilyAddSubItem(bot_settings, R.drawable.msg_settings_old, LocaleController.getString(R.string.BotSettings));
+4447:                        headerItem.lazilyAddSubItem(bot_help, R.drawable.msg_help, LocaleController.getString(R.string.BotHelp));
+4449:                            trackRedHeaderItem(headerItem.lazilyAddSubItem(report, R.drawable.msg_report, LocaleController.getString(R.string.ReportBot)), false).setColors(getThemedColor(Theme.key_text_RedRegular), getThemedColor(Theme.key_text_RedRegular));
+4451:                        trackRedHeaderItem(headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_block2, LocaleController.getString(R.string.DeleteAndBlock)), false).setColors(getThemedColor(Theme.key_text_RedRegular), getThemedColor(Theme.key_text_RedRegular));
+4454:                        headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_delete, LocaleController.getString(R.string.DeleteChatUser));
+4459:                headerItem.lazilyAddSubItem(remove_fee, R.drawable.menu_paid_off, getString(R.string.DirectRemoveFee));
+4460:                headerItem.lazilyAddSubItem(charge_fee, R.drawable.menu_feature_paid, getString(R.string.DirectChargeFee));
+4475:            headerItem.lazilyAddSubItem(copy_business_link, R.drawable.msg_copy, getString(R.string.Copy));
+4476:            headerItem.lazilyAddSubItem(share_business_link, R.drawable.msg_share, getString(R.string.LinkActionShare));
+4477:            headerItem.lazilyAddSubItem(rename_business_link, R.drawable.msg_edit, getString(R.string.Rename));
+4478:            trackRedHeaderItem(headerItem.lazilyAddSubItem(delete_business_link, R.drawable.msg_delete, getString(R.string.Delete)), true).setColors(Theme.getColor(Theme.key_text_RedRegular), Theme.getColor(Theme.key_text_RedRegular));
+4491:                openForumItem = headerItem.lazilyAddSubItem(open_forum, R.drawable.msg_discussion, LocaleController.getString(R.string.OpenAllTopics));
+4495:            closeTopicItem = headerItem.lazilyAddSubItem(topic_close, R.drawable.msg_topic_close, LocaleController.getString(R.string.CloseTopic));
+4524:            headerItem.lazilyAddSubItem(888, R.drawable.menu_download_round, "Dump Canvas");
+45035:                            headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveMegaMenu));
+45037:                            headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveChannelMenu));
+45042:                        headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_leave, LocaleController.getString(R.string.DeleteAndExit));
+45044:                        trackRedHeaderItem(headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_block2, LocaleController.getString(R.string.DeleteAndBlock)), false).setColors(getThemedColor(Theme.key_text_RedRegular), getThemedColor(Theme.key_text_RedRegular));
+45046:                        headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_delete, LocaleController.getString(R.string.DeleteChatUser));
+=== menu click ===
+line 3852
+                    });
+                } else if (id == chat_enc_timer) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    showDialog(AlertsCreator.createTTLAlert(getParentActivity(), currentEncryptedChat, themeDelegate).create());
+                } else if (id == clear_history || id == delete_chat || id == auto_delete_timer) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+
+                    if (id == clear_history && ChatObject.isMonoForum(currentChat)) {
+                        if (getThreadId() != 0) {
+                            final TLRPC.User user = getMessagesController().getUser(getThreadId());
+                            if (user != null) {
+                                AlertsCreator.createClearDaysDialogAlert(ChatActivity.this, -1, user, currentChat, true, revoke -> {
+                                    if (user.id != getThreadId()) {
+=== fields ===
+884:    private long dialog_id;
+908:    private SparseArray<MessageObject>[] messagesDict = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
+914:    public ArrayList<MessageObject> messages = new ArrayList<>();
+13412:                ArrayList<MessageObject> messages = chatAdapter.getMessages();
+23123:            final ArrayList<MessageObject> messages = new ArrayList<>();
+42174:            ArrayList<MessageObject> messages = new ArrayList<>();
+42323:                    ArrayList<MessageObject> messages = new ArrayList<>();
+42373:                ArrayList<MessageObject> messages = new ArrayList<>();
+=== onResume ===
+30660:    public void onResume() {
+=== menu create ===
+            headerItem = menu.addItem(chat_menu_options, otherIcon);
+            updateTopicsPanelItem();
+            otherIcon.addView(headerItem.getIconView());
+            headerItem.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));
+
+            headerItem.lazilyAddSubItem(copy_business_link, R.drawable.msg_copy, getString(R.string.Copy));
+            headerItem.lazilyAddSubItem(share_business_link, R.drawable.msg_share, getString(R.string.LinkActionShare));
+            headerItem.lazilyAddSubItem(rename_business_link, R.drawable.msg_edit, getString(R.string.Rename));
+            trackRedHeaderItem(headerItem.lazilyAddSubItem(delete_business_link, R.drawable.msg_delete, getString(R.string.Delete)), true).setColors(Theme.getColor(Theme.key_text_RedRegular), Theme.getColor(Theme.key_text_RedRegular));
+        }
+        if (ChatObject.isForum(currentChat) && isTopic && getParentLayout() != null && getParentLayout().getFragmentStack() != null && chatMode == MODE_DEFAULT) {
+            boolean hasMyForum = false;
+            for (int i = 0; i < getParentLayout().getFragmentStack().size(); ++i) {
+                BaseFragment fragment = getParentLayout().getFragmentStack().get(i);
+                if (fragment instanceof TopicsFragment && ((TopicsFragment) fragment).getDialogId() == dialog_id) {
+                    hasMyForum = true;
+                    break;
+                }
+            }
+
+            if (!hasMyForum) {
+                openForumItem = headerItem.lazilyAddSubItem(open_forum, R.drawable.msg_discussion, LocaleController.getString(R.string.OpenAllTopics));
+            }
+        }
+        if (currentChat != null && forumTopic != null && chatMode == 0) {
+            closeTopicItem = headerItem.lazilyAddSubItem(topic_close, R.drawable.msg_topic_close, LocaleController.getString(R.string.CloseTopic));
+            closeTopicItem.setVisibility(currentChat != null && ChatObject.canManageTopic(currentAccount, currentChat, forumTopic) && forumTopic != null && !forumTopic.closed ? View.VISIBLE : View.GONE);
+        }
+        menu.setVisibility(inMenuMode ? View.GONE : View.VISIBLE);
+
+        updateTitle(false);
+=== MessageObject ===
+10085:    public long getFromChatId() {
+10397:    public long getDialogId() {
+11520:    public boolean isVoice() {
+11532:    public boolean isVideo() {
+11553:    public boolean isPhoto() {
+11577:    public boolean isRoundVideo() {
