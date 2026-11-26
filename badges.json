@@ -6,10 +6,28 @@
       "image": "badges/owner.png",
       "info": "Этот пользователь владелец мода"
     },
-    "tester": { "label": "tester", "icon": "🖊️" }
+    "tester": {
+      "label": "tester",
+      "icon": "🖊️",
+      "info": "Этот человек тестирует мод"
+    },
+    "iconartist": {
+      "label": "Icon Artist",
+      "icon": "🎨",
+      "info": "Этот человек нарисовал иконку приложения"
+    },
+    "official": {
+      "label": "official",
+      "icon": "📢",
+      "image": "badges/owner.png",
+      "info": "Этот канал является официальным источником Telegyou"
+    }
   },
   "users": {
     "8512557198": "owner",
-    "533792188": "tester"
+    "7605552323": "Icon Artist"
+  },
+  "channels": {
+    "telegyoumod": "official"
   }
 }
