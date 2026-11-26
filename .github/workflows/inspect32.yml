@@ -1,0 +1,31 @@
+name: Inspect32
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect
+        run: |
+          set +e
+          mkdir -p inspect
+          O=inspect/part32.txt
+          F=$(find . -name ChatActivity.java | head -1)
+          echo "=== menu items ===" > $O
+          grep -n "addSubItem(\|headerItem = \|ActionBarMenuItem headerItem" "$F" | head -60 >> $O
+          echo "=== menu ids ===" >> $O
+          grep -n "private final static int [a-z_A-Z]* = [0-9]*;" "$F" | head -80 >> $O
+          echo "=== MessagesController GhostMode ===" >> $O
+          M=$(find . -name MessagesController.java | head -1)
+          grep -n "GhostMode" "$M" | head -40 >> $O
+          true
+      - name: Commit result
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add inspect/part32.txt
+          git commit -m "inspect32" || echo none
+          git pull --rebase
+          git push
