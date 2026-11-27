@@ -14,13 +14,13 @@
     "iconartist": {
       "label": "Icon Artist",
       "icon": "🎨",
-      "image": "badges/iconartist.png",
+      "image": "badges/iconartist.svg",
       "info": "Этот человек нарисовал основную иконку приложения"
     },
     "official": {
       "label": "official",
       "icon": "📢",
-      "image": "badges/mainchannel.png",
+      "image": "badges/mainchannel.svg",
       "info": "Этот канал является официальным источником Telegyou"
     }
   },
