@@ -3,7 +3,7 @@
     "owner": {
       "label": "owner",
       "icon": "👑",
-      "image": "badges/owner.png",
+      "image": "badges/owner.svg",
       "info": "Этот пользователь владелец мода"
     },
     "tester": {
