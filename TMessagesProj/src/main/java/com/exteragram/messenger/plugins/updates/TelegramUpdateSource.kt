@@ -41,7 +41,7 @@ internal object TelegramUpdateSource {
         fun start(account: Int, message: TLRPC.Message, document: TLRPC.Document, callback: (File?) -> Unit) {
             if (listener != null) return
             val loader = FileLoader.getInstance(account)
-            val file = loader.getPathToAttachForAccount(document)
+            val file = loader.getPathToAttach(document)
             if (file.isFile) {
                 callback(file)
                 return
@@ -72,7 +72,7 @@ internal object TelegramUpdateSource {
                 }
 
                 override fun onFailedDownload(fileName: String, canceled: Boolean) = finish(null)
-                override fun onSuccessDownload(fileName: String) = finish(loader.getPathToAttachForAccount(document))
+                override fun onSuccessDownload(fileName: String) = finish(loader.getPathToAttach(document))
                 override fun onProgressDownload(fileName: String, downloadSize: Long, totalSize: Long) {
                     if (listener === this) resetStallTimer()
                 }

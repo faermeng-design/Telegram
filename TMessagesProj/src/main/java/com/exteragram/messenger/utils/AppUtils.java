@@ -79,4 +79,18 @@ public class AppUtils {
         }
         return r;
     }
+
+    public static int getBuildVersionCode() {
+        try {
+            android.content.Context c = org.telegram.messenger.ApplicationLoader.applicationContext;
+            android.content.pm.PackageInfo info = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
+            return (int) androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(info);
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
+    public static boolean compareVersions(String operator, int a, int b) {
+        return compareVersions(operator, String.valueOf(a), String.valueOf(b));
+    }
 }

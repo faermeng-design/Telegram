@@ -36,6 +36,12 @@ public class NotificationCenter {
     private static int totalEvents = 1;
 
     public static final int didReceiveNewMessages = totalEvents++;
+    public static final int pluginsUpdated = totalEvents++;
+    public static final int pluginMenuItemsUpdated = totalEvents++;
+    public static final int pluginSettingsRegistered = totalEvents++;
+    public static final int pluginSettingsUnregistered = totalEvents++;
+    public static final int pluginsPySdkInfoChanged = totalEvents++;
+    public static final int pluginIsNotResponding = totalEvents++;
     public static final int updateInterfaces = totalEvents++;
     public static final int dialogsNeedReload = totalEvents++;
     public static final int closeChats = totalEvents++;

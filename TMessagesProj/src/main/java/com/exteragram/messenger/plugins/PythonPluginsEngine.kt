@@ -2697,7 +2697,7 @@ class PythonPluginsEngine : PluginsController.PluginsEngine {
             fun isAppVersionCodeCompatible(operator: String, targetVersion: String): Boolean {
                 return AppUtils.compareVersions(
                     operator,
-                    BuildVars.BUILD_VERSION,
+                    com.exteragram.messenger.utils.AppUtils.getBuildVersionCode(),
                     targetVersion.toInt()
                 )
             }

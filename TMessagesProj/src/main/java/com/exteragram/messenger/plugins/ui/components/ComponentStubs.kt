@@ -11,13 +11,13 @@ class SafeModeBottomSheet(fragment: BaseFragment?) {
 class InstallPluginBottomSheet(fragment: BaseFragment?, validationResult: Any?, params: Any?) {
     fun show() {}
 
-    class PluginInstallParams {
+    class PluginInstallParams(val filePath: String?, val trusted: Boolean) {
         companion object {
             @JvmStatic
-            fun of(messageObject: Any?, filePath: String?): PluginInstallParams = PluginInstallParams()
+            fun of(messageObject: Any?, filePath: String?): PluginInstallParams = PluginInstallParams(filePath, false)
 
             @JvmStatic
-            fun untrusted(filePath: String?): PluginInstallParams = PluginInstallParams()
+            fun untrusted(filePath: String?): PluginInstallParams = PluginInstallParams(filePath, false)
         }
     }
 }

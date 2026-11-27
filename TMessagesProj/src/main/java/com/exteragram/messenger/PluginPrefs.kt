@@ -29,3 +29,39 @@ var sdkUpdateScheduleTimestamp: Long
     set(value) {
         preferences.edit().putLong("sdkUpdateScheduleTimestamp", value).apply()
     }
+
+var pluginsEngine: Boolean
+    get() = preferences.getBoolean("pluginsEngine", true)
+    set(value) {
+        preferences.edit().putBoolean("pluginsEngine", value).apply()
+    }
+
+var pluginsSafeMode: Boolean
+    get() = preferences.getBoolean("pluginsSafeMode", false)
+    set(value) {
+        preferences.edit().putBoolean("pluginsSafeMode", value).apply()
+    }
+
+var pluginsDevMode: Boolean
+    get() = preferences.getBoolean("pluginsDevMode", false)
+    set(value) {
+        preferences.edit().putBoolean("pluginsDevMode", value).apply()
+    }
+
+var pluginsDisableArtOpts: Boolean
+    get() = preferences.getBoolean("pluginsDisableArtOpts", false)
+    set(value) {
+        preferences.edit().putBoolean("pluginsDisableArtOpts", value).apply()
+    }
+
+var pluginsPySdkAutoUpdate: Boolean
+    get() = preferences.getBoolean("pluginsPySdkAutoUpdate", false)
+    set(value) {
+        preferences.edit().putBoolean("pluginsPySdkAutoUpdate", value).apply()
+    }
+
+var pluginsPySdkBetaVersions: Boolean
+    get() = preferences.getBoolean("pluginsPySdkBetaVersions", false)
+    set(value) {
+        preferences.edit().putBoolean("pluginsPySdkBetaVersions", value).apply()
+    }
