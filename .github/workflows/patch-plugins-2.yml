@@ -1,0 +1,197 @@
+name: Patch plugin compat (round 2)
+on:
+  push:
+    branches: [Plugins-1]
+    paths:
+      - '.github/workflows/patch-plugins-2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Small source fixes
+        run: |
+          set -e
+          D=TMessagesProj/src/main/java/com/exteragram/messenger/plugins
+          sed -i 's/getPathToAttachForAccount(/getPathToAttach(/g' $D/updates/TelegramUpdateSource.kt
+          sed -i 's/BuildVars\.BUILD_VERSION\b/com.exteragram.messenger.utils.AppUtils.getBuildVersionCode()/' $D/PythonPluginsEngine.kt
+
+      - name: Rewrite stubs
+        run: |
+          set -e
+          E=TMessagesProj/src/main/java/com/exteragram/messenger
+
+          cat > $E/PluginPrefs.kt <<'EOF1'
+          package com.exteragram.messenger
+
+          import android.content.Context
+          import android.content.SharedPreferences
+          import org.telegram.messenger.ApplicationLoader
+
+          // Minimal replacement for the exteraGram settings used by the plugin core.
+
+          val preferences: SharedPreferences
+              get() {
+                  val prefs = ApplicationLoader.applicationContext.getSharedPreferences("telegyou_plugins", Context.MODE_PRIVATE)
+                  if (!prefs.contains("pluginsEngine")) {
+                      prefs.edit().putBoolean("pluginsEngine", true).apply()
+                  }
+                  return prefs
+              }
+
+          val editor: SharedPreferences.Editor
+              get() = preferences.edit()
+
+          var pinnedPlugins: Set<String>
+              get() = preferences.getStringSet("pinnedPlugins", emptySet()) ?: emptySet()
+              set(value) {
+                  preferences.edit().putStringSet("pinnedPlugins", HashSet(value)).apply()
+              }
+
+          var sdkUpdateScheduleTimestamp: Long
+              get() = preferences.getLong("sdkUpdateScheduleTimestamp", 0L)
+              set(value) {
+                  preferences.edit().putLong("sdkUpdateScheduleTimestamp", value).apply()
+              }
+
+          var pluginsEngine: Boolean
+              get() = preferences.getBoolean("pluginsEngine", true)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsEngine", value).apply()
+              }
+
+          var pluginsSafeMode: Boolean
+              get() = preferences.getBoolean("pluginsSafeMode", false)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsSafeMode", value).apply()
+              }
+
+          var pluginsDevMode: Boolean
+              get() = preferences.getBoolean("pluginsDevMode", false)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsDevMode", value).apply()
+              }
+
+          var pluginsDisableArtOpts: Boolean
+              get() = preferences.getBoolean("pluginsDisableArtOpts", false)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsDisableArtOpts", value).apply()
+              }
+
+          var pluginsPySdkAutoUpdate: Boolean
+              get() = preferences.getBoolean("pluginsPySdkAutoUpdate", false)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsPySdkAutoUpdate", value).apply()
+              }
+
+          var pluginsPySdkBetaVersions: Boolean
+              get() = preferences.getBoolean("pluginsPySdkBetaVersions", false)
+              set(value) {
+                  preferences.edit().putBoolean("pluginsPySdkBetaVersions", value).apply()
+              }
+          EOF1
+
+          cat > $E/plugins/ui/components/ComponentStubs.kt <<'EOF2'
+          package com.exteragram.messenger.plugins.ui.components
+
+          import android.app.Dialog
+          import org.telegram.ui.ActionBar.BaseFragment
+
+          // Temporary stubs.
+          class SafeModeBottomSheet(fragment: BaseFragment?) {
+              fun show() {}
+          }
+
+          class InstallPluginBottomSheet(fragment: BaseFragment?, validationResult: Any?, params: Any?) {
+              fun show() {}
+
+              class PluginInstallParams(val filePath: String?, val trusted: Boolean) {
+                  companion object {
+                      @JvmStatic
+                      fun of(messageObject: Any?, filePath: String?): PluginInstallParams = PluginInstallParams(filePath, false)
+
+                      @JvmStatic
+                      fun untrusted(filePath: String?): PluginInstallParams = PluginInstallParams(filePath, false)
+                  }
+              }
+          }
+
+          class PythonSdkUpdateAlert(fragment: BaseFragment, update: Any?) : Dialog(fragment.parentActivity!!)
+
+          object PluginFileViewer {
+              @JvmStatic
+              fun open(fragment: BaseFragment?, file: Any?, name: String?) {}
+          }
+          EOF2
+
+      - name: Patch Telegram classes and helpers
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          base = pathlib.Path("TMessagesProj/src/main/java")
+
+          p = base / "org/telegram/messenger/NotificationCenter.java"
+          s = p.read_text(encoding="utf-8")
+          names = ["pluginsUpdated", "pluginMenuItemsUpdated", "pluginSettingsRegistered",
+                   "pluginSettingsUnregistered", "pluginsPySdkInfoChanged", "pluginIsNotResponding"]
+          if "pluginsUpdated" in s:
+              print("NotificationCenter: already patched")
+          else:
+              m = re.search(r"^[ \t]*public static final int \w+ = totalEvents\+\+;[^\n]*\n", s, re.M)
+              if not m:
+                  print("WARNING: NotificationCenter anchor not found")
+              else:
+                  add = "".join("    public static final int %s = totalEvents++;\n" % n for n in names)
+                  p.write_text(s[:m.end()] + add + s[m.end():], encoding="utf-8")
+                  print("NotificationCenter: patched")
+
+          p = base / "org/telegram/messenger/Utilities.java"
+          s = p.read_text(encoding="utf-8")
+          if "pluginsQueue" in s:
+              print("Utilities: already patched")
+          else:
+              m = re.search(r"^[ \t]*public static volatile DispatchQueue stageQueue[^\n]*\n", s, re.M)
+              if not m:
+                  print("WARNING: Utilities anchor not found")
+              else:
+                  add = '    public static volatile DispatchQueue pluginsQueue = new DispatchQueue("pluginsQueue");\n'
+                  p.write_text(s[:m.end()] + add + s[m.end():], encoding="utf-8")
+                  print("Utilities: patched")
+
+          p = base / "com/exteragram/messenger/utils/AppUtils.java"
+          s = p.read_text(encoding="ascii")
+          if "getBuildVersionCode" in s:
+              print("AppUtils: already patched")
+          else:
+              add = """
+              public static int getBuildVersionCode() {
+                  try {
+                      android.content.Context c = org.telegram.messenger.ApplicationLoader.applicationContext;
+                      android.content.pm.PackageInfo info = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
+                      return (int) androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(info);
+                  } catch (Throwable t) {
+                      return 0;
+                  }
+              }
+
+              public static boolean compareVersions(String operator, int a, int b) {
+                  return compareVersions(operator, String.valueOf(a), String.valueOf(b));
+              }
+          """
+              i = s.rindex("}")
+              p.write_text(s[:i] + add + "}\n", encoding="ascii")
+              print("AppUtils: patched")
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TMessagesProj/src/main
+          git commit -m "Plugin compat fixes: settings, notification events, queue, stubs" || echo "nothing to commit"
+          git push
