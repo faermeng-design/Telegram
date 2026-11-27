@@ -3,7 +3,7 @@
     "owner": {
       "label": "owner",
       "icon": "👑",
-      "image": "badges/owner.svg",
+      "image": "badges/owner.png",
       "info": "Этот пользователь владелец мода"
     },
     "tester": {
@@ -14,13 +14,13 @@
     "iconartist": {
       "label": "Icon Artist",
       "icon": "🎨",
-      "image": "badges/iconartist.svg",
+      "image": "badges/iconartist.png",
       "info": "Этот человек нарисовал основную иконку приложения"
     },
     "official": {
       "label": "official",
       "icon": "📢",
-      "image": "badges/mainchannel.svg",
+      "image": "badges/mainchannel.png",
       "info": "Этот канал является официальным источником Telegyou"
     }
   },
