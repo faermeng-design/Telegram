@@ -576,7 +576,7 @@ print("zz-zzarchive: окно архива создано")
 # ---------- 3) ChatMessageCell: ловим удалённые при показе ----------
 cell = B + "ui/Cells/ChatMessageCell.java"
 try:
-    c = open(cell, encoding="ascii", errors="replace").read()
+   c = open(cell, encoding="utf-8").read()
     if "TelegyouArchive.capture" in c:
         print("zz-zzarchive: ChatMessageCell уже пропатчен")
     else:
@@ -585,7 +585,7 @@ try:
             print("WARNING zz-zzarchive: якорь в ChatMessageCell не найден (архив будет ловить только при открытии чата)")
         else:
             c = c.replace(a, "org.telegram.messenger.TelegyouArchive.capture(currentMessageObject);\n                " + a, 1)
-            open(cell, "w", encoding="ascii").write(c)
+           open(cell, "w", encoding="utf-8").write(c)
             print("zz-zzarchive: ChatMessageCell пропатчен")
 except FileNotFoundError:
     print("WARNING zz-zzarchive: ChatMessageCell.java не найден")
